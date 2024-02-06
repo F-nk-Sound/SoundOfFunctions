@@ -35,4 +35,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: macos
-        path: /home/runner/.local/share/godot/archives/macos.zip
+        path: /home/runner/.local/share/godot/archives/macOS.zip
