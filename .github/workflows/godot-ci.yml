@@ -3,8 +3,8 @@ on: push
 
 env:
   GODOT_VERSION: 4.2.1
-  EXPORT_NAME: F(nk) Sounds
-  PROJECT_PATH: F(nk) Sounds
+  EXPORT_NAME: F(nk)Sound
+  PROJECT_PATH: F(nk)Sound
 
 jobs:
   export-windows:
