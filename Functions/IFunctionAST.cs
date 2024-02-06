@@ -16,4 +16,6 @@ public interface IFunctionAST
     /// <param name="ctx">Evaluation context.</param>
     /// <returns>The value of this node.</returns>
     public double Evaluate(EvalContext ctx);
+
+    public double EvaluateAtT(double t) => Evaluate(new() { Variables = new() { { "t", t } } });
 }
