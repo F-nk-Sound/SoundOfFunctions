@@ -23,6 +23,8 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 6
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
@@ -49,6 +51,8 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 6
       - name: Linux Build
         run: |
           mkdir -v -p build/linux
@@ -110,6 +114,8 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 6
       - name: Mac Build
         run: |
           mkdir -v -p build/mac
