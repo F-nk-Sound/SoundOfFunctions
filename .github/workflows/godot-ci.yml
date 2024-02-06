@@ -4,7 +4,7 @@ on: push
 env:
   GODOT_VERSION: 4.2.1
   EXPORT_NAME: F(nk)Sound
-  PROJECT_PATH: F(nk)Sound
+  PROJECT_PATH: SoundOfFunctions
 
 jobs:
   export-windows:
