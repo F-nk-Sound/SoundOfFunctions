@@ -23,16 +23,16 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: windows
-        path: /~/.local/share/godot/archives/Windows Desktop.zip
+        path: /home/runner/.local/share/godot/archives/Windows Desktop.zip
 
     - name: Upload Linux
       uses: actions/upload-artifact@v1
       with:
         name: linux
-        path: /~/.local/share/godot/archives/LinuxX11.zip
+        path: /home/runner/.local/share/godot/archives/LinuxX11.zip
 
     - name: Upload MacOS
       uses: actions/upload-artifact@v1
       with:
         name: macos
-        path: /~/.local/share/godot/archives/macos.zip
+        path: /home/runner/.local/share/godot/archives/macos.zip
