@@ -18,3 +18,21 @@ jobs:
         relative_project_path: ./
         cache: true
         archive_output: true
+
+    - name: Upload Windows
+      uses: actions/upload-artifact@v1
+      with:
+        name: windows
+        path: /home/runner/.local/share/godot/archives/Windows Desktop.zip
+
+    - name: Upload Linux
+      uses: actions/upload-artifact@v1
+      with:
+        name: linux
+        path: /home/runner/.local/share/godot/archives/LinuxX11.zip
+
+    - name: Upload MacOS
+      uses: actions/upload-artifact@v1
+      with:
+        name: macos
+        path: /home/runner/.local/share/godot/archives/macOS.zip
