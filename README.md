@@ -1,2 +1,2 @@
-# SoundOfFunctions
+# SoundOfFunctions 
 Visualize sound with math!
