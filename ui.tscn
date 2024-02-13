@@ -1,0 +1,152 @@
+[gd_scene load_steps=2 format=3 uid="uid://cagj64jn35d4q"]
+
+[ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
+
+[node name="UI" type="Node2D"]
+script = ExtResource("1_owfon")
+
+[node name="Function Palette" type="Node2D" parent="."]
+
+[node name="FP BG" type="Panel" parent="Function Palette"]
+offset_left = 12.0
+offset_top = 65.0
+offset_right = 269.0
+offset_bottom = 506.0
+
+[node name="FP Text" type="Label" parent="Function Palette/FP BG"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = 131.0
+offset_bottom = 25.0
+text = "Function Palette"
+
+[node name="Add function + button" type="Button" parent="Function Palette/FP BG"]
+layout_mode = 0
+offset_left = 216.0
+offset_top = 6.0
+offset_right = 251.0
+offset_bottom = 41.0
+tooltip_text = "Click to add a function"
+text = "+"
+
+[node name="Graph" type="Node2D" parent="."]
+
+[node name="Graph BG" type="Panel" parent="Graph"]
+offset_left = 296.0
+offset_top = 64.0
+offset_right = 1142.0
+offset_bottom = 505.0
+
+[node name="Graph Text" type="Label" parent="Graph/Graph BG"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 5.0
+offset_right = 96.0
+offset_bottom = 28.0
+text = "Graph View"
+
+[node name="Timeline" type="Node2D" parent="."]
+
+[node name="Timeline BG" type="Panel" parent="Timeline"]
+offset_left = 9.0
+offset_top = 513.0
+offset_right = 1145.0
+offset_bottom = 640.0
+
+[node name="Timeline Text" type="Label" parent="Timeline/Timeline BG"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 75.0
+offset_bottom = 27.0
+text = "Timeline"
+
+[node name="Toolbar" type="Node2D" parent="."]
+
+[node name="Toolbar BG" type="Panel" parent="Toolbar"]
+offset_top = 1.0
+offset_right = 1151.0
+offset_bottom = 53.0
+
+[node name="Toolbar Text" type="Label" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 13.0
+offset_right = 87.0
+offset_bottom = 36.0
+text = "Toolbar"
+
+[node name="Save" type="Button" parent="Toolbar/Toolbar BG"]
+offset_left = 140.0
+offset_top = 7.0
+offset_right = 184.0
+offset_bottom = 42.0
+tooltip_text = "Save progress"
+text = "Save"
+
+[node name="Load" type="Button" parent="Toolbar/Toolbar BG"]
+offset_left = 197.0
+offset_top = 7.0
+offset_right = 243.0
+offset_bottom = 42.0
+tooltip_text = "Load a previous state"
+text = "Load"
+
+[node name="Undo" type="Button" parent="Toolbar/Toolbar BG"]
+offset_left = 255.0
+offset_top = 7.0
+offset_right = 305.0
+offset_bottom = 42.0
+tooltip_text = "Undo (CTRL + Z)"
+text = "Undo"
+
+[node name="Redo" type="Button" parent="Toolbar/Toolbar BG"]
+offset_left = 316.0
+offset_top = 7.0
+offset_right = 364.0
+offset_bottom = 42.0
+tooltip_text = "Redo your most recent \"undo\" (CTRL + Y)"
+text = "Redo"
+
+[node name="Begin" type="Button" parent="Toolbar/Toolbar BG"]
+offset_left = 472.0
+offset_top = 8.0
+offset_right = 513.0
+offset_bottom = 43.0
+tooltip_text = "Rewind to the beginning"
+text = "<<"
+
+[node name="Play" type="Button" parent="Toolbar/Toolbar BG"]
+offset_left = 530.0
+offset_top = 8.0
+offset_right = 571.0
+offset_bottom = 43.0
+tooltip_text = "Play"
+text = "play"
+
+[node name="End" type="Button" parent="Toolbar/Toolbar BG"]
+offset_left = 592.0
+offset_top = 8.0
+offset_right = 633.0
+offset_bottom = 43.0
+tooltip_text = "Fast forward to the end"
+text = ">>"
+
+[node name="Exit Button" type="Button" parent="."]
+offset_left = 1117.0
+offset_top = 2.0
+offset_right = 1152.0
+offset_bottom = 37.0
+tooltip_text = "Exit Application"
+text = "x"
+
+[connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Save" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Load" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Undo" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Redo" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Begin" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Play" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/End" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Exit Button" to="." method="_on_exit_button_pressed"]
