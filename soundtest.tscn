@@ -2,14 +2,19 @@
 
 [ext_resource type="Script" path="res://PlayFunctions.cs" id="1_1erne"]
 
-[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_ja3ui"]
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_k73is"]
 buffer_length = 3.0
 
 [node name="Root" type="Node"]
 
-[node name="Node" type="Node" parent="." node_paths=PackedStringArray("Player")]
+[node name="Node" type="Node" parent="."]
 script = ExtResource("1_1erne")
-Player = NodePath("../AudioStreamPlayer")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = SubResource("AudioStreamGenerator_ja3ui")
+[node name="Play1" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_k73is")
+
+[node name="Play2" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_k73is")
+
+[node name="Play3" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_k73is")
