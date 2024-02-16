@@ -16,4 +16,17 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
+  <!-- Downloads the rust component of the parser automatically from the latest github CI run -->
+  <Target Name="CustomBeforeCompile" BeforeTargets="BeforeCompile">
+    <PropertyGroup>
+      <ParserName Condition="'$(GodotTargetPlatform)' == 'windows'">Windows.zip</ParserName>
+      <ParserName Condition="'$(GodotTargetPlatform)' == 'macos'">MacOS.zip</ParserName>
+      <ParserName Condition="'$(GodotTargetPlatform)' == 'linux'">Linux.zip</ParserName>
+
+      <ParserUrl>https://nightly.link/F-nk-Sound/fnky_parser/workflows/ci/main/$(ParserName)</ParserUrl>
+    </PropertyGroup>
+    <DownloadFile DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" SourceUrl="$(ParserUrl)" />
+    <Unzip SourceFiles="$(OutDir)/$(ParserName)" DestinationFolder="$(OutDir)" />
+  </Target>
 </Project>
