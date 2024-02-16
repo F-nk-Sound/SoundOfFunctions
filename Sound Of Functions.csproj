@@ -26,6 +26,7 @@
 
       <ParserUrl>https://nightly.link/F-nk-Sound/fnky_parser/workflows/ci/main/$(ParserName)</ParserUrl>
     </PropertyGroup>
+    <Message Text="Targeting platform `$(GodotTargetPlatform)`" />
     <DownloadFile DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" SourceUrl="$(ParserUrl)" />
     <Unzip SourceFiles="$(OutDir)/$(ParserName)" DestinationFolder="$(OutDir)" />
   </Target>
