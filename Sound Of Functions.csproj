@@ -20,6 +20,7 @@
   <!-- Downloads the rust component of the parser automatically from the latest github CI run -->
   <Target Name="CustomBeforeCompile" BeforeTargets="BeforeCompile">
     <PropertyGroup>
+      <ParserName>Linux.zip</ParserName>
       <ParserName Condition="'$(GodotTargetPlatform)' == 'windows'">Windows.zip</ParserName>
       <ParserName Condition="'$(GodotTargetPlatform)' == 'macos'">MacOS.zip</ParserName>
       <ParserName Condition="'$(GodotTargetPlatform)' == 'linux'">Linux.zip</ParserName>
