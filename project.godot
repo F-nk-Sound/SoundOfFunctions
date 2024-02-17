@@ -17,4 +17,4 @@ config/icon="res://icon.svg"
 
 [dotnet]
 
-project/assembly_name="Sotf"
+project/assembly_name="Sound Of Functions"

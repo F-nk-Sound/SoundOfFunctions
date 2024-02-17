@@ -1,11 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=3 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
+[ext_resource type="Script" path="res://ui.cs" id="2_jw6w8"]
 
 [node name="UI" type="Node2D"]
 script = ExtResource("1_owfon")
 
 [node name="Function Palette" type="Node2D" parent="."]
+script = ExtResource("2_jw6w8")
 
 [node name="FP BG" type="Panel" parent="Function Palette"]
 offset_left = 12.0
@@ -29,6 +31,17 @@ offset_right = 251.0
 offset_bottom = 41.0
 tooltip_text = "Click to add a function"
 text = "+"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Function Palette/FP BG"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 48.0
+offset_right = 250.0
+offset_bottom = 435.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Function Palette/FP BG/ScrollContainer"]
+custom_minimum_size = Vector2(225, 0)
+layout_mode = 2
 
 [node name="Graph" type="Node2D" parent="."]
 
@@ -78,6 +91,7 @@ offset_bottom = 36.0
 text = "Toolbar"
 
 [node name="Save" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 140.0
 offset_top = 7.0
 offset_right = 184.0
@@ -86,6 +100,7 @@ tooltip_text = "Save progress"
 text = "Save"
 
 [node name="Load" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 197.0
 offset_top = 7.0
 offset_right = 243.0
@@ -94,6 +109,7 @@ tooltip_text = "Load a previous state"
 text = "Load"
 
 [node name="Undo" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 255.0
 offset_top = 7.0
 offset_right = 305.0
@@ -102,6 +118,7 @@ tooltip_text = "Undo (CTRL + Z)"
 text = "Undo"
 
 [node name="Redo" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 316.0
 offset_top = 7.0
 offset_right = 364.0
@@ -110,6 +127,7 @@ tooltip_text = "Redo your most recent \"undo\" (CTRL + Y)"
 text = "Redo"
 
 [node name="Begin" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 472.0
 offset_top = 8.0
 offset_right = 513.0
@@ -118,6 +136,7 @@ tooltip_text = "Rewind to the beginning"
 text = "<<"
 
 [node name="Play" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 530.0
 offset_top = 8.0
 offset_right = 571.0
@@ -126,6 +145,7 @@ tooltip_text = "Play"
 text = "play"
 
 [node name="End" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 592.0
 offset_top = 8.0
 offset_right = 633.0
@@ -141,7 +161,7 @@ offset_bottom = 37.0
 tooltip_text = "Exit Application"
 text = "x"
 
-[connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="." method="_on_add_function__button_pressed"]
+[connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Save" to="." method="_on_add_function__button_pressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Load" to="." method="_on_add_function__button_pressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Undo" to="." method="_on_add_function__button_pressed"]
