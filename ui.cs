@@ -4,8 +4,4 @@ using System;
 
 public partial class ui : Node2D
 {
-	private void OnButtonPressed()
-	{
-		GD.Print("TEST");
-	}
 }
