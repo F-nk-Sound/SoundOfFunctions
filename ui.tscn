@@ -166,11 +166,4 @@ tooltip_text = "Exit Application"
 text = "x"
 
 [connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Save" to="." method="_on_add_function__button_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Load" to="." method="_on_add_function__button_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Undo" to="." method="_on_add_function__button_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Redo" to="." method="_on_add_function__button_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Begin" to="." method="_on_add_function__button_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Play" to="." method="_on_add_function__button_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/End" to="." method="_on_add_function__button_pressed"]
 [connection signal="pressed" from="Exit Button" to="." method="_on_exit_button_pressed"]
