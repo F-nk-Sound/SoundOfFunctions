@@ -134,7 +134,7 @@ public static class Bridge
     [DllImport(dllName: "fnky_parser", CallingConvention = CallingConvention.Cdecl, EntryPoint = "fnky_parse")]
     private unsafe static extern IntPtr Parse(byte* input, nuint length, CtorTable* table);
 
-    public static object Parse(string input)
+    public static ParseResult Parse(string input)
     {
         CtorTable table = new();
 
@@ -151,8 +151,47 @@ public static class Bridge
                 CtorTable.FreeHandles();
                 if (target is null)
                     throw new NullReferenceException("Parsing module returned a null reference.");
-                return target;
+                return target switch
+                {
+                    IFunctionAST ast => new Success(ast),
+                    string error => new Failure(error),
+                    _ => throw new Exception("Unknown return value from parsing module"),
+                };
             }
         }
+    }
+}
+
+/// <summary>
+/// Represents a potentially successful parse attempt. 
+/// Will be a Success if it was successful, and Failure if it encountered an error.
+/// </summary>
+public abstract class ParseResult 
+{
+    public IFunctionAST Unwrap() => this switch
+    {
+        Success s => s.Value,
+        Failure f => throw new Exception(f.Error),
+        _ => throw new ArgumentException("ParseResult was an unknown variant"),
+    };
+}
+
+public sealed class Success : ParseResult
+{
+    public IFunctionAST Value { get; init; }
+
+    public Success(IFunctionAST value)
+    {
+        Value = value;
+    }
+}
+
+public sealed class Failure : ParseResult
+{
+    public string Error { get; init; }
+
+    public Failure(string error)
+    {
+        Error = error;
     }
 }
