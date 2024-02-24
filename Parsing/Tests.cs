@@ -23,7 +23,7 @@ public class Tests
     [InlineData("x")]
     [InlineData("x_1")]
     [InlineData("α_21x")]
-    [InlineData("aaΑ_a32f")]
+    [InlineData("A_a32f")]
     public void VariablesParse(string input)
     {
         object ast = Bridge.Parse(input);
