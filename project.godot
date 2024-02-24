@@ -19,7 +19,6 @@ config/icon="res://icon.svg"
 
 project/assembly_name="Sound Of Functions"
 
-[rendering]
+[editor_plugins]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
+enabled=PackedStringArray("res://addons/GodoTeX/plugin.cfg")
