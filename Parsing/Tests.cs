@@ -42,4 +42,13 @@ public class Tests
         else
             Assert.Fail((string)ast);
     }
+
+    [Theory]
+    [InlineData("5x^2 + 3y + z")]
+    [InlineData("4floor(t) + 2floor(2t) - 1")]
+    public void ComplexFunctionsParse(string input)
+    {
+        object ast = Bridge.Parse(input);
+        Assert.True(ast is IFunctionAST);
+    }
 }
