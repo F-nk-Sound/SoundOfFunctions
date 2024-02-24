@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Sound Of Functions"
-config/features=PackedStringArray("4.2", "C#", "GL Compatibility")
+run/main_scene="res://ui.tscn"
+config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [dotnet]
 
 project/assembly_name="Sound Of Functions"
 
-[rendering]
+[editor_plugins]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
+enabled=PackedStringArray("res://addons/GodoTeX/plugin.cfg")
