@@ -18,13 +18,13 @@ public partial class PlayFunctions : Node
 		FillBuffer();
 	}
 
-	void FillBuffer()
+	void FillBuffer() 
 	{
 		int frames = playback.GetFramesAvailable();
 		double phase = 0;
 		float increment = 440 / sampleRate;
 
-		for (int i = 0; i < frames; i++)
+		for (int i = 0; i < frames; i++) 
 		{
 			playback.PushFrame(Vector2.One * (float)(4 * Mathf.Floor(phase) - 2 * Mathf.Floor(2 * phase) + 1));
 			phase += increment;
