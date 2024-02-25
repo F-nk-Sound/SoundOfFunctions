@@ -184,4 +184,11 @@ tooltip_text = "Exit Application"
 icon = ExtResource("12_5c7ir")
 
 [connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Load" to="." method="_on_load_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Undo" to="." method="_on_undo_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Redo" to="." method="_on_redo_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Begin" to="." method="_on_begin_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Toolbar/Toolbar BG/End" to="." method="_on_end_pressed"]
 [connection signal="pressed" from="Exit Button" to="." method="_on_exit_button_pressed"]
