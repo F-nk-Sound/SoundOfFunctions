@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Sdk;
+using System.Diagnostics;
 
 /// <summary>
 /// Provides lookup table of note to frequency mappings. <br/>
@@ -55,7 +56,9 @@ public static class Frequencies {
 public partial class Function : Node {
 	private string textRepresentation;		// Input text funtion is parsed from
 	private string type;					// Type of Function: i.e., Cubic, Logarithimic, Linear
-	private int runLength;					// Size of domain
+	private int runLength;					// Size of domain	
+	private int startPos;					// Starting time point
+	private int endPos;						// Ending time point
 	private List<int> timeDomain;			// Function domain: [startPos, ..., endPos]
 	private List<int> noteSequence;			// Frequency domain: [minFreq, ..., maxFreq]
 	private AudioStreamPlayer player;		// Audio Player
@@ -64,6 +67,8 @@ public partial class Function : Node {
 		this.textRepresentation = textRepresentation;
 		timeDomain = fillTimeDomain(textRepresentation, startPos, endPos);
 		noteSequence = fillNoteSequence(timeDomain);
+		this.startPos = startPos;
+		this.endPos = endPos;
 		runLength = endPos - startPos;
 
 		// Audio stream characteristics
@@ -141,15 +146,16 @@ public partial class Function : Node {
 		player.Play();
 		var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
 		foreach(int note in noteSequence) {
+			GD.Print(note);
 			var sample = generateNoteAudio(note);
 			playback.PushBuffer(sample);
-			Task.Delay(1000);
+			Thread.Sleep(500);
 		}	
 
 	}
 
 	private void addDefaultNotes() {
-		for(int i = 32; i < 88; i += 12) noteSequence.Add(i);
+		for(int i = startPos + 32; i <= 88; i+=5) noteSequence.Add(i);
 	}
 	public int length() {
 		return runLength;
@@ -215,11 +221,11 @@ public partial class PlayFunctions : Node {
 	private List<AudioStreamGenerator> strmGenList = new List<AudioStreamGenerator>();
 
 	// Called when the node enters the scene tree for the first time.
-	public override void _Ready() {
+	public override async void _Ready() {
 		
 		// Create new Timeline and associated Functions
 		Timeline sequence = new Timeline();
-		Function linear = new Function("y = 2x + 6", 0, 5);
+		Function linear = new Function("y = 2x + 6", 1, 5);
 		Function cubic = new Function("y = x^3 + 2", 5, 10);
 		
 		// Add the functions to the timeline and play them
@@ -251,6 +257,36 @@ public partial class PlayFunctions : Node {
 		//var audioA3 = generateTone(function2, 5, 37);
 		//playTone(function, audioA4);
 		//playTone(function2, audioA3);
+
+		/*
+		var sw = new Stopwatch();
+		sw.Start();
+		AudioStreamPlayer player = new AudioStreamPlayer {Stream = new AudioStreamGenerator()};
+		List<Task> tas = new List<Task>();
+		for(int i = 0; i < 5; i ++) tas.Add(Task.Delay(2000));
+
+		AddChild(player);
+		int delay = 1000;
+		PlayNoteSimple(player, 32);
+		Thread.Sleep(delay);
+		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
+
+		PlayNoteSimple(player, 44);
+		Thread.Sleep(delay);
+		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
+
+		PlayNoteSimple(player, 56);
+		Thread.Sleep(delay);;
+		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
+
+		PlayNoteSimple(player, 68);
+		Thread.Sleep(delay);
+		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
+		
+		PlayNoteSimple(player, 80);
+		Thread.Sleep(delay);
+		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
+		*/
 
 	}
 
