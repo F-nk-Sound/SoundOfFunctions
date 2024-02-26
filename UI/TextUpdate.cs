@@ -83,7 +83,7 @@ public partial class TextUpdate : Control
 		IFunctionAST ast = result.Unwrap();
 
 		functionPalette.CurrentSelectedFunction = ast;
-		functionPalette.EmitSignal(FunctionPalette.SignalName.SelectedFunctionChanged, functionPalette);
+		functionPalette.EmitSignal(FunctionPalette.SignalName.SelectedFunctionChanged);
 	}
 	
 	private void _OnFocusEntered()
