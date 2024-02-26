@@ -85,7 +85,7 @@ public partial class TextUpdate : Control
 		make();
 		text.ReleaseFocus();
 		
-		return;
+		//return;
 		String functionText = text.Text;
 		ParseResult result = Bridge.Parse(functionText);
 		IFunctionAST ast = result.Unwrap();
