@@ -43,5 +43,6 @@
     <Message Text="Targeting platform `$(GodotTargetPlatform)`" />
     <DownloadFile DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" SourceUrl="$(ParserUrl)" />
     <Unzip SourceFiles="$(OutDir)/$(ParserName)" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="$(OutDir)fnky_parser.dll" DestinationFolder="$(GodotProjectDir)" />
   </Target>
 </Project>
