@@ -5,6 +5,7 @@ using Parsing;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Xunit;
 
 public partial class TextUpdate : Control
 {
@@ -38,9 +39,9 @@ public partial class TextUpdate : Control
 		text = this.GetChild<LineEdit>(1);
 
 		if (latex == null)
-			GD.PrintErr("Latex not initialized");
+			GD.PushError("Latex not initialized");
 		if (text == null)
-			GD.PrintErr("Text not initialized");
+			GD.PushError("Text not initialized");
 
 		this.OnTextChanged();
 	}
@@ -85,12 +86,14 @@ public partial class TextUpdate : Control
 		make();
 		text.ReleaseFocus();
 		
-		return;
 		String functionText = text.Text;
 		ParseResult result = Bridge.Parse(functionText);
 		IFunctionAST ast = result.Unwrap();
+		object[] atT = new object[100];
 		for (int i = 0; i < 100; i++)
-			GD.PrintRaw(ast.EvaluateAtT(i).ToString() + " ");
+			atT[i] = ast.EvaluateAtT(i);
+
+		GD.PrintS(atT);
 	}
 	
 	private void _OnFocusEntered()
