@@ -39,11 +39,11 @@ offset_top = 113.0
 offset_right = 262.0
 offset_bottom = 500.0
 
-[node name="FunctionContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
+[node name="FunctionsContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
 custom_minimum_size = Vector2(225, 0)
 layout_mode = 2
 
-[node name="FunctionContainer" parent="Function Palette/ScrollContainer/FunctionContainer" instance=ExtResource("3_vof5n")]
+[node name="FunctionContainer" parent="Function Palette/ScrollContainer/FunctionsContainer" instance=ExtResource("3_vof5n")]
 visible = false
 layout_mode = 2
 
