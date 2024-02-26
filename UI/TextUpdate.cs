@@ -1,3 +1,4 @@
+using CSharpMath;
 using CSharpMath.Structures;
 using Functions;
 using Godot;
@@ -12,19 +13,17 @@ public partial class TextUpdate : Control
 	ScrollContainer? lsc;
 	LaTeX? latex;
 	LineEdit? text;
-	double timeBetween = 0.75;
-	double total = 0.0;
-	bool active = true;
+	Control? control;
 
 	private void make()
 	{
-		if (latex == null || text == null) return;
+		if (latex == null || text == null || lsc == null) return;
 		latex.Render();
 		Vector2 size;
 		size = new Vector2(Math.Max(this.Position.X / 2 + latex.Width / 2, 225), Math.Max(this.Position.Y / 2 + latex.Height / 2, 60));
 		text.Size = size;
+		lsc.Size = new Vector2(225, 60);
 		latex.Position = new Vector2(latex.Width / 2, size.Y / 2);
-		GD.Print(latex.Position);
 		latex.Render();	
 	}
 	
@@ -34,61 +33,42 @@ public partial class TextUpdate : Control
 		base._Ready();
 
 		lsc = this.GetChild<ScrollContainer>(0);
-		lsc.CustomMinimumSize = new Vector2(225, 70);
-		latex = lsc.GetChild<LaTeX>(0);
-		text = this.GetChild<LineEdit>(1);
+		lsc.CustomMinimumSize = new Vector2(225, 60);
+		control = lsc.GetChild<Control>(0);
+		latex = control.GetChild<LaTeX>(0);
+		text = control.GetChild<LineEdit>(1);
 
 		if (latex == null)
-			GD.PushError("Latex not initialized");
-		if (text == null)
-			GD.PushError("Text not initialized");
-
-		this.OnTextChanged();
-	}
-
-	public override void _Process(double delta)
-	{
-		total += delta;
-		if (total > timeBetween)
 		{
-			total = 0.0;
-			active = !active;
+			GD.PushError("Latex not initialized");
+			return;
 		}
-	}
-	
-	private void OnTextChanged()
-	{
-		if (latex == null || text == null) return;
-		String newText = text.Text;
-		if (newText.Equals(""))
-			latex.LatexExpression = text.PlaceholderText;
-		else
-			latex.LatexExpression = newText;
-	}
+		if (text == null)
+		{
+			GD.PushError("Text not initialized");
+			return;
+		}
 
-	private void OnTextInput(InputEvent @event)
-	{
-		if (latex == null || text == null) return;
-		if (!(@event is InputEventKey keyEvent && keyEvent.Pressed)) return;
-		if (keyEvent.Keycode != Key.Enter) return;
-	}
-
-	private void OnTextSet()
-	{
-		if (latex == null || text == null) return;
-		GD.Print(text.Text);
+		latex.LatexExpression = text.PlaceholderText;
 	}
 
 	private void _LineEditSubmitted(String finalText)
 	{
 		if (latex == null || text == null) return;
 		GD.Print(finalText);
+		if (finalText.IsEmpty())
+			latex.LatexExpression = text.PlaceholderText;
+		else
+			latex.LatexExpression = finalText;
 		make();
 		text.ReleaseFocus();
 		
 		String functionText = text.Text;
 		ParseResult result = Bridge.Parse(functionText);
 		IFunctionAST ast = result.Unwrap();
+
+
+
 		object[] atT = new object[100];
 		for (int i = 0; i < 100; i++)
 			atT[i] = ast.EvaluateAtT(i);
@@ -99,13 +79,13 @@ public partial class TextUpdate : Control
 	private void _OnFocusEntered()
 	{
 		text.RemoveThemeColorOverride("font_color");
-		latex.ZIndex = 1;
+		latex.ZIndex = 0;
 	}
 
 	private void _OnFocusExited()
 	{
 		text.AddThemeColorOverride("font_color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
-		latex.ZIndex = 0;
+		latex.ZIndex = 1;
 	}
 
 }
