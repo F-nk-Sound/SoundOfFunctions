@@ -37,11 +37,15 @@
       <ParserName Condition="'$(GodotTargetPlatform)' == 'windows'">Windows.zip</ParserName>
       <ParserName Condition="'$(GodotTargetPlatform)' == 'macos'">MacOS.zip</ParserName>
       <ParserName Condition="'$(GodotTargetPlatform)' == 'linux'">Linux.zip</ParserName>
+      <ParserFile Condition="'$(GodotTargetPlatform)' == 'windows'">fnky_parser.dll</ParserFile>
+      <ParserFile Condition="'$(GodotTargetPlatform)' == 'macos'">libfnky_parser.dylib</ParserFile>
+      <ParserFile Condition="'$(GodotTargetPlatform)' == 'linux'">libfnky_parser.so</ParserFile>
 
       <ParserUrl>https://nightly.link/F-nk-Sound/fnky_parser/workflows/ci/main/$(ParserName)</ParserUrl>
     </PropertyGroup>
     <Message Text="Targeting platform `$(GodotTargetPlatform)`" />
     <DownloadFile DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" SourceUrl="$(ParserUrl)" />
     <Unzip SourceFiles="$(OutDir)/$(ParserName)" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="$(OutDir)$(ParserFile)" DestinationFolder="$(GodotProjectDir)" />
   </Target>
 </Project>
