@@ -36,7 +36,8 @@ public partial class TextUpdate : Control
 	{
 		base._Ready();
 
-		functionPalette = GetNode<FunctionPalette>("UI/Function Palette");
+		//functionPalette = GetNode<FunctionPalette>("UI/Function Palette");
+		functionPalette = GetTree().CurrentScene.GetNode<FunctionPalette>("Function Palette");
 
 		lsc = this.GetParent<ScrollContainer>();
 		lsc.CustomMinimumSize = minimumSize;
@@ -69,7 +70,6 @@ public partial class TextUpdate : Control
 	private void _LineEditSubmitted(String finalText)
 	{
 		if (latex == null || text == null) return;
-		GD.Print(finalText);
 		if (finalText.IsEmpty())
 			latex.LatexExpression = text.PlaceholderText;
 		else
@@ -83,13 +83,7 @@ public partial class TextUpdate : Control
 		IFunctionAST ast = result.Unwrap();
 
 		functionPalette.CurrentSelectedFunction = ast;
-		EmitSignal(FunctionPalette.SignalName.SelectedFunctionChanged);
-
-		object[] atT = new object[100];
-		for (int i = 0; i < 100; i++)
-			atT[i] = ast.EvaluateAtT(i);
-
-		GD.PrintS(atT);
+		functionPalette.EmitSignal(FunctionPalette.SignalName.SelectedFunctionChanged, functionPalette);
 	}
 	
 	private void _OnFocusEntered()

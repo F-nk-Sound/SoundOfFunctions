@@ -5,7 +5,7 @@ using System;
 public partial class FunctionPalette : Node
 {
 	[Signal]
-	public delegate void SelectedFunctionChangedEventHandler();
+	public delegate void SelectedFunctionChangedEventHandler(FunctionPalette functionPalette);
 
 	public IFunctionAST CurrentSelectedFunction { get; set; }
 
