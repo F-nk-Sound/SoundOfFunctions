@@ -4,7 +4,10 @@ using System;
 
 public partial class FunctionPalette : Node
 {
-	public IFunctionAST CurrentSelectedFunction { get; private set; }
+	[Signal]
+	public delegate void SelectedFunctionChangedEventHandler();
+
+	public IFunctionAST CurrentSelectedFunction { get; set; }
 
 	private VBoxContainer? _container;
 	private Resource? _textUpdateScript;
@@ -24,11 +27,8 @@ public partial class FunctionPalette : Node
 	private void OnButtonPressed()
 	{
 		if (_container == null || _functionContainer == null) return;
-		Control sizeContainer = new Control();
-		sizeContainer.CustomMinimumSize = new Vector2(225, 70);
 		Control instance = (Control) _functionContainer.Instantiate();
 		instance.CustomMinimumSize = new Vector2(225, 70);
-		//sizeContainer.AddChild(instance);
 		_container.AddChild(instance);
 	}
 }

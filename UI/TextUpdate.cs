@@ -14,16 +14,20 @@ public partial class TextUpdate : Control
 	LaTeX? latex;
 	LineEdit? text;
 	Control? control;
+	FunctionPalette? functionPalette;
+
+	Vector2 margins = new Vector2(20.0f, 10.0f);
+	Vector2 minimumSize = new Vector2(225, 60);
 
 	private void make()
 	{
-		if (latex == null || text == null || lsc == null) return;
+		if (latex == null || text == null || control == null) return;
 		latex.Render();
 		Vector2 size;
-		size = new Vector2(Math.Max(this.Position.X / 2 + latex.Width / 2, 225), Math.Max(this.Position.Y / 2 + latex.Height / 2, 60));
-		text.Size = size;
-		lsc.Size = new Vector2(225, 60);
-		latex.Position = new Vector2(latex.Width / 2, size.Y / 2);
+		size = new Vector2(Math.Max(latex.Width + margins.X, minimumSize.X), minimumSize.Y);
+		text.CustomMinimumSize = size;
+		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
+		latex.Position = new Vector2(size.X / 2, size.Y / 2);
 		latex.Render();	
 	}
 	
@@ -32,9 +36,12 @@ public partial class TextUpdate : Control
 	{
 		base._Ready();
 
-		lsc = this.GetChild<ScrollContainer>(0);
-		lsc.CustomMinimumSize = new Vector2(225, 60);
-		control = lsc.GetChild<Control>(0);
+		functionPalette = GetNode<FunctionPalette>("UI/Function Palette");
+
+		lsc = this.GetParent<ScrollContainer>();
+		lsc.CustomMinimumSize = minimumSize;
+		lsc.Size = minimumSize;
+		control = this;
 		latex = control.GetChild<LaTeX>(0);
 		text = control.GetChild<LineEdit>(1);
 
@@ -50,6 +57,13 @@ public partial class TextUpdate : Control
 		}
 
 		latex.LatexExpression = text.PlaceholderText;
+		make();
+	}
+
+	private void _OnTextChanged(String newText)
+	{
+		Vector2 size = new Vector2(Math.Max(latex.Width, minimumSize.X), minimumSize.Y);
+		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
 	}
 
 	private void _LineEditSubmitted(String finalText)
@@ -60,6 +74,7 @@ public partial class TextUpdate : Control
 			latex.LatexExpression = text.PlaceholderText;
 		else
 			latex.LatexExpression = finalText;
+		lsc.GetHScrollBar().Value = lsc.GetHScrollBar().MinValue;
 		make();
 		text.ReleaseFocus();
 		
@@ -67,7 +82,8 @@ public partial class TextUpdate : Control
 		ParseResult result = Bridge.Parse(functionText);
 		IFunctionAST ast = result.Unwrap();
 
-
+		functionPalette.CurrentSelectedFunction = ast;
+		EmitSignal(FunctionPalette.SignalName.SelectedFunctionChanged);
 
 		object[] atT = new object[100];
 		for (int i = 0; i < 100; i++)
