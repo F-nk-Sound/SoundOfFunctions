@@ -4,5 +4,5 @@
 
 [node name="Root" type="Node"]
 
-[node name="NotePlayers" type="Node" parent="."]
+[node name="Sounds" type="Node" parent="."]
 script = ExtResource("1_1erne")

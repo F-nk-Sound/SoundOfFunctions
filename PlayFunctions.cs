@@ -120,7 +120,7 @@ public partial class Function : Node {
 	private Vector2[] generateNoteAudio(int noteNum) {
 		
 		// Calculate buffer length and then adjust it to seconds
-		var duration = 1.0;
+		var duration = 0.75;
 		((AudioStreamGenerator) player.Stream).BufferLength = (float) duration;
 		
 		// Calculate the buffer size and create  the array to store audio data
@@ -145,17 +145,38 @@ public partial class Function : Node {
 		if (!noteSequence.Any()) addDefaultNotes();
 		player.Play();
 		var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
+		
+		/*
+		int note = noteSequence[0], i = 0;
+		while(i < noteSequence.Count) {
+			// Create the note to push
+			var sample = generateNoteAudio(note);
+			int available = ((AudioStreamGeneratorPlayback) playback).GetFramesAvailable();
+			GD.Print(available);
+
+			// Push the note if there is space
+			if(sample.Length <= available) {
+				playback.PushBuffer(sample);
+				note = noteSequence[i];
+			}
+			// Hold the buffer until there is space 
+			else {
+				while(!playback.CanPushBuffer(sample.Length)){}
+			}
+		}
+		*/
+		
 		foreach(int note in noteSequence) {
 			GD.Print(note);
 			var sample = generateNoteAudio(note);
 			playback.PushBuffer(sample);
-			Thread.Sleep(500);
+			Thread.Sleep(775);
 		}	
 
 	}
 
 	private void addDefaultNotes() {
-		for(int i = startPos + 32; i <= 88; i+=5) noteSequence.Add(i);
+		for(int i = 32; i < 44; i+=1) noteSequence.Add(i);
 	}
 	public int length() {
 		return runLength;
