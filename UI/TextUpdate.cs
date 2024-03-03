@@ -98,4 +98,11 @@ public partial class TextUpdate : Control
 		latex.ZIndex = 1;
 	}
 
+	private void _OnExit()
+	{
+		ScrollContainer scrollContainer = GetParent<ScrollContainer>();
+		VBoxContainer vBoxContainer = scrollContainer.GetParent<VBoxContainer>();
+		vBoxContainer.RemoveChild(scrollContainer);
+	}
+
 }
