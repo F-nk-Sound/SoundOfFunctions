@@ -6,8 +6,12 @@ public partial class FunctionPalette : Node
 {
 	[Signal]
 	public delegate void SelectedFunctionChangedEventHandler();
+    [Signal]
+    public delegate void FunctionDraggedEventHandler(Vector2 position);
+	[Signal]
+    public delegate void FunctionDraggingEventHandler(Vector2 position);
 
-	public IFunctionAST CurrentSelectedFunction { get; set; }
+    public IFunctionAST CurrentSelectedFunction { get; set; }
 
 	private VBoxContainer? _container;
 	private Resource? _textUpdateScript;

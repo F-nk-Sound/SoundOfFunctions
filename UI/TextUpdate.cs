@@ -4,6 +4,7 @@ using Functions;
 using Godot;
 using Parsing;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -18,6 +19,8 @@ public partial class TextUpdate : Control
 
 	Vector2 margins = new Vector2(20.0f, 10.0f);
 	Vector2 minimumSize = new Vector2(225, 60);
+
+	private bool _dragging = false;
 
 	private void make()
 	{
@@ -63,13 +66,14 @@ public partial class TextUpdate : Control
 
 	private void _OnTextChanged(String newText)
 	{
+		if (latex == null || text == null || control == null) return;
 		Vector2 size = new Vector2(Math.Max(latex.Width, minimumSize.X), minimumSize.Y);
 		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
 	}
 
 	private void _LineEditSubmitted(String finalText)
 	{
-		if (latex == null || text == null) return;
+		if (latex == null || text == null || lsc == null || functionPalette == null) return;
 		if (finalText.IsEmpty())
 			latex.LatexExpression = text.PlaceholderText;
 		else
@@ -88,14 +92,45 @@ public partial class TextUpdate : Control
 	
 	private void _OnFocusEntered()
 	{
+		if (text == null || latex == null) return;
 		text.RemoveThemeColorOverride("font_color");
 		latex.ZIndex = 0;
 	}
 
 	private void _OnFocusExited()
 	{
+		if (text == null || latex == null) return;
 		text.AddThemeColorOverride("font_color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
 		latex.ZIndex = 1;
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		base._Input(@event);
+		if (functionPalette == null) return;
+		if (@event is InputEventMouseButton mouseEvent)
+		{
+			if (_dragging && !mouseEvent.Pressed)
+			{
+                _dragging = false;
+				functionPalette.EmitSignal(FunctionPalette.SignalName.FunctionDragged, mouseEvent.Position);
+            }
+
+			if (!(mouseEvent.Position.X > GlobalPosition.X)) return;
+			if (!(mouseEvent.Position.X < GlobalPosition.X + Size.X)) return;
+			if (!(mouseEvent.Position.Y > GlobalPosition.Y)) return;
+			if (!(mouseEvent.Position.Y < GlobalPosition.Y + Size.Y)) return;
+
+			if (!_dragging && mouseEvent.Pressed)
+				_dragging = true;
+		}
+		else
+		{
+			if (@event is InputEventMouseMotion motionEvent && _dragging)
+			{
+                functionPalette.EmitSignal(FunctionPalette.SignalName.FunctionDragging, motionEvent.Position);
+            }
+		}
 	}
 
 	private void _OnExit()
