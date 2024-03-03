@@ -16,11 +16,14 @@ public partial class TextUpdate : Control
 	LineEdit? text;
 	Control? control;
 	FunctionPalette? functionPalette;
+	TextUpdate? textUpdateCopy;
 
 	Vector2 margins = new Vector2(20.0f, 10.0f);
 	Vector2 minimumSize = new Vector2(225, 60);
 
 	private bool _dragging = false;
+	private bool _moving = false;
+	public bool _isCopy = false;
 
 	private void make()
 	{
@@ -41,6 +44,9 @@ public partial class TextUpdate : Control
 
 		//functionPalette = GetNode<FunctionPalette>("UI/Function Palette");
 		functionPalette = GetTree().CurrentScene.GetNode<FunctionPalette>("Function Palette");
+
+		if (_isCopy)
+			return;
 
 		lsc = this.GetParent<ScrollContainer>();
 		lsc.CustomMinimumSize = minimumSize;
@@ -110,26 +116,50 @@ public partial class TextUpdate : Control
 		if (functionPalette == null) return;
 		if (@event is InputEventMouseButton mouseEvent)
 		{
+			
 			if (_dragging && !mouseEvent.Pressed)
 			{
-                _dragging = false;
+				_dragging = false;
+				_moving = false;
 				functionPalette.EmitSignal(FunctionPalette.SignalName.FunctionDragged, mouseEvent.Position);
-            }
+				functionPalette.RemoveChild(textUpdateCopy);
+			}
 
-			if (!(mouseEvent.Position.X > GlobalPosition.X)) return;
-			if (!(mouseEvent.Position.X < GlobalPosition.X + Size.X)) return;
-			if (!(mouseEvent.Position.Y > GlobalPosition.Y)) return;
-			if (!(mouseEvent.Position.Y < GlobalPosition.Y + Size.Y)) return;
+			if (!(mouseEvent.Position.X > GlobalPosition.X)
+				&& !(mouseEvent.Position.X < GlobalPosition.X + Size.X)
+				&& !(mouseEvent.Position.Y > GlobalPosition.Y)
+				&& !(mouseEvent.Position.Y < GlobalPosition.Y + Size.Y))
+			{
+				return;
+			}
 
 			if (!_dragging && mouseEvent.Pressed)
+			{
 				_dragging = true;
+			}
 		}
 		else
 		{
 			if (@event is InputEventMouseMotion motionEvent && _dragging)
 			{
-                functionPalette.EmitSignal(FunctionPalette.SignalName.FunctionDragging, motionEvent.Position);
-            }
+				if ((motionEvent.Position.X <= GlobalPosition.X
+				|| motionEvent.Position.X >= GlobalPosition.X + Size.X
+				|| motionEvent.Position.Y <= GlobalPosition.Y
+				|| motionEvent.Position.Y >= GlobalPosition.Y + Size.Y)
+				&& !_moving)
+				{
+					textUpdateCopy = (TextUpdate)Duplicate();
+					textUpdateCopy._isCopy = true;
+					textUpdateCopy.Position = motionEvent.Position - Size / 2;
+					functionPalette.AddChild(textUpdateCopy);
+					_moving = true;
+				}
+				if (_moving && textUpdateCopy != null)
+				{
+					functionPalette.EmitSignal(FunctionPalette.SignalName.FunctionDragging, motionEvent.Position);
+					textUpdateCopy.Position = motionEvent.Position - Size / 2;
+				}
+			}
 		}
 	}
 
