@@ -1,13 +1,8 @@
 using CSharpMath;
-using CSharpMath.Structures;
 using Functions;
 using Godot;
 using Parsing;
 using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Xunit;
 
 public partial class TextUpdate : Control
 {
@@ -42,7 +37,6 @@ public partial class TextUpdate : Control
 	{
 		base._Ready();
 
-		//functionPalette = GetNode<FunctionPalette>("UI/Function Palette");
 		functionPalette = GetTree().CurrentScene.GetNode<FunctionPalette>("Function Palette");
 
 		if (_isCopy)
@@ -89,11 +83,18 @@ public partial class TextUpdate : Control
 		text.ReleaseFocus();
 		
 		String functionText = text.Text;
-		ParseResult result = Bridge.Parse(functionText);
-		IFunctionAST ast = result.Unwrap();
+		IFunctionAST ast;
+		if (text.Text.IsEmpty())
+		{
+			ast = null;
+		}
+		else
+		{
+			ParseResult result = Bridge.Parse(functionText);
+			ast = result.Unwrap();
+		}
 
 		functionPalette.CurrentSelectedFunction = ast;
-		functionPalette.EmitSignal(FunctionPalette.SignalName.SelectedFunctionChanged);
 	}
 	
 	private void _OnFocusEntered()
@@ -117,25 +118,28 @@ public partial class TextUpdate : Control
 		if (@event is InputEventMouseButton mouseEvent)
 		{
 			
-			if (_dragging && !mouseEvent.Pressed)
+			if (_dragging && _moving && !mouseEvent.Pressed)
 			{
 				_dragging = false;
 				_moving = false;
-				functionPalette.EmitSignal(FunctionPalette.SignalName.FunctionDragged, mouseEvent.Position);
+				functionPalette.OnDraggedEvent(mouseEvent.Position);
 				functionPalette.RemoveChild(textUpdateCopy);
 			}
 
-			if (!(mouseEvent.Position.X > GlobalPosition.X)
-				&& !(mouseEvent.Position.X < GlobalPosition.X + Size.X)
-				&& !(mouseEvent.Position.Y > GlobalPosition.Y)
-				&& !(mouseEvent.Position.Y < GlobalPosition.Y + Size.Y))
-			{
+			if (mouseEvent.Position.X <= GlobalPosition.X
+				|| mouseEvent.Position.X >= GlobalPosition.X + Size.X
+				|| mouseEvent.Position.Y <= GlobalPosition.Y
+				|| mouseEvent.Position.Y >= GlobalPosition.Y + Size.Y)
 				return;
-			}
 
 			if (!_dragging && mouseEvent.Pressed)
 			{
 				_dragging = true;
+			}
+
+			if (_dragging && mouseEvent.IsReleased())
+			{
+				_dragging = false;
 			}
 		}
 		else
@@ -156,7 +160,7 @@ public partial class TextUpdate : Control
 				}
 				if (_moving && textUpdateCopy != null)
 				{
-					functionPalette.EmitSignal(FunctionPalette.SignalName.FunctionDragging, motionEvent.Position);
+					functionPalette.OnDraggingEvent(motionEvent.Position);
 					textUpdateCopy.Position = motionEvent.Position - Size / 2;
 				}
 			}
