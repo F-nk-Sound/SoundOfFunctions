@@ -14,7 +14,7 @@ public partial class TextUpdate : Control
 	TextUpdate? textUpdateCopy;
 
 	Vector2 margins = new Vector2(20.0f, 10.0f);
-	Vector2 minimumSize = new Vector2(225, 60);
+	Vector2 minimumSize = new Vector2(225, 80);
 
 	private bool _dragging = false;
 	private bool _moving = false;
@@ -28,7 +28,7 @@ public partial class TextUpdate : Control
 		size = new Vector2(Math.Max(latex.Width + margins.X, minimumSize.X), minimumSize.Y);
 		text.CustomMinimumSize = size;
 		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
-		latex.Position = new Vector2(size.X / 2, size.Y / 2);
+		latex.Position = new Vector2(size.X / 2, size.Y / 2 + margins.Y);
 		latex.Render();	
 	}
 	
@@ -74,13 +74,7 @@ public partial class TextUpdate : Control
 	private void _LineEditSubmitted(String finalText)
 	{
 		if (latex == null || text == null || lsc == null || functionPalette == null) return;
-		if (finalText.IsEmpty())
-			latex.LatexExpression = text.PlaceholderText;
-		else
-			latex.LatexExpression = finalText;
-		lsc.GetHScrollBar().Value = lsc.GetHScrollBar().MinValue;
-		make();
-		text.ReleaseFocus();
+		
 		
 		String functionText = text.Text;
 		IFunctionAST ast;
@@ -93,6 +87,14 @@ public partial class TextUpdate : Control
 			ParseResult result = Bridge.Parse(functionText);
 			ast = result.Unwrap();
 		}
+
+		if (finalText.IsEmpty() || ast == null)
+			latex.LatexExpression = text.PlaceholderText;
+		else
+			latex.LatexExpression = ast.Latex;
+		lsc.GetHScrollBar().Value = lsc.GetHScrollBar().MinValue;
+		make();
+		text.ReleaseFocus();
 
 		functionPalette.CurrentSelectedFunction = ast;
 	}
