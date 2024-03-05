@@ -9,5 +9,5 @@ public record Divide(IFunctionAST Left, IFunctionAST Right) : IFunctionAST
 
     public bool IsTerm => false;
 
-    public string Latex => $"\frac{{{Left.Latex}}}{{{Right.Latex}}}";
+    public string Latex => $"\\frac{{{Left.Latex}}}{{{Right.Latex}}}";
 }
