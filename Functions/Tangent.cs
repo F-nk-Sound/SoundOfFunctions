@@ -11,5 +11,5 @@ public record Tangent(IFunctionAST Inner) : IFunctionAST
 
     public bool IsTerm => true;
 
-    public string Latex => $"tan({Inner.Latex})";
+    public string Latex => $"\\tan({Inner.Latex})";
 }

@@ -11,5 +11,5 @@ public record Cosine(IFunctionAST Inner) : IFunctionAST
 
     public bool IsTerm => true;
 
-    public string Latex => $"cos({Inner.Latex})";
+    public string Latex => $"\\cos({Inner.Latex})";
 }

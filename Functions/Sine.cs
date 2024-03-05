@@ -11,5 +11,5 @@ public record Sine(IFunctionAST Inner) : IFunctionAST
 
     public bool IsTerm => true;
 
-    public string Latex => $"sin({Inner.Latex})";
+    public string Latex => $"\\sin({Inner.Latex})";
 }
