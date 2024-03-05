@@ -11,5 +11,5 @@ public record Exponent(IFunctionAST Base, IFunctionAST Power) : IFunctionAST
 
     public bool IsTerm => true;
 
-    public string Latex => $"{{{Base.Latex}}}^{{{Power.Latex}}}";
+    public string Latex => $"{Base.SingleTermLatex}^{{{Power.Latex}}}";
 }
