@@ -101,7 +101,7 @@ public unsafe struct CtorTable
     /// 
     /// Thread local so that multiple threads can use it freely.
     /// </summary>
-    static ThreadLocal<List<GCHandle>> activeHandles = new() { Value = new() };
+    static readonly ThreadLocal<List<GCHandle>> activeHandles = new(() => new());
 
     static IntPtr NewHandle(object obj)
     {
