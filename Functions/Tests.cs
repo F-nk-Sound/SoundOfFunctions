@@ -1,3 +1,4 @@
+using Parsing;
 using Xunit;
 
 namespace Functions.Tests;
@@ -36,5 +37,16 @@ public class Tests
         );
 
         Assert.Equal(f.EvaluateAtT(t), output);
+    }
+
+    [Theory]
+    [InlineData("4floor(t) - 2floor(2t) + 1", "4\\lfloor t \\rfloor - 2\\lfloor 2t \\rfloor + 1")]
+    [InlineData("21x/367 + 5", "\\frac{21x}{367} + 5")]
+    [InlineData("5sin(x^2)^2", "5\\sin(x^{2})^{2}")]
+    [InlineData("12 + 3 + 4 + 5 + 6 + 19", "12 + 3 + 4 + 5 + 6 + 19")]
+    [InlineData("abs(floor(ceil(x)))", "|\\lfloor \\lceil x \\rceil \\rfloor|")]
+    public void FunctionToLatex(string function, string latex)
+    {
+        Assert.Equal(latex, Bridge.Parse(function).Unwrap().Latex);
     }
 }
