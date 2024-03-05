@@ -1,3 +1,4 @@
+using Parsing;
 using Xunit;
 
 namespace Functions.Tests;
@@ -36,5 +37,12 @@ public class Tests
         );
 
         Assert.Equal(f.EvaluateAtT(t), output);
+    }
+
+    [Theory]
+    [InlineData("4floor(t) - 2floor(2t) + 1", "4\\lfloor t \\rfloor - 2\\lfloor 2t \\rfloor + 1")]
+    public void FunctionToLatex(string function, string latex)
+    {
+        Assert.Equal(latex, Bridge.Parse(function).Unwrap().Latex);
     }
 }

@@ -8,4 +8,8 @@ namespace Functions;
 public record Ceil(IFunctionAST Inner) : IFunctionAST
 {
     public double Evaluate(EvalContext ctx) => Math.Ceiling(Inner.Evaluate(ctx));
+
+    public bool IsTerm => true;
+
+    public string Latex => $"\\lceil {Inner.Latex} \\rceil";
 }
