@@ -62,6 +62,7 @@ public partial class Function : Node {
 	private List<int> timeDomain;			// Function domain: [startPos, ..., endPos]
 	private List<int> noteSequence;			// Frequency domain: [minFreq, ..., maxFreq]
 	private AudioStreamPlayer player;		// Audio Player
+	public bool isPlaying;			// Duh
 
 	public Function(string textRepresentation, int startPos, int endPos) {
 		this.textRepresentation = textRepresentation;
@@ -70,6 +71,7 @@ public partial class Function : Node {
 		this.startPos = startPos;
 		this.endPos = endPos;
 		runLength = endPos - startPos;
+		isPlaying = false;
 
 		// Audio stream characteristics
 		player = new AudioStreamPlayer();
@@ -139,42 +141,24 @@ public partial class Function : Node {
 	
 		return audio;
 	}
-
-	public void playFunction() {
+	
+	public void playFunction() { 
 		// Generate the audio data for each note
 		if (!noteSequence.Any()) addDefaultNotes();
 		player.Play();
 		var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
 		
-		/*
-		int note = noteSequence[0], i = 0;
-		while(i < noteSequence.Count) {
-			// Create the note to push
-			var sample = generateNoteAudio(note);
-			int available = ((AudioStreamGeneratorPlayback) playback).GetFramesAvailable();
-			GD.Print(available);
-
-			// Push the note if there is space
-			if(sample.Length <= available) {
-				playback.PushBuffer(sample);
-				note = noteSequence[i];
-			}
-			// Hold the buffer until there is space 
-			else {
-				while(!playback.CanPushBuffer(sample.Length)){}
-			}
-		}
-		*/
-		
-		foreach(int note in noteSequence) {
-			GD.Print(note);
-			var sample = generateNoteAudio(note);
+		int noteIndex = 0;
+		while(noteIndex != noteSequence.Count) {
+			var sample = generateNoteAudio(noteSequence[noteIndex]);
 			playback.PushBuffer(sample);
-			Thread.Sleep(775);
-		}	
-
+			//if(player.Stream)
+		}
 	}
 
+	public void stopFunction() {
+		isPlaying = false;
+	}
 	private void addDefaultNotes() {
 		for(int i = 32; i < 44; i+=1) noteSequence.Add(i);
 	}
@@ -189,6 +173,8 @@ public partial class Timeline : Node {
 	private AudioStreamPlayer player;	// Stream to play timeline
 	private List<Function> functions;	// List of Functions on timeline
 
+	private bool isPlaying;				// Timeline active playback or not
+
 	public Timeline() {
 		length = 0;
 		functions = new List<Function>();
@@ -201,6 +187,7 @@ public partial class Timeline : Node {
 	}
 
 	public void AddFunction(Function func) {
+		//GetNode($".").AddChild(func);		// NEW, See if adding this here and removing the addition of  functions as kids to root still works
 		length += func.length();
 		functions.Add(func);
 	}
@@ -241,76 +228,6 @@ public partial class PlayFunctions : Node {
 	private List<AudioStreamPlayer> strmPlayerList = new List<AudioStreamPlayer>();
 	private List<AudioStreamGenerator> strmGenList = new List<AudioStreamGenerator>();
 
-	// Called when the node enters the scene tree for the first time.
-	public override async void _Ready() {
-		
-		// Create new Timeline and associated Functions
-		Timeline sequence = new Timeline();
-		Function linear = new Function("y = 2x + 6", 1, 5);
-		Function cubic = new Function("y = x^3 + 2", 5, 10);
-		
-		// Add the functions to the timeline and play them
-		GetNode($".").AddChild(linear);
-		sequence.AddFunction(linear);
-		linear.playFunction();
-		//GetNode($".").AddChild(cubic);
-		//sequence.AddFunction(cubic);
-		//sequence.Play();
-		
-		// Create new Audio Stream Player and its new Generator.
-		/*
-		AudioStreamPlayer function = new AudioStreamPlayer {
-			Stream = new AudioStreamGenerator()
-		};
-
-		AudioStreamPlayer function2 = new AudioStreamPlayer {
-			Stream = new AudioStreamGenerator()
-		};
-		*/
-
-		// Add player to NotePlayers Node.
-		//GetNode($".").AddChild(function);
-		//GetNode($".").AddChild(function2);
-		
-		// Play the stream.
-		//PlayNoteSimple(function, 54);
-		//var audioA4 = generateTone(function, 5, 49);
-		//var audioA3 = generateTone(function2, 5, 37);
-		//playTone(function, audioA4);
-		//playTone(function2, audioA3);
-
-		/*
-		var sw = new Stopwatch();
-		sw.Start();
-		AudioStreamPlayer player = new AudioStreamPlayer {Stream = new AudioStreamGenerator()};
-		List<Task> tas = new List<Task>();
-		for(int i = 0; i < 5; i ++) tas.Add(Task.Delay(2000));
-
-		AddChild(player);
-		int delay = 1000;
-		PlayNoteSimple(player, 32);
-		Thread.Sleep(delay);
-		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
-
-		PlayNoteSimple(player, 44);
-		Thread.Sleep(delay);
-		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
-
-		PlayNoteSimple(player, 56);
-		Thread.Sleep(delay);;
-		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
-
-		PlayNoteSimple(player, 68);
-		Thread.Sleep(delay);
-		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
-		
-		PlayNoteSimple(player, 80);
-		Thread.Sleep(delay);
-		GD.Print("async: Running for {0} seconds\n", sw.Elapsed.TotalSeconds);
-		*/
-
-	}
-
 	static void PlayNoteSimple(AudioStreamPlayer player, int n) {
 
 		float sampleRate = ((AudioStreamGenerator) player.Stream).MixRate;
@@ -349,10 +266,45 @@ public partial class PlayFunctions : Node {
 		playback.PushBuffer(audio);
 	}
 
+	// Called when the node enters the scene tree for the first time.
+	public override async void _Ready() {
+		
+		Function linear = new Function("y = 2x + 6", 1, 5);
+		Function cubic = new Function("y = x^3 + 2", 5, 10);
+		
+		// Add the functions to the scene tree
+		linear.Name = "linear";
+		cubic.Name = "cubic";
+		GetNode($".").AddChild(linear);
+		GetNode($".").AddChild(cubic);
 	
+	}
 
+	// Process sentinels
+	bool played = false;
+	double duration = -1;
+	double time = 0;
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta) {
 		
+		// Actually play functions
+		var child0 = GetChild(0);
+		if (child0 is Function func && !played) {
+			if(!func.isPlaying) {
+				func.playFunction();
+				duration = (0.75 * 12) + 5.0;
+				played = true;
+			}
+			else {
+				time += delta;
+				if(time >= duration) {
+					func.stopFunction();
+					duration = -1;
+					time = 0;
+				}
+			}
+		}
+
+
 	}
 }
