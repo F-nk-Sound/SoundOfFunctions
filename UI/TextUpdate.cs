@@ -4,6 +4,10 @@ using Godot;
 using Parsing;
 using System;
 
+/// <summary>
+/// Updates the LineEdit/Text box inside the Function Palette,
+/// along with updating the function palette script itself.
+/// </summary>
 public partial class TextUpdate : Control
 {
 	ScrollContainer? lsc;
@@ -20,19 +24,22 @@ public partial class TextUpdate : Control
 	private bool _moving = false;
 	public bool _isCopy = false;
 
+	/// <summary>
+	/// Adjusts the LaTeX node to fit the same space as the current text box.
+	/// Also adjusts to fit within the minimumSize.
+	/// </summary>
 	private void make()
 	{
 		if (latex == null || text == null || control == null) return;
+
 		latex.Render();
 		Vector2 size;
 		size = new Vector2(Math.Max(latex.Width + margins.X, minimumSize.X), minimumSize.Y);
 		text.CustomMinimumSize = size;
 		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
 		latex.Position = new Vector2(size.X / 2, size.Y / 2 + margins.Y);
-		latex.Render();	
 	}
 	
-	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		base._Ready();
@@ -67,24 +74,24 @@ public partial class TextUpdate : Control
 	private void _OnTextChanged(String newText)
 	{
 		if (latex == null || text == null || control == null) return;
+
 		Vector2 size = new Vector2(Math.Max(latex.Width, minimumSize.X), minimumSize.Y);
 		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
 	}
 
+	/// <summary>
+	/// Called when the text box is "submitted"--when "Enter" is pressed.
+	/// Sets the function palettes' current selected function.
+	/// </summary>
+	/// <param name="finalText">The entered text.</param>
 	private void _LineEditSubmitted(String finalText)
 	{
 		if (latex == null || text == null || lsc == null || functionPalette == null) return;
 		
-		
-		String functionText = text.Text;
-		IFunctionAST ast;
-		if (text.Text.IsEmpty())
+		IFunctionAST? ast = null;
+		if(!text.Text.IsEmpty())
 		{
-			ast = null;
-		}
-		else
-		{
-			ParseResult result = Bridge.Parse(functionText);
+			ParseResult result = Bridge.Parse(finalText);
 			ast = result.Unwrap();
 		}
 
@@ -99,24 +106,44 @@ public partial class TextUpdate : Control
 		functionPalette.CurrentSelectedFunction = ast;
 	}
 	
+	/// <summary>
+	/// Called when the box is in focus--is selected. This does
+	/// not set the function palettes' current selected function,
+	/// see _LineEditSubmitted.
+	/// </summary>
 	private void _OnFocusEntered()
 	{
 		if (text == null || latex == null) return;
+
 		text.RemoveThemeColorOverride("font_color");
 		latex.ZIndex = 0;
 	}
 
+	/// <summary>
+	/// Called when the box is out of focus--is not selected.
+	/// This does set the function palettes' current selected function,
+	/// currently a design decision that can be modified.
+	/// </summary>
 	private void _OnFocusExited()
 	{
 		if (text == null || latex == null) return;
+
 		text.AddThemeColorOverride("font_color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
 		latex.ZIndex = 1;
+
+		String functionText = text.Text;
+		_LineEditSubmitted(functionText);
 	}
 
+	/// <summary>
+	/// Called when any text is inputted into the text box.
+	/// </summary>
+	/// <param name="event"></param>
 	public override void _Input(InputEvent @event)
 	{
 		base._Input(@event);
 		if (functionPalette == null) return;
+
 		if (@event is InputEventMouseButton mouseEvent)
 		{
 			
@@ -169,6 +196,9 @@ public partial class TextUpdate : Control
 		}
 	}
 
+	/// <summary>
+	/// Called when a function is closed.
+	/// </summary>
 	private void _OnExit()
 	{
 		ScrollContainer scrollContainer = GetParent<ScrollContainer>();
