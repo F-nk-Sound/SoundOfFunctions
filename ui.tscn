@@ -1,13 +1,11 @@
-[gd_scene load_steps=17 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=15 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
 [ext_resource type="Script" path="res://UI/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Texture2D" uid="uid://dyv6hilyp7g3i" path="res://Assets/FOTS UI/icons8-add-50.png" id="3_5lgt0"]
-[ext_resource type="Script" path="res://FPText.cs" id="3_7ehj3"]
 [ext_resource type="PackedScene" uid="uid://cplv0i0ax5sqm" path="res://UI/FunctionContainer.tscn" id="3_vof5n"]
 [ext_resource type="Script" path="res://UI/Timeline.cs" id="4_1pkc6"]
 [ext_resource type="Script" path="res://UI/Testbutton.cs" id="4_7nqbq"]
-[ext_resource type="Script" path="res://UI/AddFunctionButton.cs" id="5_onmpq"]
 [ext_resource type="Script" path="res://UI/Toolbar.cs" id="6_5mm8q"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
@@ -36,7 +34,6 @@ offset_top = 2.0
 offset_right = 131.0
 offset_bottom = 25.0
 text = "Function Palette"
-script = ExtResource("3_7ehj3")
 
 [node name="Add function + button" type="Button" parent="Function Palette/FP BG"]
 layout_mode = 0
@@ -47,7 +44,6 @@ offset_bottom = 76.0
 scale = Vector2(0.5, 0.5)
 tooltip_text = "Click to add a function"
 icon = ExtResource("3_5lgt0")
-script = ExtResource("5_onmpq")
 
 [node name="Test button" type="Button" parent="Function Palette/FP BG"]
 layout_mode = 1
