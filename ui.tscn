@@ -1,13 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=17 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
 [ext_resource type="Script" path="res://UI/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Texture2D" uid="uid://dyv6hilyp7g3i" path="res://Assets/FOTS UI/icons8-add-50.png" id="3_5lgt0"]
+[ext_resource type="Script" path="res://FPText.cs" id="3_7ehj3"]
 [ext_resource type="PackedScene" uid="uid://cplv0i0ax5sqm" path="res://UI/FunctionContainer.tscn" id="3_vof5n"]
-[ext_resource type="Script" path="res://Timeline.cs" id="4_1pkc6"]
-[ext_resource type="Script" path="res://Toolbar.cs" id="6_5mm8q"]
+[ext_resource type="Script" path="res://UI/Timeline.cs" id="4_1pkc6"]
+[ext_resource type="Script" path="res://UI/Testbutton.cs" id="4_7nqbq"]
+[ext_resource type="Script" path="res://UI/AddFunctionButton.cs" id="5_onmpq"]
+[ext_resource type="Script" path="res://UI/Toolbar.cs" id="6_5mm8q"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
+[ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
 [ext_resource type="Texture2D" uid="uid://dst08x3c1p4fb" path="res://Assets/FOTS UI/icons8-redo-50-2.png" id="9_vnk82"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
@@ -32,22 +36,31 @@ offset_top = 2.0
 offset_right = 131.0
 offset_bottom = 25.0
 text = "Function Palette"
+script = ExtResource("3_7ehj3")
 
 [node name="Add function + button" type="Button" parent="Function Palette/FP BG"]
 layout_mode = 0
-offset_left = 216.0
-offset_top = 6.0
-offset_right = 251.0
-offset_bottom = 41.0
+offset_left = 212.0
+offset_top = 18.0
+offset_right = 270.0
+offset_bottom = 76.0
+scale = Vector2(0.5, 0.5)
 tooltip_text = "Click to add a function"
 icon = ExtResource("3_5lgt0")
+script = ExtResource("5_onmpq")
 
 [node name="Test button" type="Button" parent="Function Palette/FP BG"]
-layout_mode = 0
-offset_left = 143.0
-offset_top = 11.0
-offset_right = 151.0
-offset_bottom = 19.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.161
+anchor_right = 0.5
+anchor_bottom = 1.161
+offset_left = -35.5
+offset_top = -492.001
+offset_right = 37.5
+offset_bottom = -430.001
+script = ExtResource("4_7nqbq")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Function Palette"]
 offset_left = 22.0
@@ -95,6 +108,25 @@ offset_top = 4.0
 offset_right = 75.0
 offset_bottom = 27.0
 text = "Timeline"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Timeline"]
+offset_left = 28.0
+offset_top = 545.0
+offset_right = 1028.0
+offset_bottom = 625.0
+
+[node name="TimelineContainer" type="HBoxContainer" parent="Timeline/ScrollContainer"]
+layout_mode = 2
+
+[node name="TimelineContainer" parent="Timeline/ScrollContainer/TimelineContainer" instance=ExtResource("9_jons1")]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Timeline"]
+offset_left = 1074.0
+offset_top = 547.0
+offset_right = 1082.0
+offset_bottom = 555.0
+scale = Vector2(7.5809, 6.47314)
 
 [node name="Toolbar" type="Node2D" parent="."]
 script = ExtResource("6_5mm8q")
@@ -176,14 +208,16 @@ tooltip_text = "Fast forward to the end"
 icon = ExtResource("10_sgbw4")
 
 [node name="Exit Button" type="Button" parent="."]
-offset_left = 1117.0
+offset_left = 1090.0
 offset_top = 2.0
-offset_right = 1152.0
-offset_bottom = 37.0
+offset_right = 1148.0
+offset_bottom = 60.0
+scale = Vector2(0.9, 0.9)
 tooltip_text = "Exit Application"
 icon = ExtResource("12_5c7ir")
 
 [connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
+[connection signal="pressed" from="Timeline/Button" to="Timeline" method="OnButtonPressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Save" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Load" to="." method="_on_load_pressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Undo" to="." method="_on_undo_pressed"]
