@@ -10,6 +10,7 @@ public partial class Root : Node {
 	public override void _Ready() {
 		// Create new Timeline
 		Timeline tl = new Timeline();
+		SetProcess(false);
 	}
 
 	readonly TimeKeeper timer = new TimeKeeper();
@@ -20,7 +21,7 @@ public partial class Root : Node {
 
 		// Move forward a tick. Get the current time.
 		timer.Tick(delta);
-		int currTime = timer.GetCurrentTimeRoundedDown();
+		int currTime = timer.GetRoundedClockTime();
 		
 		switch (state) {
 			// TEST BLOCKING

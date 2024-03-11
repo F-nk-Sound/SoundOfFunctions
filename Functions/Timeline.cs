@@ -28,7 +28,11 @@ public partial class Timeline : Node {
         functions.Add(func);
     }
 
-    public Boolean RemoveFunction(Function func) {
+    public Function GetFunction(int index) {
+        if(index + 1 > functions.Count || index < 0) return null;
+        return functions[index];
+    }
+    public bool RemoveFunction(Function func) {
         var removed = functions.Remove(func);
         if(removed) length -= func.length();
         return removed; 

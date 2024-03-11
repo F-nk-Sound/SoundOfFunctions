@@ -14,7 +14,10 @@ public partial class Function : Node {
     private List<int> timeDomain;			// Function domain: [startPos, ..., endPos]
     private List<int> noteSequence;			// Frequency domain: [minFreq, ..., maxFreq]
     private AudioStreamPlayer player;		// Audio Player
-    public bool isPlaying;			        // Duh
+
+    // Attributes related to Function Audio Playback
+    public TimeKeeper functionTimer;    // Each Function has a timer object to manage it's playback
+    public bool isPlaying;	            // Duh
 
     public Function(string textRepresentation, int startPos, int endPos) {
         this.textRepresentation = textRepresentation;
@@ -24,6 +27,7 @@ public partial class Function : Node {
         this.endPos = endPos;
         runLength = endPos - startPos;
         isPlaying = false;
+        functionTimer = new TimeKeeper();
 
         // Audio stream characteristics
         player = new AudioStreamPlayer();
@@ -32,6 +36,7 @@ public partial class Function : Node {
             MixRate = 44100
         };
 
+        //SetProcess(false);
         AddChild(player);
     }
 
@@ -51,8 +56,8 @@ public partial class Function : Node {
     private Vector2[] generateAudio(int noteNum) {
         
         // Calculate buffer length and then adjust it to seconds
-        var duration = timeDomain.Last<int>() - timeDomain.First<int>();
-        var adjDuration = duration * duration/8;
+        var playbackDuration = timeDomain.Last<int>() - timeDomain.First<int>();
+        var adjDuration = playbackDuration * playbackDuration/8;    // Some weird adjustment needed to actually make notes onse second long
         ((AudioStreamGenerator) player.Stream).BufferLength = (float) adjDuration;
         
         // Calculate the buffer size and create  the array to store audio data
@@ -75,12 +80,12 @@ public partial class Function : Node {
     private Vector2[] generateNoteAudio(int noteNum) {
         
         // Calculate buffer length and then adjust it to seconds
-        var duration = 0.75;
-        ((AudioStreamGenerator) player.Stream).BufferLength = (float) duration;
+        var noteDuration = 0.75;
+        ((AudioStreamGenerator) player.Stream).BufferLength = (float) noteDuration;
         
         // Calculate the buffer size and create  the array to store audio data
         float sampleRate = ((AudioStreamGenerator) player.Stream).MixRate;
-        int bufferSize = (int) (sampleRate * duration);
+        int bufferSize = (int) (sampleRate * noteDuration);
         Vector2[] audio = new Vector2[bufferSize];
 
         // Fill the buffer appropriately 
@@ -122,6 +127,15 @@ public partial class Function : Node {
     }
 
     public override void _Process(double delta) {
-        GD.Print("This is From the Function Class");
+        functionTimer.Tick(delta);
+		int currTime = functionTimer.GetRoundedClockTime();
+		bool changed = functionTimer.GetTimeChanged();
+		if(!changed) return;
+
+        GD.Print("\t\t->tThis is From the Function Class @ Function Time t = " + currTime);
+    }
+
+    public void ActivateProcess() {
+        SetProcess(true);
     }
 }

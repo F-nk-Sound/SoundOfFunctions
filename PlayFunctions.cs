@@ -53,48 +53,43 @@ public partial class PlayFunctions : Node {
 		playback.PushBuffer(audio);
 	}
 
+	Timeline sequence = new Timeline();
 	// Called when the node enters the scene tree for the first time.
 	public override async void _Ready() {
 		
-		Function linear = new Function("y = 2x + 6", 1, 5);
+		Function linear = new Function("y = 2x + 6", 3, 5);
 		Function cubic = new Function("y = x^3 + 2", 5, 10);
 		
 		// Add the functions to the scene tree
 		linear.Name = "linear";
 		cubic.Name = "cubic";
 		GetNode($".").AddChild(linear);
-		GetNode($".").AddChild(cubic);
+		//GetNode($".").AddChild(cubic);
+
+		// Add Functions to timeline
+		linear.SetProcess(false);
+		sequence.AddFunction(linear);
+		sequence.AddFunction(cubic);
 	
 	}
 
-	// Process sentinels
-	bool played = false;
-	double duration = -1;
-	double time = 0;
+	TimeKeeper timer = new TimeKeeper();
+	bool first = false;
+	bool second = false;
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta) {
-		
+		timer.Tick(delta);
+		int currTime = timer.GetRoundedClockTime();
+		bool changed = timer.GetTimeChanged();
+		if(!changed) return;
+
 		// Actually play functions
-		/*
-		var child0 = GetChild(0);
-		if (child0 is Function func && !played) {
-			if(!func.isPlaying) {
-				func.playFunction();
-				duration = (0.75 * 12) + 5.0;
-				played = true;
-			}
-			else {
-				time += delta;
-				if(time >= duration) {
-					func.stopFunction();
-					duration = -1;
-					time = 0;
-				}
-			}
-		}*/
-		//GD.Print("This is from the PlayFunctions Class");
+		if(currTime == 5 && !first) sequence.GetFunction(0).SetProcess(true);
+		if(currTime == 10) sequence.GetFunction(0).SetProcess(false);
+		GD.Print("tThis is from the PlayFunctions Class @ t = " + currTime);
 
 	}
+
 
 	public void ActivateProcess() {
 		
