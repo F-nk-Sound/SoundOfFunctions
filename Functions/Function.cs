@@ -19,7 +19,8 @@ public partial class Function : Node {
     public TimeKeeper functionTimer;    // Each Function has a timer object to manage it's playback
     public bool isPlaying;	            // Duh
 
-    public Function(string textRepresentation, int startPos, int endPos) {
+    public Function(string name, string textRepresentation, int startPos, int endPos) {
+        this.Name = name;
         this.textRepresentation = textRepresentation;
         timeDomain = fillTimeDomain(textRepresentation, startPos, endPos);
         noteSequence = fillNoteSequence(timeDomain);
@@ -132,7 +133,7 @@ public partial class Function : Node {
 		bool changed = functionTimer.GetTimeChanged();
 		if(!changed) return;
 
-        GD.Print("\t\t->tThis is From the Function Class @ Function Time t = " + currTime);
+        GD.Print("\t\t->" + this.Name + " @ Function Time t = " + currTime);
     }
 
     public void ActivateProcess() {

@@ -57,17 +57,18 @@ public partial class PlayFunctions : Node {
 	// Called when the node enters the scene tree for the first time.
 	public override async void _Ready() {
 		
-		Function linear = new Function("y = 2x + 6", 3, 5);
-		Function cubic = new Function("y = x^3 + 2", 5, 10);
+		Function linear = new Function("linear", "y = 2x + 6", 3, 5);
+		Function cubic = new Function("cubic", "y = x^3 + 2", 5, 10);
 		
 		// Add the functions to the scene tree
 		linear.Name = "linear";
 		cubic.Name = "cubic";
 		GetNode($".").AddChild(linear);
-		//GetNode($".").AddChild(cubic);
+		GetNode($".").AddChild(cubic);
 
 		// Add Functions to timeline
 		linear.SetProcess(false);
+		cubic.SetProcess(false);
 		sequence.AddFunction(linear);
 		sequence.AddFunction(cubic);
 	
@@ -86,10 +87,11 @@ public partial class PlayFunctions : Node {
 		// Actually play functions
 		if(currTime == 5 && !first) sequence.GetFunction(0).SetProcess(true);
 		if(currTime == 10) sequence.GetFunction(0).SetProcess(false);
-		GD.Print("tThis is from the PlayFunctions Class @ t = " + currTime);
+		if(currTime == 15 && !first) sequence.GetFunction(1).SetProcess(true);
+		if(currTime == 20) sequence.GetFunction(1).SetProcess(false);
+		GD.Print("This is from the PlayFunctions Class @ t = " + currTime);
 
 	}
-
 
 	public void ActivateProcess() {
 		
