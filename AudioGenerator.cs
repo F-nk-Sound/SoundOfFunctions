@@ -37,16 +37,15 @@ public partial class AudioGenerator : Node {
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta) {
+		// Increment the timer
 		timer.Tick(delta);
 		int currTime = timer.ClockTimeRounded;
-
 		if(timer.IsTimeChanged) GD.Print("AudioGenerator Time t = " + currTime + " s");
 
 		// Actually play functions
 		if(currTime == timeline.GetFunction(0).StartTime && !timeline.IsPlaying) timeline.StartPlaying();
 		if(currTime > timeline.GetFunction(0).StartTime && !timeline.IsPlaying) {
-			GD.Print("That's all folks!");
-			PrintTreePretty();
+			PrintTreePretty();	// Just to signify the end for now.
 			GetTree().Quit();
 		}
 	

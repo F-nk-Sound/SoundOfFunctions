@@ -42,7 +42,7 @@ public partial class Function : Node {
 	/// <summary>
 	/// Function Timer object to manage and synchronize playback. <br/>
 	/// </summary>
-	public TimeKeeper functionTimer;        
+	private readonly TimeKeeper timer;        
 
 	/// <summary>
 	/// Individual note run time (seconds). <br/>
@@ -79,7 +79,7 @@ public partial class Function : Node {
 		CurrNote = 0;
 		NoteDuration = 1.0;
 		RunTime = EndTime - StartTime;
-		functionTimer = new TimeKeeper();
+		timer = new TimeKeeper();
 		player = new AudioStreamPlayer {
 			Stream = new AudioStreamGenerator {
 				BufferLength = RunTime,
@@ -109,8 +109,14 @@ public partial class Function : Node {
 	/// Uses Function <c>timeDomain</c> to calculate the appropriate values of the functions audio note sequence.
 	/// </summary>
 	private void FillNoteSequence() {
-		List<int> res = new List<int>();
-		noteSequence = res;
+		noteSequence = new List<int>();
+		
+		// Should be changed to actual math once demos concluded
+		if(Name == "Lucid Dreams") addLucidDreams();
+		if(Name == "Twinkle Twinkle") addTwinkleTwinkle();
+		if(Name == "Seven Nation Army") addSevenNationArmy();
+		if(Name == "Scale") addDefaultNotes();
+		if(Name == "Hot Cross Buns") addHotCrossBuns();
 	}
 
 	/// <summary>
@@ -147,14 +153,14 @@ public partial class Function : Node {
 	/// </summary>
 	public bool StopPlaying() {
 		// Poll the time and check if time has arrived. Stop sonificaiton if needed
-		int currTime = functionTimer.ClockTimeRounded;
+		int currTime = timer.ClockTimeRounded;
 		if(currTime != EndTime + RunTime) return false;
 		
 		// Stopping Sonification
 		CurrNote = 0;
 		player.Stop();
 		SetProcess(false);
-		functionTimer.Reset();
+		timer.Reset();
 		return true;
 		
 	}
@@ -165,7 +171,6 @@ public partial class Function : Node {
 	public bool StartPlaying() {
 
 		// Don't allow uninitialized functions to play
-		fillNotes();
 		if(noteSequence.Count == 0) throw new Exception("Attempting to Play Empty Function");
 		
 		// Initializing Sonification
@@ -178,16 +183,7 @@ public partial class Function : Node {
 		return true;
 	}	
 
-	private void fillNotes() {
-		if(!noteSequence.Any()) {
-			if(Name == "Lucid Dreams") addLucidDreams();
-			if(Name == "Twinkle Twinkle") addTwinkleTwinkle();
-			if(Name == "Seven Nation Army") addSevenNationArmy();
-			if(Name == "Scale") addDefaultNotes();
-			if(Name == "Hot Cross Buns") addHotCrossBuns();
-		}
-	}
-	
+	/********* Below Only for Testing and Demonstration Purposes *********/
 	private void addDefaultNotes() {
 		for(int i = 32; i < 32 + 12; i += 1) noteSequence.Add(i);
 		StartTime = 23;
@@ -373,6 +369,7 @@ public partial class Function : Node {
 		RunTime = 40;
 
 	}
+	/********* Above Only for Testing and Demonstration Purposes *********/
 
 	/// <summary>
 	/// Pushes the current note from noteSequence[] into the buffer.
@@ -382,7 +379,7 @@ public partial class Function : Node {
 		if(StopPlaying()) return;
 
 		// Push new note into Audio Buffer on each discrete timer tick
-		bool changed = functionTimer.IsTimeChanged;
+		bool changed = timer.IsTimeChanged;
 		if(CurrNote != noteSequence.Count && changed) {
 			var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
 			var sample = GenerateNoteAudio(noteSequence[CurrNote]);
@@ -392,7 +389,7 @@ public partial class Function : Node {
 	}
 
 	public override void _Process(double delta) {
-		functionTimer.Tick(delta);
+		timer.Tick(delta);
 		Play();
 	}
 

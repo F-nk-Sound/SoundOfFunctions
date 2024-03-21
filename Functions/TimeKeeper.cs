@@ -3,7 +3,7 @@ using Godot;
 
 namespace Functions;
 
-public partial class TimeKeeper : Node {
+public partial class TimeKeeper {
 
     /// <summary>
     /// Current time TimeKeeper has kept time for since construction (in seconds).

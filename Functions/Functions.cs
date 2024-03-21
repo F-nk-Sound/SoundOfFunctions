@@ -14,19 +14,19 @@ namespace Functions {
     }
 
     /// <summary>
-    /// Sycnhronous Timing Node. <br/>
+    /// Class for Sycnhronous Timing within the application. 
     /// </summary>
     public partial class TimeKeeper {};
     
     namespace Sonification {
         
         /// <summary>
-        /// Represents any individual function passed into the program as a Node. <br/>
+        /// Represents any individual function passed into the program as a Node.
         /// </summary>
         public partial class Function {};
        
         /// <summary>
-        /// Backend of the Timeline UI. This is the backbone of Audio Generation. <br/>
+        /// Backend of the Timeline UI. This is the backbone of Audio Generation. 
         /// </summary>
         public partial class LowerTimeline {};
 
