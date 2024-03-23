@@ -6,7 +6,11 @@ using System.Linq;
 using Xunit.Sdk;
 using System.Diagnostics;
 
-namespace Functions.Sonification;
+namespace Sonification;
+
+/// <summary>
+/// Backend of the Timeline UI. This is the backbone of Audio Generation. 
+/// </summary>
 public partial class LowerTimeline : Node {
     
     /// <summary>
@@ -117,7 +121,7 @@ public partial class LowerTimeline : Node {
         // Stop playback if necessary
 		if(StopPlaying() || currFunction > functions.Count) return;
 
-        // Grab the current timer position and the time to allow thenext function to play
+        // Grab the current timer position and the time to allow the next function to play
         int currTime = timer.ClockTimeRounded;
         int updateTime = (currFunction == 0) ? functions[currFunction].RunTime : functions[currFunction - 1].RunTime;
 
@@ -129,7 +133,7 @@ public partial class LowerTimeline : Node {
         }
 
         // Debugging Statments
-        if(timer.IsTimeChanged && Debugging.Enabled) {
+        if(timer.IsTimeChanged && AudioDebugging.Enabled) {
             GD.Print("\t->CurrTime = " + currTime + " s. UpdateTime = " + updateTime + " s");
             GD.Print("\t->Current Function Being Played = " + currFunction);
             GD.Print("\t->Elapsed Time: " + (int) timer.ElapsedTime + " s " + "[absolute: "+ timer.ElapsedTime + " s]");
@@ -206,7 +210,7 @@ public partial class LowerTimeline : Node {
     public override void _Process(double delta) {
         timer.Tick(delta);
         CurrPosition = timer.ClockTimeAbsolute;
-		if(timer.IsTimeChanged && Debugging.Enabled) GD.Print("\t->LowerTimeline Time t = " + timer.ClockTimeRounded + " s");
+		if(timer.IsTimeChanged && AudioDebugging.Enabled) GD.Print("\t->LowerTimeline Time t = " + timer.ClockTimeRounded + " s");
         Play();
     }
     

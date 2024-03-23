@@ -1,8 +1,11 @@
 using System;
 using Godot;
 
-namespace Functions;
+namespace Sonification;
 
+/// <summary>
+/// Class for Sycnhronous Timing within the application. 
+/// </summary>
 public partial class TimeKeeper {
 
     /// <summary>

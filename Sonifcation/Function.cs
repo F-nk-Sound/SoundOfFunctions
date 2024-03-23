@@ -3,15 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Functions;
+namespace Sonification;
 
-namespace Functions.Sonification;
-
+/// <summary>
+/// Represents any individual function passed into the program as a Node.
+/// </summary>
 public partial class Function : Node {
 	/// <summary>
 	/// Input text that function is parsed from. <br/>
 	/// </summary>
 	private string TextRepresentation;		
 
+	/// <summary>
+	/// Stores the AST of the Function.
+	/// </summary>
+	public IFunctionAST FunctionAST {get; set;}
 	/// <summary>
 	/// Function starting time point. <br/>
 	/// </summary>
@@ -23,10 +30,9 @@ public partial class Function : Node {
 	public int EndTime {get; set;}			
 
 	/// <summary>
-	/// Stores the calculated time domain representation of the function. <br/>
-	/// Format: Function domain: [StartTime, ..., EndTime].
+	/// Stores the calculated time domain representation of the function with respect to time. <br/>
 	/// </summary>
-	private List<int> timeDomain;			
+	public List<double> FunctionTable;			
 
 	/// <summary>
 	/// Stores the audio sequence of the function as note numbers. <br/>
@@ -60,19 +66,23 @@ public partial class Function : Node {
 	public int RunTime {get; set;}			
 
 	/// <summary>
-	/// Initializes a new Function Node.
+	/// Initializes a new Function Node w/ a domain of [-5,5].
 	/// </summary>
-	/// <param name="TextRepresentation">The text representation of the function.</param>
-	/// <param name="StartTime">The time at which the function is to start playing (in seconds).</param>
-	/// <param name="EndTime">The time at which the function is to stop playing (in seconds).</param>
-	/// <param name="Timeline">The <c> LowerTimeline </c> instance the function should be added to</param>
-	public Function(string TextRepresentation, int StartTime, int EndTime, Node Timeline) {
+	/// <param name="name">This Functions Name (i.e., its text representation before parsing).</param>
+	/// <param name="functionAST">The AST that represents the function.</param>
+	public Function(string name, IFunctionAST functionAST) {
 		// Banal Characteristics
-		Name = TextRepresentation;	// Should be changed to fit in with the rest of the application
-		this.TextRepresentation = TextRepresentation;
-		this.StartTime = StartTime;
-		this.EndTime = EndTime;
-		FillTimeDomain();
+		Name = name;
+		FunctionAST = functionAST;
+
+		// Default start and stop
+		StartTime = -5;
+		EndTime = 5;
+
+		// Initialize playback and Graph representation materials
+		FunctionTable = new List<double>();
+		noteSequence = new List<int>();
+		FillFunctionTable();
 		FillNoteSequence();
 		
 		// Characteristics relevant to audio playback
@@ -85,7 +95,7 @@ public partial class Function : Node {
 				BufferLength = RunTime,
 				MixRate = 44100,
 			},
-			Name = Name + "_Player"
+			Name = name + "_Player"
 		};
 
 		// Add player to scene tree
@@ -96,27 +106,45 @@ public partial class Function : Node {
 	/// <summary>
 	/// Uses Function text representation to calculate the appropriate values of the normal time domain of the function.
 	/// </summary>
-	private void FillTimeDomain() {
-		List<int> res = new List<int>();
-		/*
-			Do the stuff to get the values
-			Will need startTime, endTIme, textRepresentation
-		*/
-		timeDomain = res;
+	private void FillFunctionTable() {
+		if(FunctionAST == null) return;
+		// Iterate over the Domain and fill in the function's range
+		for(int t = StartTime; t <= EndTime; t++) {
+			var value = FunctionAST.EvaluateAtT(t);
+			FunctionTable.Add(value);
+		}
 	}
 	
 	/// <summary>
-	/// Uses Function <c>timeDomain</c> to calculate the appropriate values of the functions audio note sequence.
+	/// Uses Function <c>FunctionTable</c> to calculate the appropriate values for the functions audio sequence.
 	/// </summary>
 	private void FillNoteSequence() {
-		noteSequence = new List<int>();
-		
-		// Should be changed to actual math once demos concluded
+
+		// Should be removed once demos concluded
 		if(Name == "Lucid Dreams") addLucidDreams();
 		if(Name == "Twinkle Twinkle") addTwinkleTwinkle();
 		if(Name == "Seven Nation Army") addSevenNationArmy();
 		if(Name == "Scale") addDefaultNotes();
 		if(Name == "Hot Cross Buns") addHotCrossBuns();
+		if(FunctionTable.Count == 0) return;
+		
+		// Functions have 88 notes to choose from.
+		int noteNumStart = 1;
+		int noteNumEnd = 88;
+		int noteRange = noteNumEnd - noteNumStart;
+		
+		// Find the full range of values that the function can take.
+		double minVal = FunctionTable.Min();
+		double maxVal = FunctionTable.Max();
+		double functionRange = maxVal - minVal;
+
+		// Map the Functions values to note numbers 
+		foreach(double value in FunctionTable) {
+			double normalizedValue = (value - minVal) / functionRange;
+			int note = noteNumStart + (int) (normalizedValue * noteRange);
+			noteSequence.Add(note);
+		}
+
 	}
 
 	/// <summary>

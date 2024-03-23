@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 using Xunit.Sdk;
 using System.Diagnostics;
 
-using Functions;
-using Functions.Sonification;
+using Sonification;
 
 /// <summary>
 /// Main Audio Generation Node. 
@@ -65,11 +64,11 @@ public partial class AudioGenerator : Node {
 	/// </summary>
 	public void AddTests() {
 		List<Function> funcList = new List<Function> {
-			new Function("Hot Cross Buns", 5, 23, timeline),
-			new Function("Scale", 23, 35, timeline),
-			new Function("Seven Nation Army", 35, 56, timeline),
-			new Function("Twinkle Twinkle", 56, 97, timeline),
-			new Function("Lucid Dreams", 97, 137, timeline)
+			new Function("Hot Cross Buns", null),
+			new Function("Scale", null),
+			new Function("Seven Nation Army", null),
+			new Function("Twinkle Twinkle", null),
+			new Function("Lucid Dreams", null)
 		};
 		timeline.Add(funcList);
 	}
