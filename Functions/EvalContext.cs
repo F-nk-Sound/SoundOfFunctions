@@ -9,5 +9,5 @@ namespace Functions;
 /// </summary>
 public class EvalContext
 {
-    public Dictionary<string, double> Variables { get; set; }
+    public Dictionary<string, double>? Variables { get; set; }
 }
