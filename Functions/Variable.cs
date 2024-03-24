@@ -14,6 +14,10 @@ public record Variable(string Name) : IFunctionAST
         else
             throw new UnboundVariableException() { Variable = Name };
     }
+
+    public bool IsTerm => true;
+
+    public string Latex => Name;
 }
 
 /// <summary>
