@@ -36,7 +36,7 @@ public partial class LowerTimeline : Node {
     /// <summary>
     /// Runtime of the Timeline (in seconds).
     /// </summary>    
-    private int RunTime {get; set;}				
+    public int RunTime {get; set;}				
 
     /// <summary>
     /// If <c> true </c>, Timeline audio playback is active.
@@ -54,7 +54,7 @@ public partial class LowerTimeline : Node {
     /// <param name="parent">The parent of this LowerTimeline node.</param>
     public LowerTimeline(Node parent) {
         RunTime = 0;
-        currFunction = 0;
+        currFunction = -1;      // Initialized to -1 to indicate playing hasn't begun yet. 0 indexed quantity.
         CurrPosition = 0.0;
         IsPlaying = false;
         functions = new List<Function>();
@@ -123,23 +123,20 @@ public partial class LowerTimeline : Node {
 
         // Grab the current timer position and the time to allow the next function to play
         int currTime = timer.ClockTimeRounded;
-        int updateTime = (currFunction == 0) ? functions[currFunction].RunTime : functions[currFunction - 1].RunTime;
+        int updateTime = (currFunction == -1) ? functions.First().RunTime : functions[currFunction].RunTime;
 
         // Play the functions within the timeline at the appropriate time
-        if(currFunction == 0 || (int) timer.ElapsedTime == updateTime) {
+        if(currFunction == -1 || (int) timer.ElapsedTime == updateTime) {
+            currFunction++;
             functions[currFunction].StartPlaying();
             timer.ResetTracking();
-            currFunction++;
         }
 
         // Debugging Statments
         if(timer.IsTimeChanged && AudioDebugging.Enabled) {
-            GD.Print("\t->CurrTime = " + currTime + " s. UpdateTime = " + updateTime + " s");
-            GD.Print("\t->Current Function Being Played = " + currFunction);
-            GD.Print("\t->Elapsed Time: " + (int) timer.ElapsedTime + " s " + "[absolute: "+ timer.ElapsedTime + " s]");
-            GD.Print("\t->UpdateTime = " + updateTime + " s");
-            GD.Print("\t->Playing Function " + (currFunction - 1) + " @ Function.Timer = " + currTime + " s");
-            GD.Print("\t->Playing Function: " + functions[currFunction - 1].Name);
+            GD.Print("\t->Timeline.Timer.CurrTime = " + currTime + " s. UpdateTime/StopTime = " + updateTime + " s");
+            GD.Print("\t->Timeline.Timer.ElapsedTime: " + (int) timer.ElapsedTime + " s " + "[absolute: "+ timer.ElapsedTime + " s]");
+            GD.Print("\t->Playing Timeline.CurrFunction " + currFunction + ":" + functions[currFunction].Name + " @ Function.Timer = " + currTime + " s");
         }
     }
 
@@ -164,10 +161,10 @@ public partial class LowerTimeline : Node {
     public bool StopPlaying() {
         // Poll the time and check if time has arrived. Stop sonificaiton if needed
 		int currTime = timer.ClockTimeRounded;
-        if(currTime != RunTime - 1) return false;
+        if(currTime != RunTime) return false;
 		
         // Stopping Sonification
-        currFunction = 0;
+        currFunction = -1;
         IsPlaying = false;
         SetProcess(false); 
         timer.Reset();
@@ -200,7 +197,7 @@ public partial class LowerTimeline : Node {
 
         // Defualts all relevant paramters
         timer.Reset();
-        currFunction = 0;
+        currFunction = -1;
         CurrPosition = 0;
         RunTime = 0;
         functions = new List<Function>();
@@ -210,7 +207,6 @@ public partial class LowerTimeline : Node {
     public override void _Process(double delta) {
         timer.Tick(delta);
         CurrPosition = timer.ClockTimeAbsolute;
-		if(timer.IsTimeChanged && AudioDebugging.Enabled) GD.Print("\t->LowerTimeline Time t = " + timer.ClockTimeRounded + " s");
         Play();
     }
     

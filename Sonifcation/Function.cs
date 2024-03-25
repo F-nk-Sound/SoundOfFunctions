@@ -13,7 +13,7 @@ public partial class Function : Node {
 	/// <summary>
 	/// Input text that function is parsed from. <br/>
 	/// </summary>
-	private string TextRepresentation;		
+	private string TextRepresentation {get;}	
 
 	/// <summary>
 	/// Stores the AST of the Function.
@@ -68,34 +68,33 @@ public partial class Function : Node {
 	/// <summary>
 	/// Initializes a new Function Node w/ a domain of [-5,5].
 	/// </summary>
-	/// <param name="name">This Functions Name (i.e., its text representation before parsing).</param>
+	/// <param name="textRepresentation">This Functions Name (i.e., its text representation before parsing).</param>
 	/// <param name="functionAST">The AST that represents the function.</param>
-	public Function(string name, IFunctionAST functionAST) {
+	public Function(string textRepresentation, IFunctionAST functionAST) {
 		// Banal Characteristics
-		Name = name;
+		Name = textRepresentation;
+		TextRepresentation = textRepresentation;
 		FunctionAST = functionAST;
 
 		// Default start and stop
 		StartTime = -5;
 		EndTime = 5;
-
-		// Initialize playback and Graph representation materials
+		
+		// Characteristics relevant to audio playback
+		CurrNote = 0;
+		NoteDuration = 0.125;
+		RunTime = EndTime - StartTime;
 		FunctionTable = new List<double>();
 		noteSequence = new List<int>();
 		FillFunctionTable();
 		FillNoteSequence();
-		
-		// Characteristics relevant to audio playback
-		CurrNote = 0;
-		NoteDuration = 1.0;
-		RunTime = EndTime - StartTime;
 		timer = new TimeKeeper();
 		player = new AudioStreamPlayer {
 			Stream = new AudioStreamGenerator {
 				BufferLength = RunTime,
 				MixRate = 44100,
 			},
-			Name = name + "_Player"
+			Name = "[" + textRepresentation + "]Player"
 		};
 
 		// Add player to scene tree
@@ -107,9 +106,9 @@ public partial class Function : Node {
 	/// Uses Function text representation to calculate the appropriate values of the normal time domain of the function.
 	/// </summary>
 	private void FillFunctionTable() {
-		if(FunctionAST == null) return;
+
 		// Iterate over the Domain and fill in the function's range
-		for(int t = StartTime; t <= EndTime; t++) {
+		for(double t = StartTime; t <= EndTime; t += NoteDuration) {
 			var value = FunctionAST.EvaluateAtT(t);
 			FunctionTable.Add(value);
 		}
@@ -120,14 +119,6 @@ public partial class Function : Node {
 	/// </summary>
 	private void FillNoteSequence() {
 
-		// Should be removed once demos concluded
-		if(Name == "Lucid Dreams") addLucidDreams();
-		if(Name == "Twinkle Twinkle") addTwinkleTwinkle();
-		if(Name == "Seven Nation Army") addSevenNationArmy();
-		if(Name == "Scale") addDefaultNotes();
-		if(Name == "Hot Cross Buns") addHotCrossBuns();
-		if(FunctionTable.Count == 0) return;
-		
 		// Functions have 88 notes to choose from.
 		int noteNumStart = 1;
 		int noteNumEnd = 88;
@@ -144,7 +135,6 @@ public partial class Function : Node {
 			int note = noteNumStart + (int) (normalizedValue * noteRange);
 			noteSequence.Add(note);
 		}
-
 	}
 
 	/// <summary>
@@ -205,215 +195,28 @@ public partial class Function : Node {
 		CurrNote = 0;
 		SetProcess(true);
 		player.Play();
+		timer.BeginTracking();
 		Play();
 
 		// Successful initialization
 		return true;
 	}	
 
-	/********* Below Only for Testing and Demonstration Purposes *********/
-	private void addDefaultNotes() {
-		for(int i = 32; i < 32 + 12; i += 1) noteSequence.Add(i);
-		StartTime = 23;
-		EndTime = 23 + 12;
-		RunTime = 12;
-	}
-
-	private void addHotCrossBuns() {
-		int E4 = 44;
-		int D4 = 42;
-		int C4 = 40;
-		
-		noteSequence.Add(E4);
-		noteSequence.Add(D4);
-		noteSequence.Add(C4);
-
-		noteSequence.Add(E4);
-		noteSequence.Add(D4);
-		noteSequence.Add(C4);
-		
-		noteSequence.Add(C4);
-		noteSequence.Add(C4);
-		noteSequence.Add(C4);
-		noteSequence.Add(C4);
-
-		noteSequence.Add(D4);
-		noteSequence.Add(D4);
-		noteSequence.Add(D4);
-		noteSequence.Add(D4);
-
-		noteSequence.Add(E4);
-		noteSequence.Add(D4);
-		noteSequence.Add(C4);
-
-		StartTime = 5;
-		EndTime = 5 + 17;
-		RunTime = 17;
-
-	}
-
-	private void addSevenNationArmy() {
-		int C3 = 28;
-		int Eb3 = 31;
-		int Bb3 = 38;
-		int Ab3 = 36;
-		int G3 = 35;
-
-		for(int i = 0; i < 3; i++) {
-			noteSequence.Add(C3);
-			noteSequence.Add(C3);
-			noteSequence.Add(Eb3);
-			noteSequence.Add(C3);
-			noteSequence.Add(Bb3);
-			noteSequence.Add(Ab3);
-			noteSequence.Add(G3);
-		}
-
-		StartTime = 35;
-		EndTime = 35 + 21;
-		RunTime = 21;
-	}
-
-	private void addTwinkleTwinkle() {
-		int A4 = 49;
-		int G4 = 47;
-		int E4 = 44;
-		int D4 = 42;
-		int C4 = 40;
-		int F4 = 49;
-
-		noteSequence.Add(C4);
-		noteSequence.Add(C4);
-		noteSequence.Add(G4);
-		noteSequence.Add(G4);
-
-		noteSequence.Add(A4);
-		noteSequence.Add(A4);
-		noteSequence.Add(G4);
-		noteSequence.Add(F4);
-		
-		noteSequence.Add(F4);
-		noteSequence.Add(E4);
-		noteSequence.Add(E4);
-		noteSequence.Add(D4);
-
-		noteSequence.Add(D4);
-		noteSequence.Add(C4);
-		noteSequence.Add(G4);
-		noteSequence.Add(G4);
-
-		noteSequence.Add(F4);
-		noteSequence.Add(F4);
-		noteSequence.Add(E4);
-		noteSequence.Add(E4);
-
-		noteSequence.Add(D4);
-		noteSequence.Add(G4);
-		noteSequence.Add(G4);
-		noteSequence.Add(F4);
-		
-		noteSequence.Add(F4);
-		noteSequence.Add(E4);
-		noteSequence.Add(E4);
-		noteSequence.Add(C4);
-
-		noteSequence.Add(C4);
-		noteSequence.Add(G4);
-		noteSequence.Add(G4);
-		noteSequence.Add(A4);
-
-		noteSequence.Add(A4);
-		noteSequence.Add(G4);
-		noteSequence.Add(F4);
-		noteSequence.Add(F4);
-
-		noteSequence.Add(E4);
-		noteSequence.Add(E4);
-		noteSequence.Add(D4);
-		noteSequence.Add(D4);
-
-		noteSequence.Add(C4);
-
-		StartTime = 57;
-		EndTime = 57 + 41;
-		RunTime = 41;
-	}
-
-	private void addLucidDreams() {
-		int A4 = 49;
-		int Db4 = 41;
-		int Ab4 = 48;
-		int Fs4 = 46;
-		int B4 = 51;
-		int F4 = 45;
-		int D4 = 42;
-		int E4 = 44;
-
-		noteSequence.Add(A4);
-		noteSequence.Add(Db4);
-		noteSequence.Add(A4);
-		noteSequence.Add(Ab4);
-		noteSequence.Add(Db4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(B4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(F4);
-
-		noteSequence.Add(A4);
-		noteSequence.Add(D4);
-		noteSequence.Add(A4);
-		noteSequence.Add(Ab4);
-		noteSequence.Add(Db4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(B4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(F4);
-		noteSequence.Add(F4);
-
-		noteSequence.Add(D4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(D4);
-		noteSequence.Add(A4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(D4);
-		noteSequence.Add(E4);
-		noteSequence.Add(A4);
-		noteSequence.Add(Db4);
-		noteSequence.Add(Ab4);
-		noteSequence.Add(F4);
-		noteSequence.Add(Fs4);
-		noteSequence.Add(E4);
-		noteSequence.Add(D4);
-		noteSequence.Add(Db4);
-		noteSequence.Add(B4);
-		noteSequence.Add(Db4);
-		noteSequence.Add(Db4);
-		noteSequence.Add(Db4);
-
-		StartTime = 98;
-		EndTime = 98 + 40;
-		RunTime = 40;
-
-	}
-	/********* Above Only for Testing and Demonstration Purposes *********/
-
 	/// <summary>
 	/// Pushes the current note from noteSequence[] into the buffer.
 	/// </summary>
 	private void Play() { 
-		// Stop playback if necessary
-		if(StopPlaying()) return;
-
+	
 		// Push new note into Audio Buffer on each discrete timer tick
-		bool changed = timer.IsTimeChanged;
-		if(CurrNote != noteSequence.Count && changed) {
+		bool playNextNote = ((int) timer.ElapsedTime % NoteDuration) == 0;
+		if(CurrNote != noteSequence.Count && playNextNote) {
 			var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
 			var sample = GenerateNoteAudio(noteSequence[CurrNote]);
 			playback.PushBuffer(sample);
 			CurrNote++;
 		}
+		
+		if(timer.IsTimeChanged && AudioDebugging.Enabled) GD.Print("\t->Function.Timer.CurrTime = " + timer.ClockTimeRounded + " s.");
 	}
 
 	public override void _Process(double delta) {

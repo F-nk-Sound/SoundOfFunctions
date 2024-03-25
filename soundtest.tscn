@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dvbsa3b2xhodc"]
 
-[ext_resource type="Script" path="res://AudioGenerator.cs" id="1_73ssc"]
+[ext_resource type="Script" path="res://Sonifcation/AudioGenerator.cs" id="2_datpp"]
 
 [node name="Audio Generator" type="Node"]
-script = ExtResource("1_73ssc")
+script = ExtResource("2_datpp")
