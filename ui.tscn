@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
 [ext_resource type="Script" path="res://UI/FunctionPalette.cs" id="2_ykdwx"]
-[ext_resource type="PackedScene" uid="uid://cplv0i0ax5sqm" path="res://UI/FunctionContainer.tscn" id="3_vof5n"]
+[ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
 
 [node name="UI" type="Node2D"]
 script = ExtResource("1_owfon")
@@ -33,18 +33,21 @@ offset_bottom = 41.0
 tooltip_text = "Click to add a function"
 text = "+"
 
+[node name="Selected Function" type="Label" parent="Function Palette/FP BG"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 410.0
+offset_right = 46.0
+offset_bottom = 433.0
+script = ExtResource("3_3ndwe")
+
 [node name="ScrollContainer" type="ScrollContainer" parent="Function Palette"]
 offset_left = 22.0
 offset_top = 113.0
 offset_right = 262.0
 offset_bottom = 500.0
 
-[node name="FunctionContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
-custom_minimum_size = Vector2(225, 0)
-layout_mode = 2
-
-[node name="FunctionContainer" parent="Function Palette/ScrollContainer/FunctionContainer" instance=ExtResource("3_vof5n")]
-visible = false
+[node name="FunctionsContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
 layout_mode = 2
 
 [node name="Graph" type="Node2D" parent="."]
