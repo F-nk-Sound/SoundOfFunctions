@@ -26,7 +26,7 @@ public partial class LowerTimeline : Node {
     /// <summary>
     /// Timer to manage and synchronize audio playback within the Timeline.
     /// </summary>
-    private TimeKeeper timer;           
+    private readonly TimeKeeper timer;           
 
     /// <summary>
     /// Current function being played by the Timeline.
@@ -52,7 +52,7 @@ public partial class LowerTimeline : Node {
     /// Initializes a new LowerTimeline Node.
     /// </summary>
     /// <param name="parent">The parent of this LowerTimeline node.</param>
-    public LowerTimeline(Node parent) {
+    public LowerTimeline() {
         RunTime = 0;
         currFunction = -1;      // Initialized to -1 to indicate playing hasn't begun yet. 0 indexed quantity.
         CurrPosition = 0.0;
@@ -69,7 +69,6 @@ public partial class LowerTimeline : Node {
 
         // Scene Tree stuff
         AddChild(player);
-        parent.AddChild(this);
         SetProcess(false);
     }
 
@@ -82,6 +81,7 @@ public partial class LowerTimeline : Node {
         func.SetProcess(false);
         RunTime += func.RunTime;
         functions.Add(func);
+        if(AudioDebugging.Enabled) GD.Print("\t->" + func.Name + " Added");
     }
 
     /// <summary>
@@ -98,7 +98,6 @@ public partial class LowerTimeline : Node {
     /// <param name="index">Location of Function on the Timeline (0 indexed).</param>
     /// <returns>Function a the specified location.</returns>
     public Function GetFunction(int index) {
-        if(index + 1 > functions.Count || index < 0) return null;
         return functions[index];
     }
     

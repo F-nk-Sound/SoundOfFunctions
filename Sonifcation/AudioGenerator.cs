@@ -20,19 +20,30 @@ public partial class AudioGenerator : Node {
 	/// <summary>
 	/// LowerTimeline representation of the Timeline UI Node
 	/// </summary>
-	public LowerTimeline timeline;
+	public LowerTimeline timeline = new LowerTimeline();
 	
 	/// <summary>
 	/// Timer to manage and synchronize audio playback within the AudioGenerator. 
 	/// </summary>
-	private TimeKeeper timer;
+	private readonly TimeKeeper timer = new TimeKeeper();	
+
+	/// <summary>
+	/// If <c> true </c>, AudioGenerator playback is active.
+	/// </summary>
+	public bool IsPlaying {get;set;}
 
 	// Called when the node enters the scene tree for the first time.
 	public override async void _Ready() {
 
-		Initialize();
+		AddChild(timeline);
+		timeline.SetProcess(false);
 		AddTests();
 		
+	}
+
+	public void Play() {
+		timeline.StartPlaying();
+		IsPlaying = true;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -51,14 +62,7 @@ public partial class AudioGenerator : Node {
 			GetTree().Quit();
 		}
 		
-	}
-
-	/// <summary>
-	/// Initializes the Audio Generator.
-	/// </summary>
-	public void Initialize() {
-		timer = new TimeKeeper();
-		timeline = new LowerTimeline(this);
+		
 	}
 
 	public void AddTests() {
@@ -76,8 +80,10 @@ public partial class AudioGenerator : Node {
 		IFunctionAST three_pi_t = new Multiply(three_t, pi);
 		IFunctionAST sin_3_pi_t = new Sine(three_pi_t);
 		IFunctionAST inverse = new Divide(two,t);
+		IFunctionAST tan = new Tangent(three_pi_t);
 
 		//Function threeFunc = new Function("3", three);
+		Function tanFunc = new Function("Tan(3*pi*t)", tan);
 		Function inverseFunc = new Function("2/t)", inverse);
 		Function sineFunc2 = new Function("Sin(3*t)", sin_3t);
 		Function sineFunc1 = new Function("sin(3*pi*t)", sin_3_pi_t);
@@ -85,13 +91,15 @@ public partial class AudioGenerator : Node {
 		Function squareFunc = new Function("t^2", t_squared);
 		Function polynomialFunc = new Function("t^2 + 3t + 4", poly);
 		
-		//timeline.Add(threeFunc);
 		//timeline.Add(inverseFunc);
+		/*
 		timeline.Add(polynomialFunc);
 		timeline.Add(squareFunc);
 		timeline.Add(linearFunc);
 		timeline.Add(sineFunc1);
 		timeline.Add(sineFunc2);
+		*/
+		timeline.Add(tanFunc);
 		
 	}
 }

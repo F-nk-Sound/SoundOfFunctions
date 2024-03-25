@@ -172,7 +172,7 @@ public partial class Function : Node {
 	public bool StopPlaying() {
 		// Poll the time and check if time has arrived. Stop sonificaiton if needed
 		int currTime = timer.ClockTimeRounded;
-		if(currTime != EndTime + RunTime) return false;
+		if(currTime != RunTime) return false;
 		
 		// Stopping Sonification
 		CurrNote = 0;
@@ -206,7 +206,9 @@ public partial class Function : Node {
 	/// Pushes the current note from noteSequence[] into the buffer.
 	/// </summary>
 	private void Play() { 
-	
+
+		if(StopPlaying()) return;
+
 		// Push new note into Audio Buffer on each discrete timer tick
 		bool playNextNote = ((int) timer.ElapsedTime % NoteDuration) == 0;
 		if(CurrNote != noteSequence.Count && playNextNote) {
@@ -216,7 +218,7 @@ public partial class Function : Node {
 			CurrNote++;
 		}
 		
-		if(timer.IsTimeChanged && AudioDebugging.Enabled) GD.Print("\t->Function.Timer.CurrTime = " + timer.ClockTimeRounded + " s.");
+		if(timer.IsTimeChanged && AudioDebugging.Enabled) GD.Print("\t->F:(" + Name + ").Timer.CurrTime = " + timer.ClockTimeRounded + " s.");
 	}
 
 	public override void _Process(double delta) {
