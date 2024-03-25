@@ -32,7 +32,8 @@ public class Tests
 
     [Theory]
     [InlineData("3 + 3", 6)]
-    public void ArithmeticCalculations(string input, double output) {
+    public void ArithmeticCalculations(string input, double output)
+    {
         IFunctionAST ast = Bridge.Parse(input).Unwrap();
         Assert.Equal(output, ast.EvaluateAtT(0));
     }
