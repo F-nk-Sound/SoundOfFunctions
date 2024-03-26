@@ -1,20 +1,18 @@
-[gd_scene load_steps=15 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=14 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
 [ext_resource type="Script" path="res://UI/FunctionPalette.cs" id="2_ykdwx"]
+[ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
 [ext_resource type="Texture2D" uid="uid://dyv6hilyp7g3i" path="res://Assets/FOTS UI/icons8-add-50.png" id="3_5lgt0"]
-[ext_resource type="PackedScene" uid="uid://cplv0i0ax5sqm" path="res://UI/FunctionContainer.tscn" id="3_vof5n"]
 [ext_resource type="Script" path="res://UI/Timeline.cs" id="4_1pkc6"]
-[ext_resource type="Script" path="res://UI/Testbutton.cs" id="4_7nqbq"]
 [ext_resource type="Script" path="res://UI/Toolbar.cs" id="6_5mm8q"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
-[ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
+[ext_resource type="PackedScene" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
 [ext_resource type="Texture2D" uid="uid://dst08x3c1p4fb" path="res://Assets/FOTS UI/icons8-redo-50-2.png" id="9_vnk82"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
 [ext_resource type="Texture2D" uid="uid://baq81af2vj12p" path="res://Assets/FOTS UI/icons8-close-window-50.png" id="12_5c7ir"]
-[ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
 
 [node name="UI" type="Node2D"]
 script = ExtResource("1_owfon")
@@ -45,19 +43,6 @@ offset_bottom = 76.0
 scale = Vector2(0.5, 0.5)
 tooltip_text = "Click to add a function"
 icon = ExtResource("3_5lgt0")
-
-[node name="Test button" type="Button" parent="Function Palette/FP BG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 1.161
-anchor_right = 0.5
-anchor_bottom = 1.161
-offset_left = -35.5
-offset_top = -492.001
-offset_right = 37.5
-offset_bottom = -430.001
-script = ExtResource("4_7nqbq")
 
 [node name="Selected Function" type="Label" parent="Function Palette/FP BG"]
 layout_mode = 0
