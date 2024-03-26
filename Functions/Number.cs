@@ -6,4 +6,8 @@ namespace Functions;
 public record Number(double Value) : IFunctionAST
 {
     public double Evaluate(EvalContext ctx) => Value;
+
+    public bool IsTerm => true;
+
+    public string Latex => Value.ToString();
 }

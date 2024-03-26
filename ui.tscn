@@ -14,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
 [ext_resource type="Texture2D" uid="uid://baq81af2vj12p" path="res://Assets/FOTS UI/icons8-close-window-50.png" id="12_5c7ir"]
+[ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
 
 [node name="UI" type="Node2D"]
 script = ExtResource("1_owfon")
@@ -58,18 +59,21 @@ offset_right = 37.5
 offset_bottom = -430.001
 script = ExtResource("4_7nqbq")
 
+[node name="Selected Function" type="Label" parent="Function Palette/FP BG"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 410.0
+offset_right = 46.0
+offset_bottom = 433.0
+script = ExtResource("3_3ndwe")
+
 [node name="ScrollContainer" type="ScrollContainer" parent="Function Palette"]
 offset_left = 22.0
 offset_top = 113.0
 offset_right = 262.0
 offset_bottom = 500.0
 
-[node name="FunctionContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
-custom_minimum_size = Vector2(225, 0)
-layout_mode = 2
-
-[node name="FunctionContainer" parent="Function Palette/ScrollContainer/FunctionContainer" instance=ExtResource("3_vof5n")]
-visible = false
+[node name="FunctionsContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
 layout_mode = 2
 
 [node name="Graph" type="Node2D" parent="."]

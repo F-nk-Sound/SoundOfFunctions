@@ -1,15 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dvbsa3b2xhodc"]
+[gd_scene load_steps=2 format=3 uid="uid://dvbsa3b2xhodc"]
 
-[ext_resource type="Script" path="res://PlayFunctions.cs" id="1_1erne"]
+[ext_resource type="Script" path="res://Sonifcation/AudioGenerator.cs" id="2_datpp"]
 
-[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_ja3ui"]
-buffer_length = 3.0
-
-[node name="Root" type="Node"]
-
-[node name="Node" type="Node" parent="." node_paths=PackedStringArray("Player")]
-script = ExtResource("1_1erne")
-Player = NodePath("../AudioStreamPlayer")
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = SubResource("AudioStreamGenerator_ja3ui")
+[node name="Audio Generator" type="Node"]
+script = ExtResource("2_datpp")
