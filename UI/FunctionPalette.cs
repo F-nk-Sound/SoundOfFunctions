@@ -1,5 +1,6 @@
 using Functions;
 using Godot;
+using Sonification;
 using System;
 
 /// <summary>
@@ -32,34 +33,34 @@ public partial class FunctionPalette : Node
     /// C# Event called when the current function selected by the user
 	/// has changed.
     /// </summary>
-    /// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
-    public delegate void C_SelectedFunctionEventHandler(IFunctionAST functionAST);
+    /// <param name="function">Current selected function, as an IFunctionAST.</param>
+    public delegate void C_SelectedFunctionEventHandler(Function function);
 	public event C_SelectedFunctionEventHandler? C_SelectedFunctionChanged;
 
     /// <summary>
     /// C# Event called when the current function has been dragged.
     /// </summary>
     /// <param name="position">The current global position of the function.</param>
-    /// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
-    public delegate void C_FunctionDraggedEventHandler(Vector2 position, IFunctionAST functionAST);
+    /// <param name="function">Current selected function, as an IFunctionAST.</param>
+    public delegate void C_FunctionDraggedEventHandler(Vector2 position, Function function);
     public event C_FunctionDraggedEventHandler? C_FunctionDragged;
 
     /// <summary>
     /// C# Event called when the current function is being dragged.
     /// </summary>
     /// <param name="position">The current global position of the function.</param>
-    /// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
-    public delegate void C_FunctionDraggingEventHandler(Vector2 position, IFunctionAST functionAST);
+    /// <param name="function">Current selected function, as a Function from Sonification.</param>
+    public delegate void C_FunctionDraggingEventHandler(Vector2 position, Function function);
     public event C_FunctionDraggingEventHandler? C_FunctionDragging;
 
-	private IFunctionAST? currentSelectedFunction;
-	public IFunctionAST CurrentSelectedFunction
+	private Function? currentSelectedFunction;
+	public Function CurrentSelectedFunction
 	{
 		get { return currentSelectedFunction; }
 		set
 		{
 			if (value == null) return;
-			currentSelectedFunction = value;
+            currentSelectedFunction = value;
 			EmitSignal(SignalName.SelectedFunctionChanged);
 			C_SelectedFunctionChanged?.Invoke(value);
 		}
