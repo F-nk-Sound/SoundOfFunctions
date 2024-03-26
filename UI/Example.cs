@@ -1,12 +1,16 @@
 using Functions;
 using Godot;
+using Sonification;
 using System;
 
 public partial class Example : Node
 {
 	private FunctionPalette? functionPalette;
+    public LowerTimeline timeline = new LowerTimeline();
+    private readonly TimeKeeper timer = new TimeKeeper();
+    public bool IsPlaying { get; set; }
 
-	public override void _Ready()
+    public override void _Ready()
 	{
 		base._Ready();
 
@@ -22,21 +26,37 @@ public partial class Example : Node
 
 		// Connect signal when the current selected funciton has been dragged.
 		functionPalette.FunctionDragged += _OnFunctionDragged;
-	}
 
-	/// <summary>
-	/// Because of the line in _Ready, called whenever the selected
-	/// function is changed.
-	/// </summary>
-	private void _OnFunctionChanged()
+        AddChild(timeline);
+        timeline.SetProcess(false);
+    }
+
+    public override void _Process(double delta)
+    {
+        timer.Tick(delta);
+        int currTime = timer.ClockTimeRounded;
+    }
+
+    /// <summary>
+    /// Because of the line in _Ready, called whenever the selected
+    /// function is changed.
+    /// </summary>
+    private void _OnFunctionChanged()
 	{
 		if (functionPalette == null) return;
-		IFunctionAST function = functionPalette.CurrentSelectedFunction;
+		Function function = functionPalette.CurrentSelectedFunction;
+
+		// For generating values
 		object[] exampleEvaluations = new object[100];
 		for (int i = 0; i < exampleEvaluations.Length; i++)
-			exampleEvaluations[i] = function.EvaluateAtT(i);
+			exampleEvaluations[i] = function.FunctionAST.EvaluateAtT(i);
+
 		GD.Print("Example Evaluation 1-100: ");
 		GD.PrintS(exampleEvaluations);
+
+		// For playing audio
+		timeline.Add(function);
+		Play();
 	}
 
 	/// <summary>
@@ -58,4 +78,10 @@ public partial class Example : Node
 	{
 		if (functionPalette == null) return;
 	}
+
+    public void Play()
+    {
+        timeline.StartPlaying();
+        IsPlaying = true;
+    }
 }

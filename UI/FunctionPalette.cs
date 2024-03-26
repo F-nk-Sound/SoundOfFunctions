@@ -33,7 +33,7 @@ public partial class FunctionPalette : Node
     /// C# Event called when the current function selected by the user
 	/// has changed.
     /// </summary>
-    /// <param name="function">Current selected function, as an IFunctionAST.</param>
+    /// <param name="function">Current selected function, as a Function from Sonification.</param>
     public delegate void C_SelectedFunctionEventHandler(Function function);
 	public event C_SelectedFunctionEventHandler? C_SelectedFunctionChanged;
 
@@ -41,7 +41,7 @@ public partial class FunctionPalette : Node
     /// C# Event called when the current function has been dragged.
     /// </summary>
     /// <param name="position">The current global position of the function.</param>
-    /// <param name="function">Current selected function, as an IFunctionAST.</param>
+    /// <param name="function">Current selected function, as a Function from Sonification.</param>
     public delegate void C_FunctionDraggedEventHandler(Vector2 position, Function function);
     public event C_FunctionDraggedEventHandler? C_FunctionDragged;
 

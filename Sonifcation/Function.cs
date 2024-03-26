@@ -63,7 +63,12 @@ public partial class Function : Node {
 	/// <summary>
 	/// Length of time function plays for (seconds). <br/>
 	/// </summary>
-	public int RunTime {get; set;}			
+	public int RunTime {get; set;}
+
+	/// <summary>
+	/// Volume of the function. <br/>
+	/// </summary>
+	public float Volume { get; set; } = 0.1f;
 
 	/// <summary>
 	/// Initializes a new Function Node w/ a domain of [-5,5].
@@ -157,7 +162,7 @@ public partial class Function : Node {
 
 		// Create the frames to fill the buffer with the note for the proper duration
 		for (int i = 0; i < bufferSize; i++) {
-			var sample = Vector2.One * (float) (4 * Mathf.Sin(Mathf.Tau * phase));
+			var sample = Vector2.One * (float) (Volume * Mathf.Sin(Mathf.Tau * phase));
 			audio[i] = sample;
 			phase += increment;
 		}	
