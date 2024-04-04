@@ -191,7 +191,7 @@ public partial class LowerTimeline : Node {
 	/// Provides audio playback via <c> LowerTimeline.player </c>.
 	/// </summary>
 	/// <exception cref="NotImplementedException"></exception>
-	public void Sonfiy() {
+	public void Sonify() {
 		throw new NotImplementedException();        
 	}
 
