@@ -59,6 +59,7 @@ public partial class TimeKeeper {
     /// </summary>
     public TimeKeeper() {
         ClockTimeAbsolute = 0.0;
+        ClockTimeRounded = 0;
         ElapsedTime = 0.0;
         lastTime = -1;
         thisTime = -1;
@@ -124,6 +125,7 @@ public partial class TimeKeeper {
     /// </summary>
     public void Reset() {
         ClockTimeAbsolute = 0.0;
+        ClockTimeRounded = 0;
         ElapsedTime = 0.0;
         lastTime = -1;
         thisTime = -1;

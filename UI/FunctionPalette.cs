@@ -3,6 +3,8 @@ using Godot;
 using Sonification;
 using System;
 
+namespace UI;
+
 /// <summary>
 /// UI Node that hold the function palette.
 /// </summary>

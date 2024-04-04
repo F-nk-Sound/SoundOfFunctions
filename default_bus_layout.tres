@@ -1,0 +1,33 @@
+[gd_resource type="AudioBusLayout" load_steps=7 format=3 uid="uid://cbrgdi2cau7wg"]
+
+[sub_resource type="AudioEffectReverb" id="AudioEffectReverb_7cc5u"]
+resource_name = "Reverb"
+
+[sub_resource type="AudioEffectLimiter" id="AudioEffectLimiter_7t1qy"]
+resource_name = "Limiter"
+
+[sub_resource type="AudioEffectChorus" id="AudioEffectChorus_odg71"]
+resource_name = "Chorus"
+
+[sub_resource type="AudioEffectPhaser" id="AudioEffectPhaser_tecgl"]
+resource_name = "Phaser"
+
+[sub_resource type="AudioEffectEQ" id="AudioEffectEQ_ke3eb"]
+resource_name = "EQ"
+
+[sub_resource type="AudioEffectFilter" id="AudioEffectFilter_iljxm"]
+resource_name = "Filter"
+
+[resource]
+bus/0/effect/0/effect = SubResource("AudioEffectReverb_7cc5u")
+bus/0/effect/0/enabled = false
+bus/0/effect/1/effect = SubResource("AudioEffectLimiter_7t1qy")
+bus/0/effect/1/enabled = false
+bus/0/effect/2/effect = SubResource("AudioEffectChorus_odg71")
+bus/0/effect/2/enabled = false
+bus/0/effect/3/effect = SubResource("AudioEffectPhaser_tecgl")
+bus/0/effect/3/enabled = false
+bus/0/effect/4/effect = SubResource("AudioEffectEQ_ke3eb")
+bus/0/effect/4/enabled = false
+bus/0/effect/5/effect = SubResource("AudioEffectFilter_iljxm")
+bus/0/effect/5/enabled = false

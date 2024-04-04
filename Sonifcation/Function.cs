@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Functions;
+using System.Runtime.CompilerServices;
+using System.Data.Common;
 namespace Sonification;
 
 /// <summary>
@@ -19,15 +21,45 @@ public partial class Function : Node {
 	/// Stores the AST of the Function.
 	/// </summary>
 	public IFunctionAST FunctionAST {get; set;}
+
+	/// <summary>
+	/// If <c> true </c>, Function is a constant function (i.e., y = 1, y = 3, y = 6942).
+	/// </summary>
+	public bool IsConstant {get; set;}
+
 	/// <summary>
 	/// Function starting time point. <br/>
 	/// </summary>
-	public int StartTime {get; set;}		
+	public int StartTime {
+		get {
+			return _startTime;
+		}
+		set {
+			// If the start time has changed, reset the function table and note sequence.
+			if(value != _startTime) {
+				_startTime = value;
+				Refresh();
+			}
+		}
+	}	
+	private int _startTime;	
 
 	/// <summary>
 	/// Function ending time point. <br/>
 	/// </summary>
-	public int EndTime {get; set;}			
+	public int EndTime {
+		get {
+			return _endTime;
+		}
+		set {
+			// If the end time has changed, reset the function table and note sequence.
+			if(value != _endTime) {
+				_endTime = value;
+				Refresh();
+			}
+		}
+	}	
+	private int _endTime;		
 
 	/// <summary>
 	/// Stores the calculated time domain representation of the function with respect to time. <br/>
@@ -77,13 +109,13 @@ public partial class Function : Node {
 		FunctionAST = functionAST;
 
 		// Default start and stop
-		StartTime = -5;
-		EndTime = 5;
+		_startTime = -5;
+		_endTime = 5;
 		
 		// Characteristics relevant to audio playback
 		CurrNote = 0;
 		NoteDuration = 0.125;
-		RunTime = EndTime - StartTime;
+		RunTime = _endTime - _startTime;
 		FunctionTable = new List<double>();
 		noteSequence = new List<int>();
 		FillFunctionTable();
@@ -107,11 +139,29 @@ public partial class Function : Node {
 	/// </summary>
 	private void FillFunctionTable() {
 
-		// Iterate over the Domain and fill in the function's range
-		for(double t = StartTime; t <= EndTime; t += NoteDuration) {
+		// Iterate over the Domain and fill in the Function range, taking special care to tag Function as constant if needed.
+		IsConstant = true;
+		double lastValue = FunctionAST.EvaluateAtT(StartTime);
+		FunctionTable.Add(lastValue);
+
+		for(double t = StartTime + NoteDuration; t <= EndTime; t += NoteDuration) {
+
+			// Evalauate the funtion at the approriate time.
 			var value = FunctionAST.EvaluateAtT(t);
+			
+			// Manage constant/nonconstant function case.
+			if(IsConstant) {
+				if(value != lastValue) IsConstant = false;
+				else lastValue = value;
+			}
+
+			// Manage out of bounds case.
+			if(Math.Abs(value) == double.PositiveInfinity) value = 0;
+
+			// Add the value to the functions table.
 			FunctionTable.Add(value);
 		}
+
 	}
 	
 	/// <summary>
@@ -119,22 +169,36 @@ public partial class Function : Node {
 	/// </summary>
 	private void FillNoteSequence() {
 
-		// Functions have 88 notes to choose from.
-		int noteNumStart = 1;
-		int noteNumEnd = 88;
+		// Functions have a set amount of notes to choose from defined impliclty in 'Frequencies.cs'.
+		int noteNumStart = Frequencies.startingNoteNumber;
+		int noteNumEnd = Frequencies.endingNoteNumber;
 		int noteRange = noteNumEnd - noteNumStart;
 		
 		// Find the full range of values that the function can take.
 		double minVal = FunctionTable.Min();
 		double maxVal = FunctionTable.Max();
 		double functionRange = maxVal - minVal;
-
-		// Map the Functions values to note numbers 
+		
+		// Map the Functions values to note numbers
 		foreach(double value in FunctionTable) {
-			double normalizedValue = (value - minVal) / functionRange;
-			int note = noteNumStart + (int) (normalizedValue * noteRange);
-			noteSequence.Add(note);
+			int noteNumber;
+			if(IsConstant) noteNumber = (int) Math.Abs(FunctionTable[0]) % noteRange;
+			else {
+				double normalizedValue = (value - minVal) / functionRange;
+				noteNumber = noteNumStart + (int) (normalizedValue * noteRange);
+			}
+			noteSequence.Add(noteNumber);
 		}
+
+	}
+
+	/// <summary>
+	/// Recomputes Function Table and Note Sequence.
+	/// </summary>
+	private void Refresh() {
+		RunTime = _endTime - _startTime;
+		FillFunctionTable();
+		FillNoteSequence();
 	}
 
 	/// <summary>
@@ -157,7 +221,7 @@ public partial class Function : Node {
 
 		// Create the frames to fill the buffer with the note for the proper duration
 		for (int i = 0; i < bufferSize; i++) {
-			var sample = Vector2.One * (float) (4 * Mathf.Sin(Mathf.Tau * phase));
+			var sample = Vector2.One * (float) (1 * Mathf.Sin(Mathf.Tau * phase));
 			audio[i] = sample;
 			phase += increment;
 		}	
@@ -179,6 +243,7 @@ public partial class Function : Node {
 		player.Stop();
 		SetProcess(false);
 		timer.Reset();
+		AudioDebugging.Output("Function Stopped");
 		return true;
 		
 	}
@@ -187,10 +252,8 @@ public partial class Function : Node {
 	/// Begins audio function playback.
 	/// </summary>
 	public bool StartPlaying() {
-
-		// Don't allow uninitialized functions to play
-		if(noteSequence.Count == 0) throw new Exception("Attempting to Play Empty Function");
 		
+		AudioDebugging.Output("Entered Function.StartPlaying()");
 		// Initializing Sonification
 		CurrNote = 0;
 		SetProcess(true);
@@ -218,7 +281,7 @@ public partial class Function : Node {
 			CurrNote++;
 		}
 		
-		if(timer.IsTimeChanged && AudioDebugging.Enabled) GD.Print("\t->F:(" + Name + ").Timer.CurrTime = " + timer.ClockTimeRounded + " s.");
+		if(timer.IsTimeChanged) AudioDebugging.Output("\t->F:(" + Name + ").Timer.CurrTime = " + timer.ClockTimeRounded + " s.");
 	}
 
 	public override void _Process(double delta) {

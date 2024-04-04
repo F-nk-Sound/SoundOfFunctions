@@ -5,6 +5,8 @@ using Parsing;
 using Sonification;
 using System;
 
+namespace UI;
+
 /// <summary>
 /// Updates the LineEdit/Text box inside the Function Palette,
 /// along with updating the function palette script itself.
