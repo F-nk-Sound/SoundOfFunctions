@@ -15,17 +15,17 @@ public static class Frequencies {
     /// <summary>
     /// Key number (out of 88) tuning is based on. Default = 49 = A4.
     /// </summary>
-    private static readonly int tuningKeyNum = 49;						
+    public static readonly int tuningKeyNum = 49;						
 
     /// <summary>
     /// Tuning frequency (in Hz) corresponding tuning key. Default = A4 = 440 Hz.
     /// </summary>
-    private static readonly double tuningFreq = 440.0;	
+    public static readonly double tuningFreq = 440.0;	
 
     /// <summary>
     /// Note number that audio starts at.
     /// </summary>
-    public static readonly int startingNoteNumber = 13;
+    public static readonly int startingNoteNumber = 1;
 
     /// <summary>
     /// Note number that audio ends at.
@@ -35,13 +35,13 @@ public static class Frequencies {
     /// <summary>
     /// Lookup table of note to frequency mappings basedon an 88-key piano.
     /// </summary>
-    public static readonly Dictionary<int, double> Notes = InitializeNotes();		
+    public static readonly Dictionary<double, double> Notes = InitializeNotes();		
 
     /// <summary>
     /// Fills the note to frequency lookup table via formula found from wikipedia.
     /// </summary>
-    private static Dictionary<int,double> InitializeNotes() {
-        Dictionary<int, double> res =  new Dictionary<int, double>(endingNoteNumber - startingNoteNumber + 1);
+    private static Dictionary<double,double> InitializeNotes() {
+        Dictionary<double, double> res =  new Dictionary<double, double>(endingNoteNumber - startingNoteNumber + 1);
         res.Add(0,0);
         for(double n = startingNoteNumber; n <= endingNoteNumber; n++) {
             double freq = Math.Pow(2.0, (n - tuningKeyNum) / 12.0) * tuningFreq;

@@ -70,7 +70,7 @@ public partial class Function : Node {
 	/// Stores the audio sequence of the function as note numbers. <br/>
 	/// To access actual frequencies, use <c>Frequencies.Notes[noteSequence[n]]</c>
 	/// </summary>
-	private List<int> noteSequence;			
+	private List<double> noteSequence;			
 
 	/// <summary>
 	/// Function audio source. <br/>
@@ -80,7 +80,7 @@ public partial class Function : Node {
 	/// <summary>
 	/// Function Timer object to manage and synchronize playback. <br/>
 	/// </summary>
-	private readonly TimeKeeper timer;        
+	private TimeKeeper timer;        
 
 	/// <summary>
 	/// Individual note run time (seconds). <br/>
@@ -96,6 +96,12 @@ public partial class Function : Node {
 	/// Length of time function plays for (seconds). <br/>
 	/// </summary>
 	public int RunTime {get; set;}			
+	
+	/// <summary>
+	/// Represents the current position of Functions audio playback with respect to overall generated 
+	/// waveform. See method <c>GenerateNoteAudio()</c> for explicit usage.
+	/// </summary>
+	private double _phase = 0.0;
 
 	/// <summary>
 	/// Initializes a new Function Node w/ a domain of [-5,5].
@@ -114,10 +120,10 @@ public partial class Function : Node {
 		
 		// Characteristics relevant to audio playback
 		CurrNote = 0;
-		NoteDuration = 0.125;
+		NoteDuration = 0.125 * 1;
 		RunTime = _endTime - _startTime;
 		FunctionTable = new List<double>();
-		noteSequence = new List<int>();
+		noteSequence = new List<double>();
 		FillFunctionTable();
 		FillNoteSequence();
 		timer = new TimeKeeper();
@@ -181,12 +187,35 @@ public partial class Function : Node {
 		
 		// Map the Functions values to note numbers
 		foreach(double value in FunctionTable) {
-			int noteNumber;
-			if(IsConstant) noteNumber = (int) Math.Abs(FunctionTable[0]) % noteRange;
-			else {
-				double normalizedValue = (value - minVal) / functionRange;
-				noteNumber = noteNumStart + (int) (normalizedValue * noteRange);
+			double noteNumber = -1;
+			if(IsConstant) {
+				int funcRes = (int) Math.Abs(FunctionTable[0]);
+				if(funcRes >= noteNumStart && funcRes <= noteNumEnd || funcRes == 0) noteNumber = funcRes;
+				else if(funcRes < noteNumStart) noteNumber = funcRes % noteNumStart;
+				else if(funcRes > noteNumEnd) noteNumber = funcRes % noteNumEnd;
 			}
+			else {
+				switch (AudioDebugging.Method) {
+					case 1:
+						double normalizedValue = (value - minVal) / functionRange;
+						noteNumber = noteNumStart + (int) (normalizedValue * noteRange);
+						break;
+					case 2:
+						double note = (Math.Abs(value) + Frequencies.tuningKeyNum) % noteRange + Frequencies.startingNoteNumber;
+						// Round up if necessary.
+						if(Math.Ceiling(note) - note <= 0.5) noteNumber = Math.Ceiling(note);
+						else noteNumber = Math.Floor(note);
+						break;
+					case 3:	
+						double startFreq = Frequencies.Notes[Frequencies.startingNoteNumber];
+						double endFreq = Frequencies.Notes[Frequencies.endingNoteNumber];
+						noteNumber = (Math.Abs(value) + (int) Frequencies.tuningFreq + 1) % (endFreq - startFreq + 1);
+						break;
+					default:
+						break;
+				}
+			}
+			AudioDebugging.Output(value + "\t:\t" + noteNumber);
 			noteSequence.Add(noteNumber);
 		}
 
@@ -205,25 +234,25 @@ public partial class Function : Node {
 	/// Generate individual note audio based on functions current playing state.
 	/// </summary>
 	/// <param name="noteNum">Note pointing to associated frequency</param>
-	private Vector2[] GenerateNoteAudio(int noteNum) {
+	private Vector2[] GenerateNoteAudio(double noteNum) {
 		
-		// Grab audio generator
+		// Grab audio generator.
 		var streamGenerator = (AudioStreamGenerator) player.Stream;
 		
-		// Calculate the number of frames to push to the buffer to achieve proper duration
+		// Calculate the number of frames to push to the buffer to achieve proper duration.
 		float sampleRate = streamGenerator.MixRate;
 		int bufferSize = (int) (sampleRate * NoteDuration);
 		Vector2[] audio = new Vector2[bufferSize];
+		
+		// Create the frames to fill the buffer with the indicated note for the proper duration.
+		double increment;
+		if(AudioDebugging.Method == 3) increment = noteNum / sampleRate;		
+		else increment = Frequencies.Notes[noteNum] / sampleRate;	
 
-		// Grabs the actual frequency associated w/ noteNum and calculate shifting
-		var phase = 0.0;
-		double increment = Frequencies.Notes[noteNum] / sampleRate;
-
-		// Create the frames to fill the buffer with the note for the proper duration
 		for (int i = 0; i < bufferSize; i++) {
-			var sample = Vector2.One * (float) (1 * Mathf.Sin(Mathf.Tau * phase));
+			var sample = Vector2.One * (float) (1 * Mathf.Sin(Mathf.Tau * _phase));
 			audio[i] = sample;
-			phase += increment;
+			_phase += increment;
 		}	
 
 		// Return generated note audio
@@ -240,6 +269,7 @@ public partial class Function : Node {
 		
 		// Stopping Sonification
 		CurrNote = 0;
+		_phase = 0.0;
 		player.Stop();
 		SetProcess(false);
 		timer.Reset();
@@ -269,16 +299,18 @@ public partial class Function : Node {
 	/// Pushes the current note from noteSequence[] into the buffer.
 	/// </summary>
 	private void Play() { 
-
+		
+		// Check to see if Function sonification should be stopped.
 		if(StopPlaying()) return;
 
-		// Push new note into Audio Buffer on each discrete timer tick
+		// Push new note into Audio Buffer each time the note duration has been reached.
 		bool playNextNote = ((int) timer.ElapsedTime % NoteDuration) == 0;
 		if(CurrNote != noteSequence.Count && playNextNote) {
 			var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
 			var sample = GenerateNoteAudio(noteSequence[CurrNote]);
 			playback.PushBuffer(sample);
 			CurrNote++;
+			AudioDebugging.Output("\t->F:(" + Name + ") `PlayNextNote` reached. Timer.ELapsedTime = " + (int) timer.ElapsedTime + " s.");
 		}
 		
 		if(timer.IsTimeChanged) AudioDebugging.Output("\t->F:(" + Name + ").Timer.CurrTime = " + timer.ClockTimeRounded + " s.");

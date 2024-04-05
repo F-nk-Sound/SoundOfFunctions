@@ -68,6 +68,7 @@ public partial class AudioGenerator : Node {
 		IFunctionAST two = new Number(2);
 	 	IFunctionAST three = new Number(3);
 		IFunctionAST four = new Number(4);
+		IFunctionAST five = new Number(5);
 		IFunctionAST pi = new Number(3.14159);
 		IFunctionAST t_squared = new Exponent(t, two);
 		IFunctionAST three_t = new Multiply(three, t);
@@ -85,7 +86,10 @@ public partial class AudioGenerator : Node {
 		IFunctionAST sin_t = new Sine(t);
 		IFunctionAST three_sin_t = new Multiply(three, sin_t);
 		IFunctionAST sin3t_plus_3sint = new Add(sin_3t, three_sin_t);
+		IFunctionAST t_plus_5 = new Add(t, five);
 
+		Function tPlus5Func = new Function("t + 5", t_plus_5);
+		/*
 		Function sumOfSines = new Function("sin(3t) + 3sin(t)", sin3t_plus_3sint);
 		Function negA4Func = new Function("-49", negA4);
 		Function zeroFunc = new Function("0", zero);
@@ -97,7 +101,10 @@ public partial class AudioGenerator : Node {
 		Function linearFunc = new Function("3t + 4", three_t_plus_four);
 		Function squareFunc = new Function("t^2", t_squared);
 		Function polynomialFunc = new Function("t^2 + 3t + 4", poly);
-		
+		*/
+
+		timeline.Add(tPlus5Func);
+		/*
 		timeline.Add(sumOfSines);
 		timeline.Add(inverseFunc);
 		timeline.Add(polynomialFunc);
@@ -109,6 +116,7 @@ public partial class AudioGenerator : Node {
 		timeline.Add(A4Func);
 		timeline.Add(zeroFunc);
 		timeline.Add(negA4Func);
+		*/
 
 	}
 
