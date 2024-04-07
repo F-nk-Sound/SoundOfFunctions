@@ -2,7 +2,10 @@ using CSharpMath;
 using Functions;
 using Godot;
 using Parsing;
+using Sonification;
 using System;
+
+namespace UI;
 
 /// <summary>
 /// Updates the LineEdit/Text box inside the Function Palette,
@@ -89,10 +92,12 @@ public partial class TextUpdate : Control
 		if (latex == null || text == null || lsc == null || functionPalette == null) return;
 		
 		IFunctionAST? ast = null;
+		Function? function = null;
 		if(!text.Text.IsEmpty())
 		{
 			ParseResult result = Bridge.Parse(finalText);
 			ast = result.Unwrap();
+			function = new Function(finalText, ast);
 		}
 
 		if (finalText.IsEmpty() || ast == null)
@@ -103,7 +108,7 @@ public partial class TextUpdate : Control
 		make();
 		text.ReleaseFocus();
 
-		functionPalette.CurrentSelectedFunction = ast;
+		functionPalette.CurrentSelectedFunction = function;
 	}
 	
 	/// <summary>

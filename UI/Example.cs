@@ -2,6 +2,8 @@ using Functions;
 using Godot;
 using System;
 
+using UI;
+
 public partial class Example : Node
 {
 	private FunctionPalette? functionPalette;
@@ -31,7 +33,7 @@ public partial class Example : Node
 	private void _OnFunctionChanged()
 	{
 		if (functionPalette == null) return;
-		IFunctionAST function = functionPalette.CurrentSelectedFunction;
+		IFunctionAST function = functionPalette.CurrentSelectedFunction.FunctionAST;
 		object[] exampleEvaluations = new object[100];
 		for (int i = 0; i < exampleEvaluations.Length; i++)
 			exampleEvaluations[i] = function.EvaluateAtT(i);
