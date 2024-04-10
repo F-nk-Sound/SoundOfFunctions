@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://cagj64jn35d4q"]
 
-[ext_resource type="Script" path="res://UI/FunctionPalette.cs" id="2_ykdwx"]
+[ext_resource type="Script" path="res://UI/Palette/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
 [ext_resource type="Texture2D" uid="uid://dyv6hilyp7g3i" path="res://Assets/FOTS UI/icons8-add-50.png" id="3_5lgt0"]
 [ext_resource type="Script" path="res://UI/UpperTimeline.cs" id="4_1pkc6"]

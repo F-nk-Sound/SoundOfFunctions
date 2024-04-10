@@ -1,7 +1,7 @@
 using Godot;
 using System;
-
 using Sonification;
+using UI.Palette;
 
 namespace UI;
 

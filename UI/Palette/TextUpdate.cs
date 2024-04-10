@@ -5,7 +5,7 @@ using Parsing;
 using Sonification;
 using System;
 
-namespace UI;
+namespace UI.Palette;
 
 /// <summary>
 /// Updates the LineEdit/Text box inside the Function Palette,
@@ -13,19 +13,15 @@ namespace UI;
 /// </summary>
 public partial class TextUpdate : Control
 {
+	FunctionContainer? functionContainer;
 	ScrollContainer? lsc;
 	LaTeX? latex;
 	LineEdit? text;
 	Control? control;
-	FunctionPalette? functionPalette;
 	TextUpdate? textUpdateCopy;
 
 	Vector2 margins = new Vector2(20.0f, 10.0f);
 	Vector2 minimumSize = new Vector2(225, 80);
-
-	private bool _dragging = false;
-	private bool _moving = false;
-	public bool _isCopy = false;
 
 	/// <summary>
 	/// Adjusts the LaTeX node to fit the same space as the current text box.
@@ -46,13 +42,9 @@ public partial class TextUpdate : Control
 	public override void _Ready()
 	{
 		base._Ready();
+		functionContainer = (FunctionContainer) Owner;
 
-		functionPalette = GetTree().CurrentScene.GetNode<FunctionPalette>("Function Palette");
-
-		if (_isCopy)
-			return;
-
-		lsc = this.GetParent<ScrollContainer>();
+		lsc = GetParent<ScrollContainer>();
 		lsc.CustomMinimumSize = minimumSize;
 		lsc.Size = minimumSize;
 		control = this;
@@ -89,7 +81,7 @@ public partial class TextUpdate : Control
 	/// <param name="finalText">The entered text.</param>
 	private void _LineEditSubmitted(String finalText)
 	{
-		if (latex == null || text == null || lsc == null || functionPalette == null) return;
+		if (latex == null || text == null || lsc == null || functionContainer == null) return;
 		
 		IFunctionAST? ast = null;
 		Function? function = null;
@@ -108,7 +100,7 @@ public partial class TextUpdate : Control
 		make();
 		text.ReleaseFocus();
 
-		functionPalette.CurrentSelectedFunction = function;
+		functionContainer.Function = function;
 	}
 	
 	/// <summary>
@@ -139,76 +131,4 @@ public partial class TextUpdate : Control
 		String functionText = text.Text;
 		_LineEditSubmitted(functionText);
 	}
-
-	/// <summary>
-	/// Called when any text is inputted into the text box.
-	/// </summary>
-	/// <param name="event"></param>
-	public override void _Input(InputEvent @event)
-	{
-		base._Input(@event);
-		if (functionPalette == null) return;
-
-		if (@event is InputEventMouseButton mouseEvent)
-		{
-			
-			if (_dragging && _moving && !mouseEvent.Pressed)
-			{
-				_dragging = false;
-				_moving = false;
-				functionPalette.OnDraggedEvent(mouseEvent.Position);
-				functionPalette.RemoveChild(textUpdateCopy);
-			}
-
-			if (mouseEvent.Position.X <= GlobalPosition.X
-				|| mouseEvent.Position.X >= GlobalPosition.X + Size.X
-				|| mouseEvent.Position.Y <= GlobalPosition.Y
-				|| mouseEvent.Position.Y >= GlobalPosition.Y + Size.Y)
-				return;
-
-			if (!_dragging && mouseEvent.Pressed)
-			{
-				_dragging = true;
-			}
-
-			if (_dragging && mouseEvent.IsReleased())
-			{
-				_dragging = false;
-			}
-		}
-		else
-		{
-			if (@event is InputEventMouseMotion motionEvent && _dragging)
-			{
-				if ((motionEvent.Position.X <= GlobalPosition.X
-				|| motionEvent.Position.X >= GlobalPosition.X + Size.X
-				|| motionEvent.Position.Y <= GlobalPosition.Y
-				|| motionEvent.Position.Y >= GlobalPosition.Y + Size.Y)
-				&& !_moving)
-				{
-					textUpdateCopy = (TextUpdate)Duplicate();
-					textUpdateCopy._isCopy = true;
-					textUpdateCopy.Position = motionEvent.Position - Size / 2;
-					functionPalette.AddChild(textUpdateCopy);
-					_moving = true;
-				}
-				if (_moving && textUpdateCopy != null)
-				{
-					functionPalette.OnDraggingEvent(motionEvent.Position);
-					textUpdateCopy.Position = motionEvent.Position - Size / 2;
-				}
-			}
-		}
-	}
-
-	/// <summary>
-	/// Called when a function is closed.
-	/// </summary>
-	private void _OnExit()
-	{
-		ScrollContainer scrollContainer = GetParent<ScrollContainer>();
-		VBoxContainer vBoxContainer = scrollContainer.GetParent<VBoxContainer>();
-		vBoxContainer.RemoveChild(scrollContainer);
-	}
-
 }

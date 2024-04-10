@@ -3,7 +3,7 @@ using Godot;
 using Sonification;
 using System;
 
-namespace UI;
+namespace UI.Palette;
 
 /// <summary>
 /// UI Node that hold the function palette.
@@ -78,8 +78,8 @@ public partial class FunctionPalette : Node
 		ScrollContainer scrollContainer = GetNode<ScrollContainer>("ScrollContainer");
 		_container = scrollContainer.GetNode<VBoxContainer>("FunctionsContainer");
 
-		Resource _textUpdateScript = GD.Load("res://UI/TextUpdate.cs");
-		_functionContainer = GD.Load<PackedScene>("res://UI/FunctionContainer.tscn");
+		Resource _textUpdateScript = GD.Load("res://UI/Palette/TextUpdate.cs");
+		_functionContainer = GD.Load<PackedScene>("res://UI/Palette/FunctionContainer.tscn");
 	}
 
 	/// <summary>
@@ -89,7 +89,7 @@ public partial class FunctionPalette : Node
 	{
 		if (_container == null || _functionContainer == null) return;
 		Control instance = (Control) _functionContainer.Instantiate();
-		instance.CustomMinimumSize = new Vector2(225, 70);
+		instance.CustomMinimumSize = new Vector2(225, 120);
 		_container.AddChild(instance);
 	}
 
