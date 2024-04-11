@@ -6,6 +6,7 @@ using System.Linq;
 using Functions;
 using System.Runtime.CompilerServices;
 using System.Data.Common;
+using Newtonsoft.Json;
 namespace Sonification;
 
 /// <summary>
@@ -15,11 +16,13 @@ public partial class Function : Node {
 	/// <summary>
 	/// Input text that function is parsed from. <br/>
 	/// </summary>
+	[JsonRequired]
 	private string TextRepresentation {get;}	
 
 	/// <summary>
 	/// Stores the AST of the Function.
 	/// </summary>
+	[JsonIgnore]
 	public IFunctionAST FunctionAST {get; set;}
 
 	/// <summary>
@@ -64,7 +67,7 @@ public partial class Function : Node {
 	/// <summary>
 	/// Stores the calculated time domain representation of the function with respect to time. <br/>
 	/// </summary>
-	public List<double> FunctionTable;			
+	private List<double> FunctionTable;			
 
 	/// <summary>
 	/// Stores the audio sequence of the function as note numbers. <br/>
@@ -110,13 +113,12 @@ public partial class Function : Node {
 	/// <param name="functionAST">The AST that represents the function.</param>
 	public Function(string textRepresentation, IFunctionAST functionAST) {
 		// Banal Characteristics
-		Name = textRepresentation;
-		TextRepresentation = textRepresentation;
+		TextRepresentation = functionAST.Latex;
 		FunctionAST = functionAST;
 
 		// Default start and stop
-		_startTime = -5;
-		_endTime = 5;
+		_startTime = 0;
+		_endTime = 1;
 		
 		// Characteristics relevant to audio playback
 		CurrNote = 0;
@@ -307,7 +309,12 @@ public partial class Function : Node {
 		bool playNextNote = ((int) timer.ElapsedTime % NoteDuration) == 0;
 		if(CurrNote != noteSequence.Count && playNextNote) {
 			var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
-			var sample = GenerateNoteAudio(noteSequence[CurrNote]);
+			Vector2[] sample = Array.Empty<Vector2>();
+			try {
+				sample = GenerateNoteAudio(noteSequence[CurrNote]);
+			} catch (KeyNotFoundException) {
+				GD.Print("Key Not Found in Function: " + TextRepresentation);
+			}
 			playback.PushBuffer(sample);
 			CurrNote++;
 			AudioDebugging.Output("\t->F:(" + Name + ") `PlayNextNote` reached. Timer.ELapsedTime = " + (int) timer.ElapsedTime + " s.");

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit.Sdk;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace Sonification;
 
@@ -21,6 +22,7 @@ public partial class LowerTimeline : Node {
 	/// <summary>
 	/// List of functions on the Timeline.
 	/// </summary>
+	[JsonRequired]
 	private List<Function> functions;	
 
 	/// <summary>
@@ -199,8 +201,11 @@ public partial class LowerTimeline : Node {
 	/// Saves the current state of Timeline Audio playback (as an .mp3 file probably).
 	/// </summary>
 	/// <exception cref="NotImplementedException"></exception>
-	public void Save() {
-		throw new NotImplementedException();
+	public Dictionary<object, object> Save() {
+		return new Dictionary<object,object>() {
+			{"FunctionList", functions},
+			{"Runtime", RunTime}
+		};
 	}
 
 	/// <summary>

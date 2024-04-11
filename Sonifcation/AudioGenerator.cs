@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Sdk;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 using Functions;
 namespace Sonification;
@@ -89,7 +90,7 @@ public partial class AudioGenerator : Node {
 		IFunctionAST t_plus_5 = new Add(t, five);
 
 		Function tPlus5Func = new Function("t + 5", t_plus_5);
-		/*
+		
 		Function sumOfSines = new Function("sin(3t) + 3sin(t)", sin3t_plus_3sint);
 		Function negA4Func = new Function("-49", negA4);
 		Function zeroFunc = new Function("0", zero);
@@ -101,10 +102,10 @@ public partial class AudioGenerator : Node {
 		Function linearFunc = new Function("3t + 4", three_t_plus_four);
 		Function squareFunc = new Function("t^2", t_squared);
 		Function polynomialFunc = new Function("t^2 + 3t + 4", poly);
-		*/
+		/**/
 
 		timeline.Add(tPlus5Func);
-		/*
+		
 		timeline.Add(sumOfSines);
 		timeline.Add(inverseFunc);
 		timeline.Add(polynomialFunc);
@@ -116,8 +117,39 @@ public partial class AudioGenerator : Node {
 		timeline.Add(A4Func);
 		timeline.Add(zeroFunc);
 		timeline.Add(negA4Func);
-		*/
+		/**/
 
 	}
 
+	public void Serialize(){
+		GD.Print("Serializing...");
+		var timelineSave = timeline.Save();
+		var str = JsonConvert.SerializeObject(timeline);
+		string path = ProjectSettings.GlobalizePath("user://timeline.json");
+
+		// Serialize object directly into File Stream.
+        using StreamWriter file = File.CreateText(path);
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(file, timeline);
+
+    }
+
+	public void Deserialize() {
+		GD.Print("Deserializing...");
+		string path = ProjectSettings.GlobalizePath("user://timeline.json");
+
+		// Serialize object directly into File Stream.
+        string jsonString = File.ReadAllText(path);
+		GD.Print(jsonString);
+        //LowerTimeline? timeline2 = JsonConvert.DeserializeObject<LowerTimeline>(jsonString);
+
+		// Deserialize JSON directly from a file
+		using (StreamReader file = File.OpenText(path))
+		{
+			JsonSerializer serializer = new JsonSerializer();
+            LowerTimeline timeline2 = (LowerTimeline)serializer.Deserialize(file, typeof(LowerTimeline));
+		}
+	
+	}
+	
 }

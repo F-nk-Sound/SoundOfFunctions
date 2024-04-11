@@ -21,6 +21,8 @@ public partial class UpperTimeline : Node2D
 
 		// Connect the necessary signals from the ToolBar Node
 		GetParent().GetNode<Toolbar>("Toolbar").PlayButtonPressed += OnToolbarPlayButtonPressed;
+		GetParent().GetNode<Toolbar>("Toolbar").SaveButtonPressed += OnToolbarSaveButtonPressed;
+		GetParent().GetNode<Toolbar>("Toolbar").LoadButtonPressed += OnToolBarLoadButtonPressed;
 	}
 
 	private void OnButtonPressed()
@@ -46,6 +48,31 @@ public partial class UpperTimeline : Node2D
 		}
 	}
 
+	/// <summary>
+	/// Handles the event where it has been indicated that programs state should saved.
+	/// </summary>
+	private void OnToolbarSaveButtonPressed() 
+	{
+		// Grab the Audio Generator from the scene tree and begin playback.
+		AudioGenerator generator = GetParent().GetNode<AudioGenerator>($"Timeline/AudioGenerator");
+		if(generator != null) {
+			generator.Serialize();
+			AudioDebugging.Output("AudioGenerator.Serialize() Activated");
+		}
+	}
+
+	/// <summary>
+	/// Handles the event where it has been indicated that programs state should initialized from a save file.
+	/// </summary>
+	private void OnToolBarLoadButtonPressed() 
+	{
+		// Grab the Audio Generator from the scene tree and begin playback.
+		AudioGenerator generator = GetParent().GetNode<AudioGenerator>($"Timeline/AudioGenerator");
+		if(generator != null) {
+			generator.Deserialize();
+			AudioDebugging.Output("AudioGenerator.Deserialize() Activated");
+		}
+	}
 }
 
 
