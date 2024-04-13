@@ -7,9 +7,9 @@ namespace Functions;
 /// </summary>
 public record Absolute(IFunctionAST Inner) : IFunctionAST
 {
-    public double Evaluate(EvalContext ctx) => Math.Abs(Inner.Evaluate(ctx));
+	public double Evaluate(EvalContext ctx) => Math.Abs(Inner.Evaluate(ctx));
 
-    public bool IsTerm => true;
+	public bool IsTerm => true;
 
-    public string Latex => $"|{Inner.Latex}|";
+	public string Latex => $"|{Inner.Latex}|";
 }

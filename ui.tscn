@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://UI/Toolbar.cs" id="6_5mm8q"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
-[ext_resource type="PackedScene" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
+[ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
 [ext_resource type="Texture2D" uid="uid://dst08x3c1p4fb" path="res://Assets/FOTS UI/icons8-redo-50-2.png" id="9_vnk82"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]

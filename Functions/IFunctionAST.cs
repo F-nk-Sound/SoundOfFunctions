@@ -44,8 +44,8 @@ public interface IFunctionAST
   /// <value></value>
   public string SingleTermLatex => IsTerm switch
   {
-      true => Latex,
-      false => $"({Latex})",
+	  true => Latex,
+	  false => $"({Latex})",
   };
 
   /// <summary>

@@ -7,50 +7,50 @@ using System;
 /// </summary>
 public partial class FunctionPalette : Node
 {
-    /// <summary>
-    /// Godot Event called when the current function selected by the user
-    /// has changed.
-    /// </summary>
-    [Signal]
-    public delegate void SelectedFunctionChangedEventHandler();
+	/// <summary>
+	/// Godot Event called when the current function selected by the user
+	/// has changed.
+	/// </summary>
+	[Signal]
+	public delegate void SelectedFunctionChangedEventHandler();
 
 	/// <summary>
 	/// Godot Event called when the current function has been dragged.
 	/// </summary>
 	/// <param name="position">The current global position of the function.</param>
-    [Signal]
-    public delegate void FunctionDraggedEventHandler(Vector2 position);
+	[Signal]
+	public delegate void FunctionDraggedEventHandler(Vector2 position);
 
 	/// <summary>
 	/// Godot Event called when the current function is being dragged.
 	/// </summary>
 	/// <param name="position">The current global position of the funtion.</param>
 	[Signal]
-    public delegate void FunctionDraggingEventHandler(Vector2 position);
+	public delegate void FunctionDraggingEventHandler(Vector2 position);
 
-    /// <summary>
-    /// C# Event called when the current function selected by the user
+	/// <summary>
+	/// C# Event called when the current function selected by the user
 	/// has changed.
-    /// </summary>
-    /// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
-    public delegate void C_SelectedFunctionEventHandler(IFunctionAST functionAST);
+	/// </summary>
+	/// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
+	public delegate void C_SelectedFunctionEventHandler(IFunctionAST functionAST);
 	public event C_SelectedFunctionEventHandler? C_SelectedFunctionChanged;
 
-    /// <summary>
-    /// C# Event called when the current function has been dragged.
-    /// </summary>
-    /// <param name="position">The current global position of the function.</param>
-    /// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
-    public delegate void C_FunctionDraggedEventHandler(Vector2 position, IFunctionAST functionAST);
-    public event C_FunctionDraggedEventHandler? C_FunctionDragged;
+	/// <summary>
+	/// C# Event called when the current function has been dragged.
+	/// </summary>
+	/// <param name="position">The current global position of the function.</param>
+	/// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
+	public delegate void C_FunctionDraggedEventHandler(Vector2 position, IFunctionAST functionAST);
+	public event C_FunctionDraggedEventHandler? C_FunctionDragged;
 
-    /// <summary>
-    /// C# Event called when the current function is being dragged.
-    /// </summary>
-    /// <param name="position">The current global position of the function.</param>
-    /// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
-    public delegate void C_FunctionDraggingEventHandler(Vector2 position, IFunctionAST functionAST);
-    public event C_FunctionDraggingEventHandler? C_FunctionDragging;
+	/// <summary>
+	/// C# Event called when the current function is being dragged.
+	/// </summary>
+	/// <param name="position">The current global position of the function.</param>
+	/// <param name="functionAST">Current selected function, as an IFunctionAST.</param>
+	public delegate void C_FunctionDraggingEventHandler(Vector2 position, IFunctionAST functionAST);
+	public event C_FunctionDraggingEventHandler? C_FunctionDragging;
 
 	private IFunctionAST? currentSelectedFunction;
 	public IFunctionAST CurrentSelectedFunction
@@ -98,17 +98,17 @@ public partial class FunctionPalette : Node
 	{
 		if (CurrentSelectedFunction == null) return;
 		C_FunctionDragged?.Invoke(position, CurrentSelectedFunction);
-        EmitSignal(SignalName.FunctionDragged, position);
-    }
+		EmitSignal(SignalName.FunctionDragged, position);
+	}
 
-    /// <summary>
-    /// Calls C# and Godot dragging events.
-    /// </summary>
-    /// <param name="position">The global position of the function.</param>
-    public void OnDraggingEvent(Vector2 position)
-    {
-        if (CurrentSelectedFunction == null) return;
-        C_FunctionDragging?.Invoke(position, CurrentSelectedFunction);
-        EmitSignal(SignalName.FunctionDragging, position);
-    }
+	/// <summary>
+	/// Calls C# and Godot dragging events.
+	/// </summary>
+	/// <param name="position">The global position of the function.</param>
+	public void OnDraggingEvent(Vector2 position)
+	{
+		if (CurrentSelectedFunction == null) return;
+		C_FunctionDragging?.Invoke(position, CurrentSelectedFunction);
+		EmitSignal(SignalName.FunctionDragging, position);
+	}
 }
