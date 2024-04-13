@@ -1,21 +1,24 @@
 using Godot;
 using System;
 using Functions;
+using Parsing;
 
-public partial class Drawing : ColorRect
-{
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready() {
-	}
+namespace Graphing;
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta) {
-	}
-	
+public partial class FunctionRenderer : ColorRect {
 	public IFunctionAST ast = null;
 	
 	double f(double x) {
 		return ast.EvaluateAtT(x);
+	}
+	
+	public void SetFunction(IFunctionAST func) {
+		ast = func;
+		QueueRedraw();
+	}
+	
+	public void ParseAndSetFunction(String toParse) {
+		SetFunction(Bridge.Parse(toParse).Unwrap());
 	}
 	
 	public override void _Draw() {

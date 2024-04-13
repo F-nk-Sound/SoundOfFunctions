@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cyp3n7hs47nef"]
 
-[ext_resource type="Script" path="res://Graphing/set_function.gd" id="1_57iei"]
+[ext_resource type="Script" path="res://Graphing/ExampleScene.cs" id="1_aw7i7"]
 [ext_resource type="PackedScene" uid="uid://rjw4sfomfd0q" path="res://Graphing/function_renderer.tscn" id="2_3b0eh"]
 
 [node name="Control" type="Control"]
@@ -18,7 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_57iei")
+script = ExtResource("1_aw7i7")
 
 [node name="FunctionRenderer" parent="VBoxContainer" instance=ExtResource("2_3b0eh")]
 layout_mode = 2
