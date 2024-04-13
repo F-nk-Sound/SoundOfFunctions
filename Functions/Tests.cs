@@ -49,4 +49,11 @@ public class Tests
     {
         Assert.Equal(latex, Bridge.Parse(function).Unwrap().Latex);
     }
+
+    [Theory]
+    [InlineData("4cos(2pi)", 4)]
+    public void MathSanityCheck(string func, double value)
+    {
+        Assert.Equal(Bridge.Parse(func).Unwrap().Evaluate(new()), value);
+    }
 }
