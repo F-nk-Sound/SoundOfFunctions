@@ -376,4 +376,4 @@ MigrationBackup/
 # End of https://www.toptal.com/developers/gitignore/api/godot,vs
 
 # Exclude fnky_parser.dll
-*.dll
+*fnky_parser.*
