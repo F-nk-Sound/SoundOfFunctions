@@ -1,11 +1,11 @@
-[gd_scene load_steps=14 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=15 format=3 uid="uid://cagj64jn35d4q"]
 
-[ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
-[ext_resource type="Script" path="res://UI/FunctionPalette.cs" id="2_ykdwx"]
+[ext_resource type="Script" path="res://UI/Palette/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
 [ext_resource type="Texture2D" uid="uid://dyv6hilyp7g3i" path="res://Assets/FOTS UI/icons8-add-50.png" id="3_5lgt0"]
-[ext_resource type="Script" path="res://UI/Timeline.cs" id="4_1pkc6"]
+[ext_resource type="Script" path="res://UI/UpperTimeline.cs" id="4_1pkc6"]
 [ext_resource type="Script" path="res://UI/Toolbar.cs" id="6_5mm8q"]
+[ext_resource type="Script" path="res://Sonifcation/AudioGenerator.cs" id="6_yns4e"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
 [ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
@@ -14,8 +14,51 @@
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
 [ext_resource type="Texture2D" uid="uid://baq81af2vj12p" path="res://Assets/FOTS UI/icons8-close-window-50.png" id="12_5c7ir"]
 
+[sub_resource type="GDScript" id="GDScript_jf14m"]
+script/source = "# Base line GD UI script
+extends Node2D
+
+func _on_exit_button_pressed():
+	get_tree().quit()
+
+
+func _on_save_pressed():
+	# when pressed saves the current state
+	pass # Replace with function body.
+
+
+func _on_load_pressed():
+	# when pressed, loads a state/file for the session
+	pass # Replace with function body.
+
+
+func _on_undo_pressed():
+	# when pressed undoes the recent changes
+	pass # Replace with function body.
+
+
+func _on_redo_pressed():
+	# when pressed, redoes the recent redo
+	pass # Replace with function body.
+
+
+func _on_begin_pressed():
+	# when pressed, should move the timeline to the first function on the timeline
+	pass # Replace with function body.
+
+
+func _on_play_pressed():
+	# when pressed, the timeline should move, and the audio should play corresponding
+	pass # Replace with function body.
+
+
+func _on_end_pressed():
+	# when pressed, should move the timeline to the last function on the timeline
+	pass # Replace with function body.
+"
+
 [node name="UI" type="Node2D"]
-script = ExtResource("1_owfon")
+script = SubResource("GDScript_jf14m")
 
 [node name="Function Palette" type="Node2D" parent="."]
 script = ExtResource("2_ykdwx")
@@ -106,12 +149,8 @@ layout_mode = 2
 [node name="TimelineContainer" parent="Timeline/ScrollContainer/TimelineContainer" instance=ExtResource("9_jons1")]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="Timeline"]
-offset_left = 1074.0
-offset_top = 547.0
-offset_right = 1082.0
-offset_bottom = 555.0
-scale = Vector2(7.5809, 6.47314)
+[node name="AudioGenerator" type="Node" parent="Timeline"]
+script = ExtResource("6_yns4e")
 
 [node name="Toolbar" type="Node2D" parent="."]
 script = ExtResource("6_5mm8q")
@@ -165,7 +204,7 @@ scale = Vector2(0.9, 0.9)
 tooltip_text = "Redo your most recent \"undo\" (CTRL + Y)"
 icon = ExtResource("9_vnk82")
 
-[node name="Begin" type="Button" parent="Toolbar/Toolbar BG"]
+[node name="Beginning" type="Button" parent="Toolbar/Toolbar BG"]
 layout_mode = 0
 offset_left = 521.0
 offset_right = 579.0
@@ -183,7 +222,7 @@ scale = Vector2(0.9, 0.9)
 tooltip_text = "Play"
 icon = ExtResource("11_o2of6")
 
-[node name="End" type="Button" parent="Toolbar/Toolbar BG"]
+[node name="Ending" type="Button" parent="Toolbar/Toolbar BG"]
 layout_mode = 0
 offset_left = 590.0
 offset_right = 648.0
@@ -192,22 +231,14 @@ scale = Vector2(0.9, 0.9)
 tooltip_text = "Fast forward to the end"
 icon = ExtResource("10_sgbw4")
 
-[node name="Exit Button" type="Button" parent="."]
+[node name="Exit" type="Button" parent="Toolbar/Toolbar BG"]
+layout_mode = 0
 offset_left = 1090.0
-offset_top = 2.0
+offset_top = 1.0
 offset_right = 1148.0
-offset_bottom = 60.0
+offset_bottom = 59.0
 scale = Vector2(0.9, 0.9)
 tooltip_text = "Exit Application"
 icon = ExtResource("12_5c7ir")
 
 [connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
-[connection signal="pressed" from="Timeline/Button" to="Timeline" method="OnButtonPressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Save" to="." method="_on_save_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Load" to="." method="_on_load_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Undo" to="." method="_on_undo_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Redo" to="." method="_on_redo_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Begin" to="." method="_on_begin_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/Play" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="Toolbar/Toolbar BG/End" to="." method="_on_end_pressed"]
-[connection signal="pressed" from="Exit Button" to="." method="_on_exit_button_pressed"]
