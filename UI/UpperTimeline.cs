@@ -21,6 +21,7 @@ public partial class UpperTimeline : Node2D
 
 		// Connect the necessary signals from the ToolBar Node
 		GetParent().GetNode<Toolbar>("Toolbar").PlayButtonPressed += OnToolbarPlayButtonPressed;
+
 	}
 
 	private void OnButtonPressed()
@@ -30,7 +31,7 @@ public partial class UpperTimeline : Node2D
 		var FunctionContainer = GD.Load<PackedScene>("res://UI/TimelineContainer.tscn");
 		var instance = FunctionContainer.Instantiate();
 		sizeContainer.AddChild(instance);
-		_container.AddChild(sizeContainer);
+		if(_container != null) _container.AddChild(sizeContainer);
 	}
 
 	/// <summary>
@@ -44,6 +45,16 @@ public partial class UpperTimeline : Node2D
 			generator.Play();
 			AudioDebugging.Output("AudioGenerator.Play() Activated");
 		}
+	}
+
+	/// <summary>
+	/// Saves all data elements needed to create an UpperTimeline Node to a Godot Dictionary.
+	/// </summary>
+	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
+	public Godot.Collections.Dictionary Save() 
+	{
+		var res = new Godot.Collections.Dictionary();
+		return res;
 	}
 
 }

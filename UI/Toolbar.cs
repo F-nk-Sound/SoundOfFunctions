@@ -12,6 +12,18 @@ public partial class Toolbar : Node2D {
 	[Signal]
 	public delegate void PlayButtonPressedEventHandler();
 
+	/// <summary>
+	/// Godot signal emitted when the play button is pressed.
+	/// </summary>
+	[Signal]
+	public delegate void SaveButtonPressedEventHandler();
+
+	/// <summary>
+	/// Godot signal emitted when the play button is pressed.
+	/// </summary>
+	[Signal]
+	public delegate void LoadButtonPressedEventHandler();
+
 	public override void _Ready() {
 		
 		// Connect all the button signals to the Toolbar.
@@ -37,10 +49,12 @@ public partial class Toolbar : Node2D {
 
 	private void OnLoadButtonPressed() {
 		GD.Print("Load");
+		EmitSignal(SignalName.LoadButtonPressed);
 	}
 
 	private void OnSaveButtonPressed() {
 		GD.Print("Save");
+		EmitSignal(SignalName.SaveButtonPressed);
 	}
 
 	private void OnBeginningButtonPressed() {
