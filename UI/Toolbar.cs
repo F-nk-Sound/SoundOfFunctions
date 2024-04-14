@@ -48,13 +48,13 @@ public partial class Toolbar : Node2D {
 	}
 
 	private void OnLoadButtonPressed() {
-		EmitSignal(SignalName.LoadButtonPressed);
 		GD.Print("Load");
+		EmitSignal(SignalName.LoadButtonPressed);
 	}
 
 	private void OnSaveButtonPressed() {
-		EmitSignal(SignalName.SaveButtonPressed);
 		GD.Print("Save");
+		EmitSignal(SignalName.SaveButtonPressed);
 	}
 
 	private void OnBeginningButtonPressed() {

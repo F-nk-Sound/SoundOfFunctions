@@ -114,4 +114,13 @@ public partial class FunctionPalette : Node
         C_FunctionDragging?.Invoke(position, CurrentSelectedFunction);
         EmitSignal(SignalName.FunctionDragging, position);
     }
+
+	/// <summary>
+	/// Saves all data elements needed to create a FunctionPalette Node to a Godot Dictionary.
+	/// </summary>
+	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
+	public Godot.Collections.Dictionary Save() {
+		var res = new Godot.Collections.Dictionary();
+		return res;
+	}
 }

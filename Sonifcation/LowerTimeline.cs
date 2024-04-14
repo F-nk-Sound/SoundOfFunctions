@@ -38,7 +38,14 @@ public partial class LowerTimeline : Node {
 	/// <summary>
 	/// Runtime of the Timeline (in seconds).
 	/// </summary>    
-	public int RunTime {get; set;}				
+	public double RunTime {get; set;}				
+
+	/// <summary>
+	/// Number of Functions currently held within the LowerTimeline.
+	/// </summary>
+	public int Count {
+		get { return functions.Count; }
+	}
 
 	/// <summary>
 	/// If <c> true </c>, Timeline audio playback is active.
@@ -85,11 +92,13 @@ public partial class LowerTimeline : Node {
 	/// </summary>
 	/// <param name="func">Function to be added.</param>
 	public void Add(Function func) {
+		AudioDebugging.Output("Function Processing Pre Added To TL: " + func.IsProcessing());
 		AddChild(func);	
 		func.SetProcess(false);
 		RunTime += func.RunTime;
 		functions.Add(func);
-		AudioDebugging.Output("\t->" + func.Name + " Added");
+		AudioDebugging.Output("Function Processing Pre Added To TL: " + func.IsProcessing());
+		AudioDebugging.Output("Added to LowerTimeline: " + func.Name);
 	}
 
 	/// <summary>
@@ -131,7 +140,7 @@ public partial class LowerTimeline : Node {
 
 		// Grab the current timer position and the time to allow the next function to play
 		int currTime = timer.ClockTimeRounded;
-		int updateTime = (currFunction == -1) ? functions.First().RunTime : functions[currFunction].RunTime;
+		double updateTime = (currFunction == -1) ? functions.First().RunTime : functions[currFunction].RunTime;
 
 		// Play the functions within the timeline at the appropriate time
 		if(currFunction == -1 || (int) timer.ElapsedTime == updateTime) {
@@ -198,14 +207,24 @@ public partial class LowerTimeline : Node {
 	}
 
 	/// <summary>
-	/// Saves the current state of Timeline Audio playback (as an .mp3 file probably).
+	/// Saves all data elements needed to create a LowerTimeline to a Godot Dictionary.
 	/// </summary>
-	/// <exception cref="NotImplementedException"></exception>
-	public Dictionary<object, object> Save() {
-		return new Dictionary<object,object>() {
-			{"FunctionList", functions},
-			{"Runtime", RunTime}
-		};
+	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
+	public Godot.Collections.Dictionary Save() {
+
+        // Retrieve and store all functions within the timeline as JSON.
+        Godot.Collections.Dictionary functionsDictionary = new();
+        foreach(Function func in functions) {
+            var functionData = func.Save();
+            functionsDictionary.Add(functions.IndexOf(func), functionData);
+        }
+
+        var res = new Godot.Collections.Dictionary {
+            { "Functions", functionsDictionary },
+			{ "Count", Count }
+        };
+
+		return res;
 	}
 
 	/// <summary>
@@ -225,6 +244,13 @@ public partial class LowerTimeline : Node {
 		return true;
 	}
 
+	public void Display() {
+		GD.Print("LowerTimeline: " + Name);
+		foreach(Function func in functions) {
+			func.Info();
+		}
+		GD.Print();
+	}
 	public override void _Process(double delta) {
 		timer.Tick(delta);
 		CurrPosition = timer.ClockTimeAbsolute;
