@@ -1,4 +1,8 @@
-[gd_scene format=3 uid="uid://ecgodongo53r"]
+[gd_scene load_steps=3 format=3 uid="uid://ecgodongo53r"]
+
+[ext_resource type="Script" path="res://UI/ColorRect.gd" id="1_7q0ce"]
+
+[sub_resource type="Theme" id="Theme_sbdpg"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -8,3 +12,31 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.718481, 0.282984)
+metadata/_edit_use_anchors_ = true
+
+[node name="FunctionInstance" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_top = 31.8039
+offset_right = 40.0
+offset_bottom = 125.804
+scale = Vector2(3, 3)
+theme = SubResource("Theme_sbdpg")
+color = Color(0.0316549, 0.0316549, 0.0316549, 1)
+script = ExtResource("1_7q0ce")
+
+[node name="Numbers" type="TextEdit" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 116.0
+offset_bottom = 81.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 138.0
+offset_bottom = 23.0
+text = "DONT SHOW THIS"
