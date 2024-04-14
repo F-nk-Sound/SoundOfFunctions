@@ -21,8 +21,7 @@ public partial class UpperTimeline : Node2D
 
 		// Connect the necessary signals from the ToolBar Node
 		GetParent().GetNode<Toolbar>("Toolbar").PlayButtonPressed += OnToolbarPlayButtonPressed;
-		GetParent().GetNode<Toolbar>("Toolbar").SaveButtonPressed += OnToolbarSaveButtonPressed;
-		GetParent().GetNode<Toolbar>("Toolbar").LoadButtonPressed += OnToolBarLoadButtonPressed;
+
 	}
 
 	private void OnButtonPressed()
@@ -32,7 +31,7 @@ public partial class UpperTimeline : Node2D
 		var FunctionContainer = GD.Load<PackedScene>("res://UI/TimelineContainer.tscn");
 		var instance = FunctionContainer.Instantiate();
 		sizeContainer.AddChild(instance);
-		_container.AddChild(sizeContainer);
+		if(_container != null) _container.AddChild(sizeContainer);
 	}
 
 	/// <summary>
@@ -49,30 +48,15 @@ public partial class UpperTimeline : Node2D
 	}
 
 	/// <summary>
-	/// Handles the event where it has been indicated that programs state should saved.
+	/// Saves all data elements needed to create an UpperTimeline Node to a Godot Dictionary.
 	/// </summary>
-	private void OnToolbarSaveButtonPressed() 
+	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
+	public Godot.Collections.Dictionary Save() 
 	{
-		// Grab the Audio Generator from the scene tree and begin playback.
-		AudioGenerator generator = GetParent().GetNode<AudioGenerator>($"Timeline/AudioGenerator");
-		if(generator != null) {
-			generator.Serialize();
-			AudioDebugging.Output("AudioGenerator.Serialize() Activated");
-		}
+		var res = new Godot.Collections.Dictionary();
+		return res;
 	}
 
-	/// <summary>
-	/// Handles the event where it has been indicated that programs state should initialized from a save file.
-	/// </summary>
-	private void OnToolBarLoadButtonPressed() 
-	{
-		// Grab the Audio Generator from the scene tree and begin playback.
-		AudioGenerator generator = GetParent().GetNode<AudioGenerator>($"Timeline/AudioGenerator");
-		if(generator != null) {
-			generator.Deserialize();
-			AudioDebugging.Output("AudioGenerator.Deserialize() Activated");
-		}
-	}
 }
 
 

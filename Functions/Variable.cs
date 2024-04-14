@@ -7,17 +7,17 @@ namespace Functions;
 /// </summary>
 public record Variable(string Name) : IFunctionAST
 {
-    public double Evaluate(EvalContext ctx)
-    {
-        if (ctx.Variables?.TryGetValue(Name, out double value) == true)
-            return value;
-        else
-            throw new UnboundVariableException() { Variable = Name };
-    }
+	public double Evaluate(EvalContext ctx)
+	{
+		if (ctx.Variables?.TryGetValue(Name, out double value) == true)
+			return value;
+		else
+			throw new UnboundVariableException() { Variable = Name };
+	}
 
-    public bool IsTerm => true;
+	public bool IsTerm => true;
 
-    public string Latex => Name;
+	public string Latex => Name;
 }
 
 /// <summary>
@@ -27,11 +27,11 @@ public record Variable(string Name) : IFunctionAST
 /// </summary>
 public class UnboundVariableException : Exception
 {
-    public string? Variable { get; init; }
+	public string? Variable { get; init; }
 
-    public UnboundVariableException() : base() { }
+	public UnboundVariableException() : base() { }
 
-    public UnboundVariableException(string message) : base(message) { }
+	public UnboundVariableException(string message) : base(message) { }
 
-    public UnboundVariableException(string message, Exception inner) : base(message, inner) { }
+	public UnboundVariableException(string message, Exception inner) : base(message, inner) { }
 }

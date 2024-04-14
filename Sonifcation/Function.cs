@@ -113,7 +113,8 @@ public partial class Function : Node {
 	/// <param name="functionAST">The AST that represents the function.</param>
 	public Function(string textRepresentation, IFunctionAST functionAST) {
 		// Banal Characteristics
-		TextRepresentation = functionAST.Latex;
+		TextRepresentation = textRepresentation;
+		Name = textRepresentation;
 		FunctionAST = functionAST;
 
 		// Default start and stop
@@ -126,20 +127,28 @@ public partial class Function : Node {
 		RunTime = _endTime - _startTime;
 		FunctionTable = new List<double>();
 		noteSequence = new List<double>();
-		FillFunctionTable();
-		FillNoteSequence();
+		try {
+			FillFunctionTable();
+			FillNoteSequence();
+		} catch (Exception e) {
+			GD.Print("Error: " + textRepresentation);
+			GD.Print(e);
+		}
 		timer = new TimeKeeper();
 		player = new AudioStreamPlayer {
 			Stream = new AudioStreamGenerator {
-				BufferLength = RunTime,
+				BufferLength = (float) RunTime,
 				MixRate = 44100,
 			},
 			Name = "[" + textRepresentation + "]Player"
 		};
 
 		// Add player to scene tree
+		AudioDebugging.Output("Function Fully Initialized.");
+		AudioDebugging.Output("Function Processing PreSet: " + IsProcessing());
 		SetProcess(false);
 		AddChild(player);
+		AudioDebugging.Output("Function Processing PostSet: " + IsProcessing());
 	}
 
 	/// <summary>
@@ -150,9 +159,10 @@ public partial class Function : Node {
 		// Iterate over the Domain and fill in the Function range, taking special care to tag Function as constant if needed.
 		IsConstant = true;
 		double lastValue = FunctionAST.EvaluateAtT(StartTime);
-		FunctionTable.Add(lastValue);
 
-		for(double t = StartTime + NoteDuration; t <= EndTime; t += NoteDuration) {
+		AudioDebugging.Output("Filling Function Table of : " + TextRepresentation);
+
+		for(double t = StartTime; t <= EndTime - NoteDuration; t += NoteDuration) {
 
 			// Evalauate the funtion at the approriate time.
 			var value = FunctionAST.EvaluateAtT(t);
@@ -163,11 +173,9 @@ public partial class Function : Node {
 				else lastValue = value;
 			}
 
-			// Manage out of bounds case.
-			if(Math.Abs(value) == double.PositiveInfinity) value = 0;
-
 			// Add the value to the functions table.
 			FunctionTable.Add(value);
+			AudioDebugging.Output(t + "\t:\t" + value);
 		}
 
 	}
@@ -182,11 +190,19 @@ public partial class Function : Node {
 		int noteNumEnd = Frequencies.endingNoteNumber;
 		int noteRange = noteNumEnd - noteNumStart;
 		
-		// Find the full range of values that the function can take.
-		double minVal = FunctionTable.Min();
-		double maxVal = FunctionTable.Max();
+		// Find the full range of values that the function can take (removing infinite discontinuities).
+		List<double> parameterList = new List<double>(FunctionTable);
+		if(FunctionTable.Contains(double.PositiveInfinity)) parameterList.Remove(double.PositiveInfinity);
+		if(FunctionTable.Contains(double.NegativeInfinity)) parameterList.Remove(double.NegativeInfinity);
+		double minVal = parameterList.Min();
+		double maxVal = parameterList.Max();
 		double functionRange = maxVal - minVal;
 		
+		AudioDebugging.Output("Filling Note Sequence of : " + TextRepresentation + " w/ Function table of Size " + FunctionTable.Count);
+		AudioDebugging.Output("MinVal = " + minVal);
+		AudioDebugging.Output("MaxVal = " + maxVal);
+		AudioDebugging.Output("Range = " + functionRange + "\n");
+
 		// Map the Functions values to note numbers
 		foreach(double value in FunctionTable) {
 			double noteNumber = -1;
@@ -199,8 +215,13 @@ public partial class Function : Node {
 			else {
 				switch (AudioDebugging.Method) {
 					case 1:
-						double normalizedValue = (value - minVal) / functionRange;
-						noteNumber = noteNumStart + (int) (normalizedValue * noteRange);
+						if(value == double.PositiveInfinity) noteNumber = noteNumEnd;
+						else if (value == double.NegativeInfinity) noteNumber = noteNumStart - 1;
+						else {
+							double normalizedValue = (value - minVal) / functionRange;
+							noteNumber = noteNumStart + (int) (normalizedValue * noteRange);
+						}
+						AudioDebugging.Output(value + "\t:\t" + noteNumber);
 						break;
 					case 2:
 						double note = (Math.Abs(value) + Frequencies.tuningKeyNum) % noteRange + Frequencies.startingNoteNumber;
@@ -247,9 +268,14 @@ public partial class Function : Node {
 		Vector2[] audio = new Vector2[bufferSize];
 		
 		// Create the frames to fill the buffer with the indicated note for the proper duration.
-		double increment;
-		if(AudioDebugging.Method == 3) increment = noteNum / sampleRate;		
-		else increment = Frequencies.Notes[noteNum] / sampleRate;	
+		double increment = 0;
+		try {
+			if(AudioDebugging.Method == 3) increment = noteNum / sampleRate;		
+			else increment = Frequencies.Notes[noteNum] / sampleRate;	
+		} catch(KeyNotFoundException) {
+			GD.Print("Key Not Found in Function: " + TextRepresentation);
+			GD.Print("Note Number " + noteNum);
+		}
 
 		for (int i = 0; i < bufferSize; i++) {
 			var sample = Vector2.One * (float) (1 * Mathf.Sin(Mathf.Tau * _phase));
@@ -275,7 +301,7 @@ public partial class Function : Node {
 		player.Stop();
 		SetProcess(false);
 		timer.Reset();
-		AudioDebugging.Output("Function Stopped");
+		AudioDebugging.Output("Function " + Name + " Stopped");
 		return true;
 		
 	}
@@ -309,18 +335,30 @@ public partial class Function : Node {
 		bool playNextNote = ((int) timer.ElapsedTime % NoteDuration) == 0;
 		if(CurrNote != noteSequence.Count && playNextNote) {
 			var playback = (AudioStreamGeneratorPlayback) player.GetStreamPlayback();
-			Vector2[] sample = Array.Empty<Vector2>();
-			try {
-				sample = GenerateNoteAudio(noteSequence[CurrNote]);
-			} catch (KeyNotFoundException) {
-				GD.Print("Key Not Found in Function: " + TextRepresentation);
-			}
+			var sample = GenerateNoteAudio(noteSequence[CurrNote]);
 			playback.PushBuffer(sample);
 			CurrNote++;
 			AudioDebugging.Output("\t->F:(" + Name + ") `PlayNextNote` reached. Timer.ELapsedTime = " + (int) timer.ElapsedTime + " s.");
 		}
 		
 		if(timer.IsTimeChanged) AudioDebugging.Output("\t->F:(" + Name + ").Timer.CurrTime = " + timer.ClockTimeRounded + " s.");
+	}
+
+	public void Info() {
+		GD.Print("\tText:" + TextRepresentation + "\tLaTex(" + FunctionAST.Latex + ")");
+	}
+
+	/// <summary>
+	/// Saves all data elements needed to create a Function to a Godot Dictionary.
+	/// </summary>
+	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
+	public Godot.Collections.Dictionary Save() {
+		var res = new Godot.Collections.Dictionary {
+			{ "TextRepresentation", TextRepresentation },
+			{ "StartTime", StartTime },
+			{ "EndTime", EndTime }
+		};
+		return res;
 	}
 
 	public override void _Process(double delta) {
