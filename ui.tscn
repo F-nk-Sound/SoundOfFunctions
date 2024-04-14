@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=15 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://ui.gd" id="1_owfon"]
 [ext_resource type="Script" path="res://UI/FunctionPalette.cs" id="2_ykdwx"]
@@ -8,11 +8,12 @@
 [ext_resource type="Script" path="res://UI/Toolbar.cs" id="6_5mm8q"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
-[ext_resource type="PackedScene" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
+[ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
 [ext_resource type="Texture2D" uid="uid://dst08x3c1p4fb" path="res://Assets/FOTS UI/icons8-redo-50-2.png" id="9_vnk82"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
 [ext_resource type="Texture2D" uid="uid://baq81af2vj12p" path="res://Assets/FOTS UI/icons8-close-window-50.png" id="12_5c7ir"]
+[ext_resource type="Script" path="res://Resize.gd" id="14_kwx2m"]
 
 [node name="UI" type="Node2D"]
 script = ExtResource("1_owfon")
@@ -61,6 +62,20 @@ offset_bottom = 500.0
 [node name="FunctionsContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
 layout_mode = 2
 
+[node name="ColorRect" type="ColorRect" parent="Function Palette"]
+visible = false
+offset_left = 116.0
+offset_top = 557.0
+offset_right = 156.0
+offset_bottom = 597.0
+
+[node name="UndoPop" type="Button" parent="Function Palette"]
+visible = false
+offset_left = 138.0
+offset_top = 158.0
+offset_right = 236.0
+offset_bottom = 233.0
+
 [node name="Graph" type="Node2D" parent="."]
 
 [node name="Graph BG" type="Panel" parent="Graph"]
@@ -104,9 +119,16 @@ offset_bottom = 625.0
 layout_mode = 2
 
 [node name="TimelineContainer" parent="Timeline/ScrollContainer/TimelineContainer" instance=ExtResource("9_jons1")]
+visible = false
 layout_mode = 2
 
+[node name="Numbers2" type="Label" parent="Timeline/ScrollContainer/TimelineContainer"]
+visible = false
+layout_mode = 2
+text = "1    2    3    4   5  6  7"
+
 [node name="Button" type="Button" parent="Timeline"]
+visible = false
 offset_left = 1074.0
 offset_top = 547.0
 offset_right = 1082.0
@@ -201,8 +223,28 @@ scale = Vector2(0.9, 0.9)
 tooltip_text = "Exit Application"
 icon = ExtResource("12_5c7ir")
 
+[node name="Control" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 407.0
+offset_top = 255.0
+offset_right = 447.0
+offset_bottom = 295.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Panel" type="Panel" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("14_kwx2m")
+
 [connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
-[connection signal="pressed" from="Timeline/Button" to="Timeline" method="OnButtonPressed"]
+[connection signal="pressed" from="Function Palette/UndoPop" to="Function Palette" method="_on_undo_pop_pressed"]
+[connection signal="pressed" from="Timeline/Button" to="Timeline" method="AddToTimeline"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Save" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Load" to="." method="_on_load_pressed"]
 [connection signal="pressed" from="Toolbar/Toolbar BG/Undo" to="." method="_on_undo_pressed"]
