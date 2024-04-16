@@ -1,6 +1,7 @@
 
 using System;
 using Godot;
+using Godot.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit.Sdk;
@@ -210,18 +211,19 @@ public partial class LowerTimeline : Node {
 	/// Saves all data elements needed to create a LowerTimeline to a Godot Dictionary.
 	/// </summary>
 	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
-	public Godot.Collections.Dictionary Save() {
+	public Dictionary Save() {
 
         // Retrieve and store all functions within the timeline as JSON.
-        Godot.Collections.Dictionary functionsDictionary = new();
+        Dictionary functionsDictionary = new();
         foreach(Function func in functions) {
             var functionData = func.Save();
             functionsDictionary.Add(functions.IndexOf(func), functionData);
         }
 
-        var res = new Godot.Collections.Dictionary {
+        var res = new Dictionary {
             { "Functions", functionsDictionary },
-			{ "Count", Count }
+			{ "Count", Count },
+			{ "Name", Name }
         };
 
 		return res;

@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using System;
 using Sonification;
 using UI.Palette;
@@ -51,9 +52,9 @@ public partial class UpperTimeline : Node2D
 	/// Saves all data elements needed to create an UpperTimeline Node to a Godot Dictionary.
 	/// </summary>
 	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
-	public Godot.Collections.Dictionary Save() 
+	public Dictionary Save() 
 	{
-		var res = new Godot.Collections.Dictionary();
+		var res = new Dictionary();
 		return res;
 	}
 

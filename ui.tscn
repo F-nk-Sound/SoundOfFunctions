@@ -259,9 +259,11 @@ mode = 4
 title = "Open a File"
 position = Vector2i(200, 36)
 size = Vector2i(800, 550)
+exclusive = false
 ok_button_text = "Open"
 file_mode = 0
 access = 1
+filters = PackedStringArray("*.sfc", "*.sftl", "*.sfp")
 
 [node name="SaveMenu" type="PopupMenu" parent="Storage"]
 title = "Save Options"
@@ -269,7 +271,6 @@ position = Vector2i(540, 260)
 size = Vector2i(215, 100)
 unresizable = false
 borderless = false
-always_on_top = true
 hide_on_checkable_item_selection = false
 item_count = 3
 item_0/text = "Complete Deck"
@@ -290,23 +291,24 @@ borderless = true
 always_on_top = true
 ok_button_text = "Save"
 
-[node name="FileNamePopup" type="Popup" parent="Storage"]
+[node name="ErrorPopup" type="AcceptDialog" parent="Storage"]
+initial_position = 2
+size = Vector2i(498, 100)
+always_on_top = true
+popup_window = true
+
+[node name="FileNameWindow" type="Window" parent="Storage"]
 position = Vector2i(350, 200)
 size = Vector2i(525, 75)
-borderless = false
+visible = false
 
-[node name="FileNameEntry" type="LineEdit" parent="Storage/FileNamePopup"]
+[node name="FileNameEntry" type="LineEdit" parent="Storage/FileNameWindow"]
 custom_minimum_size = Vector2(475, 0)
 offset_left = 25.0
 offset_top = 25.0
-offset_right = 92.0625
+offset_right = 500.0
 offset_bottom = 56.0
 placeholder_text = "Save as..."
-
-[node name="AcceptDialog" type="AcceptDialog" parent="Storage/FileNamePopup"]
-initial_position = 2
-size = Vector2i(498, 100)
-dialog_text = "File of this name already exisits. Please enter a valid file name."
 
 [connection signal="ready" from="." to="." method="_on_ready"]
 [connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
