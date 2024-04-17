@@ -5,9 +5,9 @@ namespace Functions;
 /// </summary>
 public record Multiply(IFunctionAST Left, IFunctionAST Right) : IFunctionAST
 {
-    public double Evaluate(EvalContext ctx) => Left.Evaluate(ctx) * Right.Evaluate(ctx);
+	public double Evaluate(EvalContext ctx) => Left.Evaluate(ctx) * Right.Evaluate(ctx);
 
-    public bool IsTerm => true;
+	public bool IsTerm => true;
 
-    public string Latex => $"{Left.SingleTermLatex}{Right.SingleTermLatex}";
+	public string Latex => $"{Left.SingleTermLatex}{Right.SingleTermLatex}";
 }
