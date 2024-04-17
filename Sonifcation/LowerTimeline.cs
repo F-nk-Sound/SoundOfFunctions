@@ -185,7 +185,7 @@ public partial class LowerTimeline : Node {
 		AudioDebugging.Output("\t\tLowerTimeline.Timer.ClockTimeRounded == " + timer.ClockTimeRounded);
 		AudioDebugging.Output("\t\tLowerTimeline.RunTime == " + RunTime);
 		// Poll the time and check if time has arrived. Stop Sonifcation if necessary.
-		if(timer.ClockTimeRounded != RunTime) res = false;
+		if(timer.ClockTimeRounded < RunTime) res = false;
 		else {
 			// Stop Sonification.
 			currFunction = -1;
@@ -253,10 +253,10 @@ public partial class LowerTimeline : Node {
 		}
 		GD.Print();
 	}
+
 	public override void _Process(double delta) {
 		timer.Tick(delta);
 		CurrPosition = timer.ClockTimeAbsolute;
 		Play();
 	}
-	
 }

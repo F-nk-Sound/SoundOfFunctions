@@ -23,12 +23,12 @@ public partial class AudioGenerator : Node {
 	/// <summary>
 	/// LowerTimeline representation of the Timeline UI Node
 	/// </summary>
-	public LowerTimeline timeline = new LowerTimeline();
+	public LowerTimeline timeline = new();
 
 	/// <summary>
 	/// If <c> true </c>, AudioGenerator playback is active.
 	/// </summary>
-	public bool IsPlaying {get;set;}
+	public bool IsPlaying { get;set; }
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
@@ -121,22 +121,26 @@ public partial class AudioGenerator : Node {
 		IFunctionAST sin3t_plus_3sint = Bridge.Parse("sin(3t) + 3sin(t)").Unwrap();
 		IFunctionAST t_plus_5 = Bridge.Parse("t + 5").Unwrap();
 
-		/*
-		Function inverseFunc = new Function("2/t", inverse);		
-		Function sumOfSines = new Function("sin(3t) + 3sin(t)", sin3t_plus_3sint);
-		Function negA4Func = new Function("-49", negA4);
-		Function zeroFunc = new Function("0", zero);
+		// Function inverseFunc = new Function("2/t", inverse);		
+		// Function sumOfSines = new Function("sin(3t) + 3sin(t)", sin3t_plus_3sint);
+		// Function negA4Func = new Function("-49", negA4);
+		// Function zeroFunc = new Function("0", zero);
+
+		// Function tanFunc = new Function("tan(3t)", tan);
+		// Function tPlus5Func = new Function("t + 5", t_plus_5);
+		string func = "4floor(t) - 2floor(2t) + 1";
+		Function f = new(func, Bridge.Parse(func).Unwrap())
+		{
+			EndTime = 10,
+		};
+		timeline.Add(f);
+		// Function sineFunc1 = new Function("sin(3*3.14159*t)", sin_3_pi_t);
+		// Function linearFunc = new Function("3t + 4", three_t_plus_four);
+		// Function squareFunc = new Function("t^2", t_squared);
+		// Function polynomialFunc = new Function("t^2 + 3t + 4", poly);
 		
-		Function tanFunc = new Function("tan(3t)", tan);
-		Function tPlus5Func = new Function("t + 5", t_plus_5);
-		Function sineFunc2 = new Function("sin(3t)", sin_3t);
-		Function sineFunc1 = new Function("sin(3*3.14159*t)", sin_3_pi_t);
-		Function linearFunc = new Function("3t + 4", three_t_plus_four);
-		Function squareFunc = new Function("t^2", t_squared);
-		Function polynomialFunc = new Function("t^2 + 3t + 4", poly);
-		//*/
-		Function A4Func = new Function("49", A4);
-		timeline.Add(A4Func);
+		// Function A4Func = new Function("49", A4);
+		// timeline.Add(A4Func);
 
 		/*
 		timeline.Add(inverseFunc);
