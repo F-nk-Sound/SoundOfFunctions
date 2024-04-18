@@ -1,11 +1,8 @@
-
 using System;
 using Godot;
 using Godot.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit.Sdk;
-using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace Sonification;
@@ -14,7 +11,6 @@ namespace Sonification;
 /// Backend of the Timeline UI. This is the backbone of Audio Generation. 
 /// </summary>
 public partial class LowerTimeline : Node {
-	
 	/// <summary>
 	/// Plays the Audio of the Timeline using <c> LowerTimeline.Sonify() </c>.
 	/// </summary>
@@ -29,7 +25,7 @@ public partial class LowerTimeline : Node {
 	/// <summary>
 	/// Timer to manage and synchronize audio playback within the Timeline.
 	/// </summary>
-	private readonly TimeKeeper timer;           
+	private TimeKeeper timer;           
 
 	/// <summary>
 	/// Current function being played by the Timeline.
@@ -69,22 +65,32 @@ public partial class LowerTimeline : Node {
 	/// </summary>
 	/// <param name="parent">The parent of this LowerTimeline node.</param>
 	public LowerTimeline() {
-		RunTime = 0;
-		currFunction = -1;      // Initialized to -1 to indicate playing hasn't begun yet. 0 indexed quantity.
-		CurrPosition = 0.0;
-		IsPlaying = false;
-		functions = new List<Function>();
-		Name = "LowerTimeline";
+		functions = new();
+		timer = new();
 
-		// Audio characteristics 
-		timer = new TimeKeeper();
-		player = new AudioStreamPlayer {
+		Reset();
+
+		// Scene Tree stuff
+		player = new AudioStreamPlayer
+		{
 			Stream = new AudioStreamGenerator(),
 			Name = "LowerTimelinePlayer"
 		};
 
-		// Scene Tree stuff
 		AddChild(player);
+	}
+
+	/// <summary>
+	/// Fully reset the state of the timeline
+	/// </summary>
+	public void Reset()
+	{
+		RunTime = 0;
+		currFunction = -1; // Initialized to -1 to indicate playing hasn't begun yet. 0 indexed quantity.
+		CurrPosition = 0.0;
+		IsPlaying = false;
+		functions.Clear();
+		timer.Reset();
 		SetProcess(false);
 	}
 
@@ -227,23 +233,6 @@ public partial class LowerTimeline : Node {
         };
 
 		return res;
-	}
-
-	/// <summary>
-	/// Resets the Timeline.
-	/// </summary>
-	/// <returns><c>true</c> if reset was successful.</returns>
-	public bool Reset() {
-		// Prevent deletion of an Active timeline
-		if(IsPlaying) return false;
-
-		// Defualts all relevant paramters
-		timer.Reset();
-		currFunction = -1;
-		CurrPosition = 0;
-		RunTime = 0;
-		functions = new List<Function>();
-		return true;
 	}
 
 	public void Display() {

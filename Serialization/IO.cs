@@ -1,11 +1,5 @@
-
 using Godot;
-using System;
-using System.IO;
 using System.ComponentModel;
-using UI;
-using System.Data;
-using System.Reflection.Metadata.Ecma335;
 using System.Linq;
 
 namespace Serialization;
@@ -88,9 +82,6 @@ public partial class IO : Node {
 		fileExplorer.CurrentDir = explorerDirectory;
 		fileExplorer.RootSubfolder = explorerDirectory;
 		
-		// Connect to necessary signals.
-		GetTree().CurrentScene.GetNode<Toolbar>("Toolbar").SaveButtonPressed += OnToolbarSaveButtonPressed;
-		GetTree().CurrentScene.GetNode<Toolbar>("Toolbar").LoadButtonPressed += OnToolBarLoadButtonPressed;
 		fileExplorer.FileSelected += OnFileSelected;
 		fileExplorer.Confirmed += OnFileExplorerConfirmed;
 		fileNameWindow.GetChild<LineEdit>(0).TextSubmitted += OnSaveFileNameEntered;

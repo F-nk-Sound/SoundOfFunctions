@@ -1,18 +1,7 @@
 using Godot;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit.Sdk;
-using System.Diagnostics;
-using Newtonsoft.Json;
-
 using Functions;
 using Parsing;
-using Serialization;
+
 namespace Sonification;
 
 /// <summary>
@@ -23,7 +12,8 @@ public partial class AudioGenerator : Node {
 	/// <summary>
 	/// LowerTimeline representation of the Timeline UI Node
 	/// </summary>
-	public LowerTimeline timeline = new();
+	[Export]
+	public LowerTimeline? timeline;
 
 	/// <summary>
 	/// If <c> true </c>, AudioGenerator playback is active.
@@ -32,53 +22,43 @@ public partial class AudioGenerator : Node {
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-
 		// Add and prep the Timeline.
-		AddChild(timeline);
-		timeline.SetProcess(false);
-		
-		// Connect the necessary signals from the Timeline.
-		timeline.AudioPlaybackFinished += OnAudioPlaybackFinished;
-		GetTree().CurrentScene.GetNode<Serializer>("Storage/Serializer").LowerTimelineLoaded += OnLowerTimelineUpdated;
+		timeline!.SetProcess(false);
 
 		// Add 'Tests' that demonstrate the audio playback.
 		AddTests();
-		if(AudioDebugging.Enabled) {
+		if(AudioDebugging.Enabled) 
+		{
 			AudioDebugging.Output("Displaying AudioGenerator SceneTree after adding intial LowerTimeline");
 			PrintTreePretty();
 		}
 	}
 
-	private void OnLowerTimelineUpdated(LowerTimeline lt) {
-
-		// Clear out the old timeline.
-		RemoveChild(timeline);
-		timeline.QueueFree();
-		AudioDebugging.Output("Cleared out the Old LowerTimeline");
-
+	private void OnLowerTimelineUpdated() {
 		// Introduce the new timeline.
-		timeline = lt;
 		AudioDebugging.Output("\tNew Timeline Processing Before Added as Child: " + timeline.IsProcessing());
-		AddChild(timeline);
-		timeline.SetProcess(false);
-		timeline.AudioPlaybackFinished += OnAudioPlaybackFinished;
-		foreach(Node n in timeline.GetChildren()) {
-			if(n is Function) n.SetProcess(false);
+		foreach (Node n in timeline.GetChildren()) 
+		{
+			if (n is Function) n.SetProcess(false);
 		}
 		AudioDebugging.Output("\tNew Timeline Processing After Added as Child: " + timeline.IsProcessing());
 		AudioDebugging.Output("Added the New LowerTimeline");
 
-		if(AudioDebugging.Enabled) {
+		if (AudioDebugging.Enabled) 
+		{
 			AudioDebugging.Output("Displaying Current AudioGenerator SceneTree after updating LowerTimeline.");
 			PrintTreePretty();
 			AudioDebugging.Output("Examining the processing of each child node");
-			foreach(Node n in GetChildren()) {
+			foreach (Node n in GetChildren()) 
+			{
 				AudioDebugging.Output("\tNode: " + n.Name + " Processing? " + n.IsProcessing());
 				var grandkids = n.GetChildren();
-				if(grandkids.Count != 0) {
+				if (grandkids.Count != 0) 
+				{
 					AudioDebugging.Output("\tExamining the processing of each function node");
-					foreach(Node gk in grandkids) {
-						if(gk is Function) AudioDebugging.Output("\t\tFunction: " + gk.Name + " Processing? " + gk.IsProcessing());
+					foreach (Node gk in grandkids) 
+					{
+						if (gk is Function) AudioDebugging.Output("\t\tFunction: " + gk.Name + " Processing? " + gk.IsProcessing());
 					}
 				}
 			}
@@ -128,7 +108,7 @@ public partial class AudioGenerator : Node {
 
 		// Function tanFunc = new Function("tan(3t)", tan);
 		// Function tPlus5Func = new Function("t + 5", t_plus_5);
-		string func = "4floor(t) - 2floor(2t) + 1";
+		string func = "1000t";
 		Function f = new(func, Bridge.Parse(func).Unwrap())
 		{
 			EndTime = 10,

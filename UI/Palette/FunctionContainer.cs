@@ -5,7 +5,7 @@ using System;
 namespace UI.Palette;
 public partial class FunctionContainer : Control
 {
-	private FunctionPalette? _functionPalette;
+	public FunctionPalette? FunctionPalette;
 	private Function? _function;
 	public Function Function
 	{
@@ -23,8 +23,8 @@ public partial class FunctionContainer : Control
 				_function.EndTime = (int)Range.MaxValue;
 			}
 
-			if (_functionPalette != null)
-				_functionPalette.CurrentSelectedFunction = value;
+			if (FunctionPalette != null)
+				FunctionPalette.CurrentSelectedFunction = value;
 		}
 	}
 	private Godot.Range? _range;
@@ -41,7 +41,9 @@ public partial class FunctionContainer : Control
 	}
 	private FunctionContainer? _functionContainerCopy;
 
+	[Export]
 	private Endpoint _start;
+	[Export]
 	private Endpoint _end;
 
 	private bool _holding = false;
@@ -50,10 +52,6 @@ public partial class FunctionContainer : Control
 
 	public override void _Ready()
 	{
-		_functionPalette = GetTree().CurrentScene.GetNode<FunctionPalette>("Function Palette");
-
-		_start = GetChild<Endpoint>(2);
-		_end = GetChild<Endpoint>(3);
 		RangeUpdate();
 
 		if (_isCopy )
@@ -65,11 +63,12 @@ public partial class FunctionContainer : Control
 		if (_start == null || _end == null)
 			return;
 
-		Godot.Range temp = new Godot.Range();
-		temp.MinValue = _start.Value;
-		temp.MaxValue = _end.Value;
-		Range = temp;
-		this.Function = this.Function;
+        Godot.Range temp = new()
+        {
+            MinValue = _start.Value,
+            MaxValue = _end.Value
+        };
+        Range = temp;
 	}
 
 	/// <summary>
@@ -79,7 +78,7 @@ public partial class FunctionContainer : Control
 	public override void _Input(InputEvent @event)
 	{
 		base._Input(@event);
-		if (_functionPalette == null) return;
+		if (FunctionPalette == null) return;
 
 		if (@event is InputEventMouseButton mouseEvent)
 		{
@@ -88,8 +87,8 @@ public partial class FunctionContainer : Control
 			{
 				_holding = false;
 				_dragging = false;
-				_functionPalette.OnDraggedEvent(mouseEvent.Position);
-				_functionPalette.RemoveChild(_functionContainerCopy);
+				FunctionPalette.OnDraggedEvent(mouseEvent.Position);
+				FunctionPalette.RemoveChild(_functionContainerCopy);
 			}
 
 			if (mouseEvent.Position.X <= GlobalPosition.X
@@ -121,12 +120,12 @@ public partial class FunctionContainer : Control
 					_functionContainerCopy = (FunctionContainer)Duplicate();
 					_functionContainerCopy._isCopy = true;
 					_functionContainerCopy.Position = motionEvent.Position - Size / 2;
-					_functionPalette.AddChild(_functionContainerCopy);
+					FunctionPalette.AddChild(_functionContainerCopy);
 					_dragging = true;
 				}
 				if (_dragging && _functionContainerCopy != null)
 				{
-					_functionPalette.OnDraggingEvent(motionEvent.Position);
+					FunctionPalette.OnDraggingEvent(motionEvent.Position);
 					_functionContainerCopy.Position = motionEvent.Position - Size / 2;
 				}
 			}
