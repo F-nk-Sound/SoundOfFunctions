@@ -11,7 +11,6 @@ public partial class ExampleScene : VBoxContainer {
 		le = GetNode<LineEdit>("HBoxContainer/LineEdit");
 	}
 	private void _on_button_pressed() {
-		fr.ParseAndSetFunction(le.Text);
 	}
 }
 

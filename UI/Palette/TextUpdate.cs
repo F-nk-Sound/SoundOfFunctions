@@ -3,7 +3,6 @@ using Functions;
 using Godot;
 using Parsing;
 using Sonification;
-using System;
 
 namespace UI.Palette;
 
@@ -13,65 +12,19 @@ namespace UI.Palette;
 /// </summary>
 public partial class TextUpdate : Control
 {
+	[Export]
 	FunctionContainer? functionContainer;
-	ScrollContainer? lsc;
-	LaTeX? latex;
+	LaTeXButton? latex;
 	LineEdit? text;
-	Control? control;
-	TextUpdate? textUpdateCopy;
-
-	Vector2 margins = new Vector2(20.0f, 10.0f);
-	Vector2 minimumSize = new Vector2(225, 80);
-
-	/// <summary>
-	/// Adjusts the LaTeX node to fit the same space as the current text box.
-	/// Also adjusts to fit within the minimumSize.
-	/// </summary>
-	private void make()
-	{
-		if (latex == null || text == null || control == null) return;
-
-		latex.Render();
-		Vector2 size;
-		size = new Vector2(Math.Max(latex.Width + margins.X, minimumSize.X), minimumSize.Y);
-		text.CustomMinimumSize = size;
-		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
-		latex.Position = new Vector2(size.X / 2, size.Y / 2 + margins.Y);
-	}
 	
 	public override void _Ready()
 	{
 		base._Ready();
-		functionContainer = (FunctionContainer) Owner;
 
-		lsc = GetParent<ScrollContainer>();
-		lsc.CustomMinimumSize = minimumSize;
-		lsc.Size = minimumSize;
-		control = this;
-		latex = control.GetChild<LaTeX>(0);
-		text = control.GetChild<LineEdit>(1);
-
-		if (latex == null)
-		{
-			GD.PushError("Latex not initialized");
-			return;
-		}
-		if (text == null)
-		{
-			GD.PushError("Text not initialized");
-			return;
-		}
+		latex = GetChild<LaTeXButton>(0);
+		text = GetChild<LineEdit>(1);
 
 		latex.LatexExpression = text.PlaceholderText;
-		make();
-	}
-
-	private void _OnTextChanged(String newText)
-	{
-		if (latex == null || text == null || control == null) return;
-
-		Vector2 size = new Vector2(Math.Max(latex.Width, minimumSize.X), minimumSize.Y);
-		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
 	}
 
 	/// <summary>
@@ -79,13 +32,11 @@ public partial class TextUpdate : Control
 	/// Sets the function palettes' current selected function.
 	/// </summary>
 	/// <param name="finalText">The entered text.</param>
-	private void _LineEditSubmitted(String finalText)
+	private void LineEditSubmitted(string finalText)
 	{
-		if (latex == null || text == null || lsc == null || functionContainer == null) return;
-		
 		IFunctionAST? ast = null;
 		Function? function = null;
-		if(!text.Text.IsEmpty())
+		if(!text!.Text.IsEmpty())
 		{
 			ParseResult result = Bridge.Parse(finalText);
 			ast = result.Unwrap();
@@ -93,14 +44,14 @@ public partial class TextUpdate : Control
 		}
 
 		if (finalText.IsEmpty() || ast == null)
-			latex.LatexExpression = text.PlaceholderText;
+			latex!.LatexExpression = text.PlaceholderText;
 		else
-			latex.LatexExpression = ast.Latex;
-		lsc.GetHScrollBar().Value = lsc.GetHScrollBar().MinValue;
-		make();
+			latex!.LatexExpression = ast.Latex;
 		text.ReleaseFocus();
 
-		functionContainer.Function = function;
+		latex.Render();
+
+		functionContainer!.Function = function!;
 	}
 	
 	/// <summary>
@@ -108,12 +59,10 @@ public partial class TextUpdate : Control
 	/// not set the function palettes' current selected function,
 	/// see _LineEditSubmitted.
 	/// </summary>
-	private void _OnFocusEntered()
+	private void OnFocusEntered()
 	{
-		if (text == null || latex == null) return;
-
-		text.RemoveThemeColorOverride("font_color");
-		latex.ZIndex = 0;
+		text!.RemoveThemeColorOverride("font_color");
+		latex!.Hide();
 	}
 
 	/// <summary>
@@ -121,14 +70,12 @@ public partial class TextUpdate : Control
 	/// This does set the function palettes' current selected function,
 	/// currently a design decision that can be modified.
 	/// </summary>
-	private void _OnFocusExited()
+	private void OnFocusExited()
 	{
-		if (text == null || latex == null) return;
+		text!.AddThemeColorOverride("font_color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
+		latex!.Show();
 
-		text.AddThemeColorOverride("font_color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
-		latex.ZIndex = 1;
-
-		String functionText = text.Text;
-		_LineEditSubmitted(functionText);
+		string functionText = text.Text;
+		LineEditSubmitted(functionText);
 	}
 }

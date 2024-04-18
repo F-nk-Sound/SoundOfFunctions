@@ -88,7 +88,6 @@ public partial class FunctionPalette : Node
 	{
 		if (_container == null || _functionContainer == null) return;
 		FunctionContainer instance = (FunctionContainer) _functionContainer.Instantiate();
-		instance.CustomMinimumSize = new Vector2(225, 120);
 		instance.FunctionPalette = this;
 		_container.AddChild(instance);
 	}

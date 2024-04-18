@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=20 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://UI/Palette/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
+[ext_resource type="PackedScene" uid="uid://rjw4sfomfd0q" path="res://Graphing/function_renderer.tscn" id="12_ivlup"]
 [ext_resource type="Script" path="res://Sonifcation/LowerTimeline.cs" id="13_lr367"]
 [ext_resource type="Script" path="res://Serialization/IO.cs" id="14_a2p4c"]
 [ext_resource type="Script" path="res://Serialization/Serializer.cs" id="14_mqxfw"]
@@ -174,11 +175,18 @@ functionPalette = NodePath("../..")
 layout_mode = 2
 size_flags_stretch_ratio = 5.0
 
-[node name="Graph Text" type="Label" parent="Main/PaletteAndGraph/Graph BG"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Main/PaletteAndGraph/Graph BG"]
+layout_mode = 2
+
+[node name="Graph Text" type="Label" parent="Main/PaletteAndGraph/Graph BG/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 text = "Graph View"
 horizontal_alignment = 1
+
+[node name="FunctionRenderer" parent="Main/PaletteAndGraph/Graph BG/VBoxContainer" instance=ExtResource("12_ivlup")]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="Timeline" type="PanelContainer" parent="Main" node_paths=PackedStringArray("timelineContainer", "functionPalette", "audioGenerator")]
 layout_mode = 2

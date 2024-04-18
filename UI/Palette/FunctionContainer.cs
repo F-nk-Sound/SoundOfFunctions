@@ -54,7 +54,7 @@ public partial class FunctionContainer : Control
 	{
 		RangeUpdate();
 
-		if (_isCopy )
+		if (_isCopy)
 			return;
 	}
 
