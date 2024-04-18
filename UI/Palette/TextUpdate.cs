@@ -1,3 +1,5 @@
+using System;
+using System.Runtime;
 using CSharpMath;
 using Functions;
 using Godot;
@@ -14,6 +16,8 @@ public partial class TextUpdate : Control
 {
 	[Export]
 	FunctionContainer? functionContainer;
+	[Export]
+	RichTextLabel? errorLabel;
 	LaTeXButton? latex;
 	LineEdit? text;
 	
@@ -25,6 +29,21 @@ public partial class TextUpdate : Control
 		text = GetChild<LineEdit>(1);
 
 		latex.LatexExpression = text.PlaceholderText;
+	}
+
+	void ReportError(string error)
+	{
+		errorLabel!.Text = $"[color=red]Error: {error}[/color]";
+		errorLabel.Visible = true;
+	}
+
+	static string HumanifyError(string error)
+	{
+		return error
+			.Replace("EOF", "end of input")
+			.Replace("found at", "found at character(s)")
+			.Replace("r#\"-?[0-9]+(\\\\.[0-9]+)?\"#", "number")
+			.Replace("r#\"[a-zA-Zα-ωΑ-Ω](_[a-zA-Zα-ωΑ-Ω0-9]+)?\"#", "variable");
 	}
 
 	/// <summary>
@@ -39,7 +58,28 @@ public partial class TextUpdate : Control
 		if (finalText.IsNonEmpty())
 		{
 			ParseResult result = Bridge.Parse(finalText);
-			ast = result.Unwrap();
+
+			if (result is Success ok)
+			{
+				ast = ok.Value;
+				errorLabel!.Visible = false;
+			}
+			else if (result is Failure err)
+			{
+				ReportError(HumanifyError(err.Error));
+				return;
+			}
+			else 
+			{
+				throw new InvalidCastException("expected a result type");
+			}
+
+			if (ASTHasUnboundVariable(ast) is string unbound)
+			{
+				ReportError($"Unknown variable '{unbound}'");
+				return;
+			}
+
 			function = new Function(finalText, ast);
 			latex!.LatexExpression = ast.Latex;
 		}
@@ -54,6 +94,32 @@ public partial class TextUpdate : Control
 
 		functionContainer!.Function = function!;
 		functionContainer.GraphFunction();
+	}
+
+	/// <summary>
+	/// Returns true if an unbound variable is found.
+	/// </summary>
+	/// <param name="ast"></param>
+	/// <returns></returns>
+	static string? ASTHasUnboundVariable(IFunctionAST ast)
+	{
+		return ast switch
+        {
+            Absolute val => ASTHasUnboundVariable(val.Inner),
+            Add val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Ceil val => ASTHasUnboundVariable(val.Inner),
+            Cosine val => ASTHasUnboundVariable(val.Inner),
+            Divide val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Exponent val => ASTHasUnboundVariable(val.Base) ?? ASTHasUnboundVariable(val.Power),
+            Floor val => ASTHasUnboundVariable(val.Inner),
+            Multiply val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Number => null,
+            Sine val => ASTHasUnboundVariable(val.Inner),
+            Subtract val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Tangent val => ASTHasUnboundVariable(val.Inner),
+            Variable val => val.Name != "t" ? val.Name : null,
+            _ => throw new NotImplementedException(),
+        };
 	}
 	
 	/// <summary>
