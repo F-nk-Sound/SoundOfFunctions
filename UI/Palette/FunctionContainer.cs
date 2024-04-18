@@ -131,4 +131,9 @@ public partial class FunctionContainer : Control
 			}
 		}
 	}
+
+	public void GraphFunction(Function fn)
+	{
+		FunctionPalette!.GraphFunction(fn);
+	}
 }

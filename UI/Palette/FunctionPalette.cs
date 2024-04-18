@@ -1,6 +1,7 @@
 using Functions;
 using Godot;
 using Godot.Collections;
+using Graphing;
 using Sonification;
 using System;
 
@@ -11,6 +12,9 @@ namespace UI.Palette;
 /// </summary>
 public partial class FunctionPalette : Node
 {
+	[Export]
+	FunctionRenderer? renderer;
+
 	/// <summary>
 	/// Godot Event called when the current function selected by the user
 	/// has changed.
@@ -121,5 +125,10 @@ public partial class FunctionPalette : Node
 	public Dictionary Save() {
 		var res = new Dictionary();
 		return res;
+	}
+
+	public void GraphFunction(Function fn)
+	{
+		renderer!.SetFunction(fn);
 	}
 }

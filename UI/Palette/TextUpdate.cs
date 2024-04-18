@@ -34,24 +34,26 @@ public partial class TextUpdate : Control
 	/// <param name="finalText">The entered text.</param>
 	private void LineEditSubmitted(string finalText)
 	{
-		IFunctionAST? ast = null;
+		IFunctionAST ast;
 		Function? function = null;
-		if(!text!.Text.IsEmpty())
+		if (finalText.IsNonEmpty())
 		{
 			ParseResult result = Bridge.Parse(finalText);
 			ast = result.Unwrap();
 			function = new Function(finalText, ast);
+			latex!.LatexExpression = ast.Latex;
+		}
+		else
+		{
+			latex!.LatexExpression = text!.PlaceholderText;
 		}
 
-		if (finalText.IsEmpty() || ast == null)
-			latex!.LatexExpression = text.PlaceholderText;
-		else
-			latex!.LatexExpression = ast.Latex;
-		text.ReleaseFocus();
+		text!.ReleaseFocus();
 
 		latex.Render();
 
 		functionContainer!.Function = function!;
+		functionContainer.GraphFunction(function!);
 	}
 	
 	/// <summary>
