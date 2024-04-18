@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 namespace UI.Palette;
 public partial class Endpoint : Node
@@ -33,12 +32,12 @@ public partial class Endpoint : Node
 	public void OnValueChanged(double value)
 	{
 		if (value >= MAX)
-            _endpoint.Value = MAX;
+            _endpoint!.Value = MAX;
 		else if (value <= -MAX)
-            _endpoint.Value = -MAX;
+            _endpoint!.Value = -MAX;
 
 		Value = (float) value;
-		_endpoint.ReleaseFocus();
+		_endpoint!.ReleaseFocus();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

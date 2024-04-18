@@ -63,7 +63,7 @@ public partial class FunctionPalette : Node
 	private Function? currentSelectedFunction;
 	public Function CurrentSelectedFunction
 	{
-		get { return currentSelectedFunction; }
+		get { return currentSelectedFunction!; }
 		set
 		{
 			if (value == null) return;

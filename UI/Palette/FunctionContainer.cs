@@ -11,7 +11,7 @@ public partial class FunctionContainer : Control
 	{
 		get
 		{
-			return _function;
+			return _function!;
 		}
 		set
 		{
@@ -42,9 +42,9 @@ public partial class FunctionContainer : Control
 	private FunctionContainer? _functionContainerCopy;
 
 	[Export]
-	private Endpoint _start;
+	private Endpoint? _start;
 	[Export]
-	private Endpoint _end;
+	private Endpoint? _end;
 
 	private bool _holding = false;
 	private bool _dragging = false;
@@ -132,8 +132,8 @@ public partial class FunctionContainer : Control
 		}
 	}
 
-	public void GraphFunction(Function fn)
+	public void GraphFunction()
 	{
-		FunctionPalette!.GraphFunction(fn);
+		FunctionPalette!.GraphFunction(Function);
 	}
 }

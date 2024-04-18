@@ -53,7 +53,7 @@ public partial class TextUpdate : Control
 		latex.Render();
 
 		functionContainer!.Function = function!;
-		functionContainer.GraphFunction(function!);
+		functionContainer.GraphFunction();
 	}
 	
 	/// <summary>
@@ -65,6 +65,11 @@ public partial class TextUpdate : Control
 	{
 		text!.RemoveThemeColorOverride("font_color");
 		latex!.Hide();
+
+		if (functionContainer!.Function is not null)
+		{
+			functionContainer.GraphFunction();
+		}
 	}
 
 	/// <summary>
