@@ -114,7 +114,7 @@ public partial class Serializer : Node {
 		if(!Godot.FileAccess.FileExists(path)) return;
 
 		// Read file using Json Loader, Ensure file was properly parsed.
-		string json = File.ReadAllText(path); 
+		string json = Godot.FileAccess.GetFileAsString(path); 
 		Json jsonLoader = new(); 
 		Error errorReadingFile = jsonLoader.Parse(json);
 		if(errorReadingFile != Error.Ok) return;
@@ -302,7 +302,7 @@ public partial class Serializer : Node {
             newFunctionList.Add(newFunction);
 		}
 
-		// Create a new Timeline.
+		// Update Timeline.
 		lowerTimeline!.Reset();
 		lowerTimeline.Name = timelineName;
 		lowerTimeline.SetProcess(false);

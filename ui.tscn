@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=22 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://UI/Palette/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" path="res://Serialization/IO.cs" id="14_a2p4c"]
 [ext_resource type="Script" path="res://Serialization/Serializer.cs" id="14_mqxfw"]
 [ext_resource type="PackedScene" uid="uid://c82ewuj4e6ylq" path="res://timeline_function_container.tscn" id="15_x5gp5"]
+[ext_resource type="PackedScene" uid="uid://b2bdnigbjemft" path="res://Serialization/SaveSelector.tscn" id="20_ysibf"]
 
 [sub_resource type="GDScript" id="GDScript_jf14m"]
 script/source = "# Base line GD UI script
@@ -245,8 +246,9 @@ size_flags_vertical = 3
 script = ExtResource("6_yns4e")
 timeline = NodePath("../Main/Timeline/LowerTimeline")
 
-[node name="Storage" type="Node" parent="."]
+[node name="Storage" type="Node" parent="." node_paths=PackedStringArray("saveSelector")]
 script = ExtResource("14_a2p4c")
+saveSelector = NodePath("SaveSelector")
 
 [node name="Serializer" type="Node" parent="Storage" node_paths=PackedStringArray("functionPalette", "upperTimeline", "audioGenerator", "lowerTimeline")]
 script = ExtResource("14_mqxfw")
@@ -311,6 +313,9 @@ offset_right = 500.0
 offset_bottom = 56.0
 placeholder_text = "Save as..."
 
+[node name="SaveSelector" parent="Storage" instance=ExtResource("20_ysibf")]
+position = Vector2i(-470, 0)
+
 [connection signal="ready" from="." to="." method="_on_ready"]
 [connection signal="LoadButtonPressed" from="Toolbar" to="Storage" method="OnToolBarLoadButtonPressed"]
 [connection signal="PlayButtonPressed" from="Toolbar" to="Main/Timeline" method="OnToolbarPlayButtonPressed"]
@@ -329,3 +334,4 @@ placeholder_text = "Save as..."
 [connection signal="pressed" from="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer/MarginContainer/Reset" to="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer" method="OnResetButton"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="AudioGenerator" method="OnAudioPlaybackFinished"]
 [connection signal="LowerTimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnLowerTimelineUpdated"]
+[connection signal="SelectedSave" from="Storage/SaveSelector" to="Storage" method="OnSaveSelected"]
