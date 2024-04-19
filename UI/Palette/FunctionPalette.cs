@@ -90,11 +90,17 @@ public partial class FunctionPalette : Node
 	/// </summary>
 	private void OnButtonPressed()
 	{
-		if (_container == null || _functionContainer == null) return;
-		FunctionContainer instance = (FunctionContainer) _functionContainer.Instantiate();
-		instance.FunctionPalette = this;
-		_container.AddChild(instance);
+		AddFunction();
 	}
+
+	private FunctionContainer AddFunction()
+	{
+        if (_container == null || _functionContainer == null) return null;
+        FunctionContainer instance = (FunctionContainer)_functionContainer.Instantiate();
+        instance.FunctionPalette = this;
+        _container.AddChild(instance);
+		return instance;
+    }
 
 	/// <summary>
 	/// Calls C# and Godot dragged events.
@@ -124,7 +130,32 @@ public partial class FunctionPalette : Node
 	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
 	public Dictionary Save() {
 		var res = new Dictionary();
+		Array<Dictionary<string, Variant>> functionStings = new Array<Dictionary<string, Variant>>();
+		Array<Node> functionNodes = _container!.GetChildren();
+		foreach (var functionNode in functionNodes)
+		{
+			FunctionContainer fc = (FunctionContainer) functionNode;
+			if (fc == null) continue;
+			Dictionary<string, Variant> functionDictionary = new Dictionary<string, Variant>();
+			functionDictionary.Add("TextRepresentation", fc.Function.TextRepresentation);
+			functionDictionary.Add("StartTime", fc.Function.StartTime);
+			functionDictionary.Add("EndTime", fc.Function.EndTime);
+			functionStings.Add(functionDictionary);
+		}
+		res.Add("Functions", functionStings);
 		return res;
+	}
+
+	public void Load(Dictionary dictionary)
+	{
+		Array<Dictionary<string, Variant>> functionStings;
+		if (!dictionary.TryGetValue("Functions", out Variant functionsListVariant)) return;
+		functionStings = (Array<Dictionary<string, Variant>>) functionsListVariant;
+		foreach (var functionString in functionStings)
+		{
+			AddFunction();
+		}
+		GD.Print(functionStings);
 	}
 
 	public void GraphFunction(Function fn)

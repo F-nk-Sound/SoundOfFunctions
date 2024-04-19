@@ -13,7 +13,7 @@ public partial class Function : Node
 	/// Input text that function is parsed from. <br/>
 	/// </summary>
 	[JsonRequired]
-	private string TextRepresentation { get; }
+	public string TextRepresentation { get; }
 
 	/// <summary>
 	/// Stores the AST of the Function.
