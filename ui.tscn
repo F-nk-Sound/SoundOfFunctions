@@ -11,7 +11,6 @@
 [ext_resource type="Script" path="res://Sonifcation/AudioGenerator.cs" id="6_yns4e"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
-[ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
 [ext_resource type="PackedScene" uid="uid://rjw4sfomfd0q" path="res://Graphing/function_renderer.tscn" id="12_ivlup"]
@@ -19,6 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://m48yl5tckgu4" path="res://Assets/FOTS UI/icons8-home-page-50.png" id="13_wjrfo"]
 [ext_resource type="Script" path="res://Serialization/IO.cs" id="14_a2p4c"]
 [ext_resource type="Script" path="res://Serialization/Serializer.cs" id="14_mqxfw"]
+[ext_resource type="PackedScene" uid="uid://c82ewuj4e6ylq" path="res://timeline_function_container.tscn" id="15_x5gp5"]
 
 [sub_resource type="GDScript" id="GDScript_jf14m"]
 script/source = "# Base line GD UI script
@@ -122,7 +122,7 @@ icon = ExtResource("10_sgbw4")
 [node name="Main" type="VSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-split_offset = -145
+split_offset = -185
 
 [node name="PaletteAndGraph" type="HSplitContainer" parent="Main"]
 layout_mode = 2
@@ -209,12 +209,14 @@ icon = ExtResource("13_wjrfo")
 flat = true
 icon_alignment = 2
 
-[node name="Timeline" type="PanelContainer" parent="Main" node_paths=PackedStringArray("timelineContainer", "functionPalette", "audioGenerator")]
+[node name="Timeline" type="PanelContainer" parent="Main" node_paths=PackedStringArray("timelineContainer", "functionPalette", "audioGenerator", "lowerTimeline")]
 layout_mode = 2
 script = ExtResource("4_1pkc6")
 timelineContainer = NodePath("VBoxContainer/ScrollContainer/TimelineContainer")
 functionPalette = NodePath("../PaletteAndGraph/Function Palette")
 audioGenerator = NodePath("../../AudioGenerator")
+lowerTimeline = NodePath("LowerTimeline")
+timelineFunctionContainer = ExtResource("15_x5gp5")
 
 [node name="LowerTimeline" type="Node" parent="Main/Timeline"]
 script = ExtResource("13_lr367")
@@ -233,12 +235,11 @@ text = "Timeline"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Main/Timeline/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="TimelineContainer" type="HBoxContainer" parent="Main/Timeline/VBoxContainer/ScrollContainer"]
 layout_mode = 2
-
-[node name="TimelineContainer" parent="Main/Timeline/VBoxContainer/ScrollContainer/TimelineContainer" instance=ExtResource("9_jons1")]
-layout_mode = 2
+size_flags_vertical = 3
 
 [node name="AudioGenerator" type="Node" parent="." node_paths=PackedStringArray("timeline")]
 script = ExtResource("6_yns4e")
@@ -314,7 +315,7 @@ placeholder_text = "Save as..."
 [connection signal="LoadButtonPressed" from="Toolbar" to="Storage" method="OnToolBarLoadButtonPressed"]
 [connection signal="PlayButtonPressed" from="Toolbar" to="Main/Timeline" method="OnToolbarPlayButtonPressed"]
 [connection signal="SaveButtonPressed" from="Toolbar" to="Storage" method="OnToolbarSaveButtonPressed"]
-[connection signal="pressed" from="Toolbar/HBoxContainer/Save" to="Toolbar" method="OnPlayButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Save" to="Toolbar" method="OnSaveButtonPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Load" to="Toolbar" method="OnLoadButtonPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Undo" to="Toolbar" method="OnUndoPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Redo" to="Toolbar" method="OnRedoPressed"]

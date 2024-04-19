@@ -36,7 +36,7 @@ public partial class AudioGenerator : Node {
 
 	private void OnLowerTimelineUpdated() {
 		// Introduce the new timeline.
-		AudioDebugging.Output("\tNew Timeline Processing Before Added as Child: " + timeline.IsProcessing());
+		AudioDebugging.Output("\tNew Timeline Processing Before Added as Child: " + timeline!.IsProcessing());
 		foreach (Node n in timeline.GetChildren()) 
 		{
 			if (n is Function) n.SetProcess(false);
@@ -79,8 +79,8 @@ public partial class AudioGenerator : Node {
 	public void Play() {
 		AudioDebugging.Output("AudioGenerator.Play(): IsPlaying = " + IsPlaying);
 		if(!IsPlaying) {
-			timeline.StartPlaying();
-			IsPlaying = true;
+			if (timeline!.StartPlaying())
+				IsPlaying = true;
 		}
 	}
 
@@ -88,32 +88,31 @@ public partial class AudioGenerator : Node {
 	/// Assorted test Functions organized and added to the timeline for playback.
 	/// </summary>
 	public void AddTests() {
-		IFunctionAST t_squared = Bridge.Parse("t^2").Unwrap();
-		IFunctionAST poly = Bridge.Parse("t^2 + 3t + 4").Unwrap();
-		IFunctionAST three_t_plus_four = Bridge.Parse("3t + 4").Unwrap();
-		IFunctionAST sin_3t = Bridge.Parse("sin(3*t)").Unwrap();
-		IFunctionAST sin_3_pi_t = Bridge.Parse("sin(3 * 3.14159 * t)").Unwrap();
-		IFunctionAST inverse = Bridge.Parse("2/t").Unwrap();
-		IFunctionAST tan = Bridge.Parse("tan(3t)").Unwrap();
-		IFunctionAST A4 = Bridge.Parse("49").Unwrap();
-		IFunctionAST zero = Bridge.Parse("0").Unwrap();
-		IFunctionAST negA4 = Bridge.Parse("-49").Unwrap();
-		IFunctionAST sin3t_plus_3sint = Bridge.Parse("sin(3t) + 3sin(t)").Unwrap();
-		IFunctionAST t_plus_5 = Bridge.Parse("t + 5").Unwrap();
+		// IFunctionAST t_squared = Bridge.Parse("t^2").Unwrap();
+		// IFunctionAST poly = Bridge.Parse("t^2 + 3t + 4").Unwrap();
+		// IFunctionAST three_t_plus_four = Bridge.Parse("3t + 4").Unwrap();
+		// IFunctionAST sin_3t = Bridge.Parse("sin(3*t)").Unwrap();
+		// IFunctionAST sin_3_pi_t = Bridge.Parse("sin(3 * 3.14159 * t)").Unwrap();
+		// IFunctionAST inverse = Bridge.Parse("2/t").Unwrap();
+		// IFunctionAST tan = Bridge.Parse("tan(3t)").Unwrap();
+		// IFunctionAST A4 = Bridge.Parse("49").Unwrap();
+		// IFunctionAST zero = Bridge.Parse("0").Unwrap();
+		// IFunctionAST negA4 = Bridge.Parse("-49").Unwrap();
+		// IFunctionAST sin3t_plus_3sint = Bridge.Parse("sin(3t) + 3sin(t)").Unwrap();
+		// IFunctionAST t_plus_5 = Bridge.Parse("t + 5").Unwrap();
 
-		// Function inverseFunc = new Function("2/t", inverse);		
-		// Function sumOfSines = new Function("sin(3t) + 3sin(t)", sin3t_plus_3sint);
-		// Function negA4Func = new Function("-49", negA4);
-		// Function zeroFunc = new Function("0", zero);
+		// // Function inverseFunc = new Function("2/t", inverse);		
+		// // Function sumOfSines = new Function("sin(3t) + 3sin(t)", sin3t_plus_3sint);
+		// // Function negA4Func = new Function("-49", negA4);
+		// // Function zeroFunc = new Function("0", zero);
 
-		// Function tanFunc = new Function("tan(3t)", tan);
-		// Function tPlus5Func = new Function("t + 5", t_plus_5);
-		string func = "1000t";
-		Function f = new(func, Bridge.Parse(func).Unwrap())
-		{
-			EndTime = 10,
-		};
-		timeline.Add(f);
+		// // Function tanFunc = new Function("tan(3t)", tan);
+		// // Function tPlus5Func = new Function("t + 5", t_plus_5);
+		// string func = "1000t";
+		// Function f = new(func, Bridge.Parse(func).Unwrap())
+		// {
+		// 	EndTime = 10,
+		// };
 		// Function sineFunc1 = new Function("sin(3*3.14159*t)", sin_3_pi_t);
 		// Function linearFunc = new Function("3t + 4", three_t_plus_four);
 		// Function squareFunc = new Function("t^2", t_squared);

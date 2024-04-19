@@ -77,62 +77,68 @@ public partial class FunctionContainer : Control
 	/// <param name="event"></param>
 	public override void _Input(InputEvent @event)
 	{
-		base._Input(@event);
-		if (FunctionPalette == null) return;
+		// base._Input(@event);
+		// if (FunctionPalette == null) return;
 
-		if (@event is InputEventMouseButton mouseEvent)
-		{
-			
-			if (_holding && _dragging && !mouseEvent.Pressed)
-			{
-				_holding = false;
-				_dragging = false;
-				FunctionPalette.OnDraggedEvent(mouseEvent.Position);
-				FunctionPalette.RemoveChild(_functionContainerCopy);
-			}
+		// if (@event is InputEventMouseButton mouseEvent)
+		// {
+		// 	if (_holding && _dragging && !mouseEvent.Pressed)
+		// 	{
+		// 		_holding = false;
+		// 		_dragging = false;
+		// 		FunctionPalette.OnDraggedEvent(mouseEvent.Position);
+		// 		FunctionPalette.RemoveChild(_functionContainerCopy);
+		// 	}
 
-			if (mouseEvent.Position.X <= GlobalPosition.X
-				|| mouseEvent.Position.X >= GlobalPosition.X + Size.X
-				|| mouseEvent.Position.Y <= GlobalPosition.Y
-				|| mouseEvent.Position.Y >= GlobalPosition.Y + Size.Y)
-				return;
+		// 	if (mouseEvent.Position.X <= GlobalPosition.X
+		// 		|| mouseEvent.Position.X >= GlobalPosition.X + Size.X
+		// 		|| mouseEvent.Position.Y <= GlobalPosition.Y
+		// 		|| mouseEvent.Position.Y >= GlobalPosition.Y + Size.Y)
+		// 		return;
 
-			if (!_holding && mouseEvent.Pressed)
-			{
-				_holding = true;
-			}
+		// 	if (!_holding && mouseEvent.Pressed)
+		// 	{
+		// 		_holding = true;
+		// 	}
 
-			if (_holding && mouseEvent.IsReleased())
-			{
-				_holding = false;
-			}
-		}
-		else
-		{
-			if (@event is InputEventMouseMotion motionEvent && _holding)
-			{
-				if ((motionEvent.Position.X <= GlobalPosition.X
-				|| motionEvent.Position.X >= GlobalPosition.X + Size.X
-				|| motionEvent.Position.Y <= GlobalPosition.Y
-				|| motionEvent.Position.Y >= GlobalPosition.Y + Size.Y)
-				&& !_dragging)
-				{
-					_functionContainerCopy = (FunctionContainer)Duplicate();
-					_functionContainerCopy._isCopy = true;
-					_functionContainerCopy.Position = motionEvent.Position - Size / 2;
-					FunctionPalette.AddChild(_functionContainerCopy);
-					_dragging = true;
-				}
-				if (_dragging && _functionContainerCopy != null)
-				{
-					FunctionPalette.OnDraggingEvent(motionEvent.Position);
-					_functionContainerCopy.Position = motionEvent.Position - Size / 2;
-				}
-			}
-		}
+		// 	if (_holding && mouseEvent.IsReleased())
+		// 	{
+		// 		_holding = false;
+		// 	}
+		// }
+		// else
+		// {
+		// 	if (@event is InputEventMouseMotion motionEvent && _holding)
+		// 	{
+		// 		if ((motionEvent.Position.X <= GlobalPosition.X
+		// 		|| motionEvent.Position.X >= GlobalPosition.X + Size.X
+		// 		|| motionEvent.Position.Y <= GlobalPosition.Y
+		// 		|| motionEvent.Position.Y >= GlobalPosition.Y + Size.Y)
+		// 		&& !_dragging)
+		// 		{
+		// 			_functionContainerCopy = (FunctionContainer)Duplicate();
+		// 			_functionContainerCopy._isCopy = true;
+		// 			_functionContainerCopy.Position = motionEvent.Position - Size / 2;
+		// 			FunctionPalette.AddChild(_functionContainerCopy);
+		// 			_dragging = true;
+		// 		}
+		// 		if (_dragging && _functionContainerCopy != null)
+		// 		{
+		// 			FunctionPalette.OnDraggingEvent(motionEvent.Position);
+		// 			_functionContainerCopy.Position = motionEvent.Position - Size / 2;
+		// 		}
+		// 	}
+		// }
 	}
 
-	public void GraphFunction()
+    public override Variant _GetDragData(Vector2 atPosition)
+    {
+		Control display = (Control)Duplicate();
+		SetDragPreview(display);
+		return Function;
+    }
+
+    public void GraphFunction()
 	{
 		FunctionPalette!.GraphFunction(Function);
 	}

@@ -30,12 +30,12 @@ public partial class LowerTimeline : Node {
 	/// <summary>
 	/// Current function being played by the Timeline.
 	/// </summary>
-	private int currFunction;       
+	private int currFunction;
 
 	/// <summary>
 	/// Runtime of the Timeline (in seconds).
 	/// </summary>    
-	public double RunTime {get; set;}				
+	public double RunTime => functions.Select(f => f.RunTime).Sum();			
 
 	/// <summary>
 	/// Number of Functions currently held within the LowerTimeline.
@@ -85,7 +85,6 @@ public partial class LowerTimeline : Node {
 	/// </summary>
 	public void Reset()
 	{
-		RunTime = 0;
 		currFunction = -1; // Initialized to -1 to indicate playing hasn't begun yet. 0 indexed quantity.
 		CurrPosition = 0.0;
 		IsPlaying = false;
@@ -100,9 +99,9 @@ public partial class LowerTimeline : Node {
 	/// <param name="func">Function to be added.</param>
 	public void Add(Function func) {
 		AudioDebugging.Output("Function Processing Pre Added To TL: " + func.IsProcessing());
-		AddChild(func);	
+		if (!IsAncestorOf(func))
+			AddChild(func);	
 		func.SetProcess(false);
-		RunTime += func.RunTime;
 		functions.Add(func);
 		AudioDebugging.Output("Function Processing Pre Added To TL: " + func.IsProcessing());
 		AudioDebugging.Output("Added to LowerTimeline: " + func.Name);
@@ -143,14 +142,14 @@ public partial class LowerTimeline : Node {
 	private void Play() {
 		// Stop playback if necessary
 		AudioDebugging.Output("\tEntered LowerTimeline.Play()");
-		if(StopPlaying() || currFunction > functions.Count) return;
+		if(StopPlaying() || currFunction >= functions.Count) return;
 
 		// Grab the current timer position and the time to allow the next function to play
 		int currTime = timer.ClockTimeRounded;
 		double updateTime = (currFunction == -1) ? functions.First().RunTime : functions[currFunction].RunTime;
 
 		// Play the functions within the timeline at the appropriate time
-		if(currFunction == -1 || (int) timer.ElapsedTime == updateTime) {
+		if(currFunction == -1 || timer.ElapsedTime >= updateTime) {
 			currFunction++;
 			functions[currFunction].StartPlaying();
 			timer.ResetTracking();

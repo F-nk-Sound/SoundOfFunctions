@@ -125,7 +125,7 @@ public partial class Function : Node
 	{
 		// Stopping Sonification
 		double currFreq = Frequencies.GetFrequency(FunctionAST.EvaluateAtT(t));
-		FadeOut(currFreq, 0.01);
+		FadeOut(currFreq, 0.05);
 		player.Stop();
 		SetProcess(false);
 		AudioDebugging.Output("Function " + Name + " Stopped");
@@ -149,7 +149,7 @@ public partial class Function : Node
 		phase = 0.0;
 
 		double initFreq = Frequencies.GetFrequency(FunctionAST.EvaluateAtT(StartTime));
-		FadeIn(initFreq, 0.01);
+		FadeIn(initFreq, 0.05);
 		Play();
 
 		// Successful initialization
