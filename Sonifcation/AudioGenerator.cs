@@ -18,7 +18,7 @@ public partial class AudioGenerator : Node {
 	/// <summary>
 	/// If <c> true </c>, AudioGenerator playback is active.
 	/// </summary>
-	public bool IsPlaying { get;set; }
+	public bool IsPlaying => timeline!.IsPlaying;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
@@ -69,7 +69,6 @@ public partial class AudioGenerator : Node {
 	/// Handles the case where the timeline has indicated audio playback is finished.
 	/// </summary>
 	private void OnAudioPlaybackFinished() {
-		IsPlaying = false;
 		GD.Print("---Playback Over---");
 	}
 
@@ -79,8 +78,7 @@ public partial class AudioGenerator : Node {
 	public void Play() {
 		AudioDebugging.Output("AudioGenerator.Play(): IsPlaying = " + IsPlaying);
 		if(!IsPlaying) {
-			if (timeline!.StartPlaying())
-				IsPlaying = true;
+			timeline!.StartPlaying();
 		}
 	}
 

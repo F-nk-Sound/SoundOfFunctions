@@ -63,7 +63,7 @@ public partial class UpperTimeline : Control
 			TimelineFunctionContainer container = timelineFunctionContainer!.Instantiate<TimelineFunctionContainer>();
 			container.StartTime = f.StartTime;
 			container.EndTime = f.EndTime;
-			container.LatexString = f.FunctionAST.Latex;
+			container.LatexString = f.FunctionAST!.Latex;
 			container.Timeline = lowerTimeline;
 			container.Index = lowerTimeline.Count - 1;
 			timelineContainer!.AddChild(container);

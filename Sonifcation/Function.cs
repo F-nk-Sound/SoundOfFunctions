@@ -13,13 +13,13 @@ public partial class Function : Node
 	/// Input text that function is parsed from. <br/>
 	/// </summary>
 	[JsonRequired]
-	private string TextRepresentation { get; }
+	public string? TextRepresentation { get; set; }
 
 	/// <summary>
 	/// Stores the AST of the Function.
 	/// </summary>
 	[JsonIgnore]
-	public IFunctionAST FunctionAST { get; set; }
+	public IFunctionAST? FunctionAST { get; set; }
 
 	/// <summary>
 	/// Function starting time point. <br/>
@@ -53,18 +53,8 @@ public partial class Function : Node
 	double t;
 	double phase;
 
-	/// <summary>
-	/// Initializes a new Function Node w/ a domain of [-5,5].
-	/// </summary>
-	/// <param name="textRepresentation">This Functions Name (i.e., its text representation before parsing).</param>
-	/// <param name="functionAST">The AST that represents the function.</param>
-	public Function(string textRepresentation, IFunctionAST functionAST)
+	public Function()
 	{
-		// Banal Characteristics
-		TextRepresentation = textRepresentation;
-		Name = textRepresentation;
-		FunctionAST = functionAST;
-
 		// Default start and stop
 		t = StartTime;
 		Timer = new();
@@ -76,7 +66,6 @@ public partial class Function : Node
 			{
 				MixRate = 44100,
 			},
-			Name = "[" + textRepresentation + "]Player"
 		};
 
 		// Add player to scene tree
@@ -85,6 +74,32 @@ public partial class Function : Node
 		SetProcess(false);
 		AddChild(player);
 		AudioDebugging.Output("Function Processing PostSet: " + IsProcessing());
+	}
+
+	/// <summary>
+	/// Initializes a new Function Node w/ a domain of [-5,5].
+	/// </summary>
+	/// <param name="textRepresentation">This Functions Name (i.e., its text representation before parsing).</param>
+	/// <param name="functionAST">The AST that represents the function.</param>
+	public Function(string textRepresentation, IFunctionAST functionAST, int startTime, int endTime) : this()
+	{
+		Initialize(textRepresentation, functionAST, startTime, endTime);
+	}
+
+	/// <summary>
+	/// Must be called if the parameterless constructor is used.
+	/// </summary>
+	/// <param name="textRepresentation"></param>
+	/// <param name="functionAST"></param>
+	public void Initialize(string textRepresentation, IFunctionAST functionAST, int startTime, int endTime)
+	{
+		// Banal Characteristics
+		TextRepresentation = textRepresentation;
+		Name = textRepresentation;
+		FunctionAST = functionAST;
+		player.Name = $"[{textRepresentation}] Player";
+		StartTime = startTime;
+		EndTime = endTime;
 	}
 
 	Vector2 CreateSinWaveFrame(double freq, double sampleRate)
@@ -109,7 +124,7 @@ public partial class Function : Node
 			if (t >= EndTime)
 				break;
 
-			double frequency = Frequencies.GetFrequency(FunctionAST.EvaluateAtT(t));
+			double frequency = Frequencies.GetFrequency(FunctionAST!.EvaluateAtT(t));
 
 			var frame = CreateSinWaveFrame(frequency, sampleRate);
 
@@ -124,7 +139,7 @@ public partial class Function : Node
 	public bool StopPlaying()
 	{
 		// Stopping Sonification
-		double currFreq = Frequencies.GetFrequency(FunctionAST.EvaluateAtT(t));
+		double currFreq = Frequencies.GetFrequency(FunctionAST!.EvaluateAtT(t));
 		FadeOut(currFreq, 0.05);
 		player.Stop();
 		SetProcess(false);
@@ -148,7 +163,7 @@ public partial class Function : Node
 		t = StartTime;
 		phase = 0.0;
 
-		double initFreq = Frequencies.GetFrequency(FunctionAST.EvaluateAtT(StartTime));
+		double initFreq = Frequencies.GetFrequency(FunctionAST!.EvaluateAtT(StartTime));
 		FadeIn(initFreq, 0.05);
 		Play();
 
@@ -159,7 +174,7 @@ public partial class Function : Node
 	void FadeIn(double freq, double time)
 	{
 		double sampleRate = Generator.MixRate;
-		for (double i = 0; i < time; i += 1 / sampleRate) 
+		for (double i = 0; i < time; i += 1 / sampleRate)
 		{
 			if (Playback.GetFramesAvailable() == 0)
 				break; // the buffer is less than the fade in time; that's ridiculously low
@@ -202,7 +217,7 @@ public partial class Function : Node
 
 	public void Info()
 	{
-		GD.Print("\tText:" + TextRepresentation + "\tLaTex(" + FunctionAST.Latex + ")");
+		GD.Print("\tText:" + TextRepresentation + "\tLaTex(" + FunctionAST!.Latex + ")");
 	}
 
 	/// <summary>
@@ -212,7 +227,7 @@ public partial class Function : Node
 	public Godot.Collections.Dictionary Save()
 	{
 		var res = new Godot.Collections.Dictionary {
-			{ "TextRepresentation", TextRepresentation },
+			{ "TextRepresentation", TextRepresentation! },
 			{ "StartTime", StartTime },
 			{ "EndTime", EndTime }
 		};
