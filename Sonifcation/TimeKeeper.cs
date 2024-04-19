@@ -136,6 +136,22 @@ public class TimeKeeper {
     }
 
     /// <summary>
+    /// Resets the TimeKeeper to default settings and begins counting from indicated time in seconds.
+    /// </summary>
+    /// <param name="startTime">Time to being counting at.</param>
+    public void Reset(double startTime) {
+        ClockTimeAbsolute = startTime;
+        ClockTimeRounded = (int) startTime;
+        ElapsedTime = 0.0;
+        lastTime = ClockTimeRounded;
+        thisTime = ClockTimeRounded;
+        trackingStartTime = 0.0;
+        IsTracking = false;
+        isPaused = false;
+        IsTimeChanged = false;
+    }
+
+    /// <summary>
     /// Enables the TimeKeepers Tracking Mode.
     /// </summary>
     /// <exception cref="Exception">Thrown if an attempt to Enable Tracking Mode happens while the TimeKeeper is paused.</exception>

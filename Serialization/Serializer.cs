@@ -72,7 +72,6 @@ public partial class Serializer : Node {
 	[Signal]
 	public delegate void AutoSaveOccurredEventHandler();
 
-
 	/// <summary>
 	/// Godot event called when a Function Palette Node has been loaded from Json.
 	/// </summary>

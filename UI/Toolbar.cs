@@ -5,7 +5,7 @@ using System;
 namespace UI;
 
 public partial class Toolbar : Control
-{
+{	
 
 	/// <summary>
 	/// Godot signal emitted when the play button is pressed.
@@ -25,6 +25,18 @@ public partial class Toolbar : Control
 	[Signal]
 	public delegate void LoadButtonPressedEventHandler();
 
+	/// <summary>
+	/// Godot signal emitted when the previous button is pressed.
+	/// </summary>
+	[Signal]
+	public delegate void PreviousButtonPressedEventHandler();
+
+	/// <summary>
+	/// Godot signal emitted when the next button is pressed.
+	/// </summary>
+	[Signal]
+	public delegate void NextButtonPressedEventHandler();
+
 	public override void _Ready()
 	{
 	}
@@ -32,29 +44,26 @@ public partial class Toolbar : Control
 	private void OnPlayButtonPressed()
 	{
 		EmitSignal(SignalName.PlayButtonPressed);
-		GD.Print("\nPlay");
 	}
 
 	private void OnLoadButtonPressed()
 	{
-		GD.Print("Load");
 		EmitSignal(SignalName.LoadButtonPressed);
 	}
 
 	private void OnSaveButtonPressed()
 	{
-		GD.Print("Save");
 		EmitSignal(SignalName.SaveButtonPressed);
 	}
 
-	private void OnBeginningButtonPressed()
-	{
-		GD.Print("Beginning");
+	private void OnPreviousButtonPressed()
+	{	
+		EmitSignal(SignalName.PreviousButtonPressed);
 	}
 
-	private void OnEndingButtonPressed()
+	private void OnNextButtonPressed()
 	{
-		GD.Print("Ending");
+		EmitSignal(SignalName.NextButtonPressed);
 	}
 
 	private void OnRedoPressed()

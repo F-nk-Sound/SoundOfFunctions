@@ -1,7 +1,6 @@
 using Godot;
 
 using Functions;
-using Newtonsoft.Json;
 namespace Sonification;
 
 /// <summary>
@@ -12,13 +11,11 @@ public partial class Function : Node
 	/// <summary>
 	/// Input text that function is parsed from. <br/>
 	/// </summary>
-	[JsonRequired]
 	public string? TextRepresentation { get; set; }
 
 	/// <summary>
 	/// Stores the AST of the Function.
 	/// </summary>
-	[JsonIgnore]
 	public IFunctionAST? FunctionAST { get; set; }
 
 	/// <summary>
@@ -69,11 +66,8 @@ public partial class Function : Node
 		};
 
 		// Add player to scene tree
-		AudioDebugging.Output("Function Fully Initialized.");
-		AudioDebugging.Output("Function Processing PreSet: " + IsProcessing());
 		SetProcess(false);
 		AddChild(player);
-		AudioDebugging.Output("Function Processing PostSet: " + IsProcessing());
 	}
 
 	/// <summary>
