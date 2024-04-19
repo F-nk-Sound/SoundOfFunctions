@@ -8,7 +8,7 @@ namespace UI;
 public partial class UpperTimeline : Control
 {
 	[Export]
-	private HBoxContainer? timelineContainer;
+	public HBoxContainer? timelineContainer;
 
 	// I believe I'm gonna need to reference the functionPalette's drag and drop
 	[Export]
@@ -22,7 +22,7 @@ public partial class UpperTimeline : Control
 	LowerTimeline? lowerTimeline;
 
 	[Export]
-	PackedScene? timelineFunctionContainer;
+	public PackedScene? timelineFunctionContainer;
 
 	private void OnButtonPressed()
 	{

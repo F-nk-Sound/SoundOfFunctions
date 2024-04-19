@@ -25,11 +25,11 @@ public partial class Toolbar : Control
 	[Signal]
 	public delegate void LoadButtonPressedEventHandler();
 
-    public override void _Ready()
-    {
-    }
+	public override void _Ready()
+	{
+	}
 
-    private void OnPlayButtonPressed()
+	private void OnPlayButtonPressed()
 	{
 		EmitSignal(SignalName.PlayButtonPressed);
 		GD.Print("\nPlay");
