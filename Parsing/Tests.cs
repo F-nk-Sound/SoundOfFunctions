@@ -1,6 +1,7 @@
 using Functions;
 using Godot;
 using Xunit;
+using System;
 
 namespace Parsing;
 
@@ -32,6 +33,8 @@ public class Tests
 
 	[Theory]
 	[InlineData("3 + 3", 6)]
+	[InlineData("5 % 3", 2)]
+	[InlineData("pi % 2pi", Math.PI)]
 	public void ArithmeticCalculations(string input, double output)
 	{
 		IFunctionAST ast = Bridge.Parse(input).Unwrap();
@@ -44,5 +47,13 @@ public class Tests
 	public void ComplexFunctionsParse(string input)
 	{
 		IFunctionAST _ = Bridge.Parse(input).Unwrap();
+	}
+
+	[Theory]
+	[InlineData("5e % 2pi", "5\\e % 2\\pi")]
+	public void LatexDisplay(string input, string expected)
+	{
+		IFunctionAST ast = Bridge.Parse(input).Unwrap();
+		Assert.Equal(expected, ast.Latex);
 	}
 }

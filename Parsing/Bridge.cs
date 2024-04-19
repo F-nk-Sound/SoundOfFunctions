@@ -18,10 +18,13 @@ public unsafe struct CtorTable
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newCeil = &NewCeil;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newCosine = &NewCosine;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> newDivide = &NewDivide;
+	delegate* unmanaged[Cdecl]<IntPtr> newE = &NewE;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> newExponent = &NewExponent;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newFloor = &NewFloor;
+	delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> newModulo = &NewModulo;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> newMultiply = &NewMultiply;
 	delegate* unmanaged[Cdecl]<double, IntPtr> newNumber = &NewNumber;
+	delegate* unmanaged[Cdecl]<IntPtr> newPi = &NewPi;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newSine = &NewSine;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> newSubtract = &NewSubtract;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newTangent = &NewTangent;
@@ -31,6 +34,9 @@ public unsafe struct CtorTable
 	// Non-fields go below here
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewNumber(double value) => NewHandle(new Number(value));
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	unsafe static IntPtr NewPi() => NewHandle(new Pi());
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewString(byte* ptr, nuint len)
@@ -52,27 +58,30 @@ public unsafe struct CtorTable
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewSubtract(IntPtr l, IntPtr r) => NewHandle(
-	   new Subtract(
+	   	new Subtract(
 		   FromHandle(l),
 		   FromHandle(r)
-	   )
+	   	)
    );
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewMultiply(IntPtr l, IntPtr r) => NewHandle(
-	   new Multiply(
+	   	new Multiply(
 		   FromHandle(l),
 		   FromHandle(r)
-	   )
+	   	)
    );
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewDivide(IntPtr l, IntPtr r) => NewHandle(
-		 new Divide(
-			 FromHandle(l),
-			 FromHandle(r)
-		 )
+		new Divide(
+			FromHandle(l),
+			FromHandle(r)
+		)
 	 );
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	unsafe static IntPtr NewE() => NewHandle(new E());
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewExponent(IntPtr b, IntPtr p) => NewHandle(new Exponent(FromHandle(b), FromHandle(p)));
@@ -87,6 +96,9 @@ public unsafe struct CtorTable
 	unsafe static IntPtr NewFloor(IntPtr inner) => NewHandle(new Floor(FromHandle(inner)));
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	unsafe static IntPtr NewModulo(IntPtr l, IntPtr r) => NewHandle(new Modulo(FromHandle(l), FromHandle(r)));
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewSine(IntPtr inner) => NewHandle(new Sine(FromHandle(inner)));
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -99,7 +111,7 @@ public unsafe struct CtorTable
 	/// A list of all GCHandles currently allocated, to be cleared once the foreign code is done 
 	/// using them.
 	/// 
-	/// Thread local so that multiple threads can use it freely.
+	/// Thread local so that multiple threads can use this API freely.
 	/// </summary>
 	static readonly ThreadLocal<List<GCHandle>> activeHandles = new(() => new());
 
