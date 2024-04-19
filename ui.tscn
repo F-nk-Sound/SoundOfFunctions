@@ -250,12 +250,14 @@ timeline = NodePath("../Main/Timeline/LowerTimeline")
 script = ExtResource("14_a2p4c")
 saveSelector = NodePath("SaveSelector")
 
-[node name="Serializer" type="Node" parent="Storage" node_paths=PackedStringArray("functionPalette", "upperTimeline", "audioGenerator", "lowerTimeline")]
+[node name="Serializer" type="Node" parent="Storage" node_paths=PackedStringArray("functionPalette", "upperTimeline", "audioGenerator", "lowerTimeline", "upperTimelineContainer")]
 script = ExtResource("14_mqxfw")
 functionPalette = NodePath("../../Main/PaletteAndGraph/Function Palette")
 upperTimeline = NodePath("../../Main/Timeline")
 audioGenerator = NodePath("../../AudioGenerator")
 lowerTimeline = NodePath("../../Main/Timeline/LowerTimeline")
+upperTimelineFunctionContainer = ExtResource("15_x5gp5")
+upperTimelineContainer = NodePath("../../Main/Timeline/VBoxContainer/ScrollContainer/TimelineContainer")
 
 [node name="FileExplorer" type="FileDialog" parent="Storage"]
 mode = 4
@@ -333,5 +335,5 @@ position = Vector2i(-470, 0)
 [connection signal="pressed" from="Main/PaletteAndGraph/Function Palette/VBoxContainer/Add function + button" to="Main/PaletteAndGraph/Function Palette" method="OnButtonPressed"]
 [connection signal="pressed" from="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer/MarginContainer/Reset" to="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer" method="OnResetButton"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="AudioGenerator" method="OnAudioPlaybackFinished"]
-[connection signal="LowerTimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnLowerTimelineUpdated"]
+[connection signal="TimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnTimelineUpdated"]
 [connection signal="SelectedSave" from="Storage/SaveSelector" to="Storage" method="OnSaveSelected"]

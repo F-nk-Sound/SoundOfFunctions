@@ -22,7 +22,7 @@ public partial class UpperTimeline : Control
 	LowerTimeline? lowerTimeline;
 
 	[Export]
-	public PackedScene? timelineFunctionContainer;
+	PackedScene? timelineFunctionContainer;
 
 	private void OnButtonPressed()
 	{

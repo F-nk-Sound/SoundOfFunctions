@@ -36,6 +36,12 @@ public partial class Serializer : Node {
 	[Export]
 	private LowerTimeline? lowerTimeline;
 
+	[Export]
+	PackedScene? upperTimelineFunctionContainer;
+
+	[Export]
+	HBoxContainer? upperTimelineContainer;
+
 	/// <summary>
 	/// File name to be added as name of each component for identification purposes.
 	/// </summary>
@@ -58,23 +64,14 @@ public partial class Serializer : Node {
 	/// <summary>
 	/// Godot event called when a Function Palette Node has been loaded from Json.
 	/// </summary>
-	/// <param name="fp">FunctionPalette Node that was loaded from JSON.</param>
 	[Signal]
 	public delegate void FunctionPaletteLoadedEventHandler();
 
 	/// <summary>
-	/// Godot event called when an Upper Timeline Node has been loaded from Json.
+	/// Godot event called when a the Timeline has been loaded form Json.
 	/// </summary>
-	/// <param name="ut">UpperTimeline Node that was loaded from JSON.</param>
 	[Signal]
-	public delegate void UpperTimelineLoadedEventHandler();
-
-	/// <summary>
-	/// Godot event called when a Lower Timeline Node has been loaded from Json.
-	/// </summary>
-	/// <param name="ut">LowerTimeline Node that was loaded from JSON.</param>
-	[Signal]
-	public delegate void LowerTimelineLoadedEventHandler();
+	public delegate void TimelineLoadedEventHandler();
 
 	public override void _Ready() {
 		// Grab relevant signals.
@@ -119,6 +116,12 @@ public partial class Serializer : Node {
 		Error errorReadingFile = jsonLoader.Parse(json);
 		if(errorReadingFile != Error.Ok) return;
 
+		// Set state (not set variable serialization mode from incorrect signal usage in IO).
+		string extension = path.Split('.')[1];
+		if(extension.Equals("sfu")) state = (int) IO.SerializationMode.COMPLETE_DECK;
+		else if(extension.Equals("sftl")) state = (int) IO.SerializationMode.TIMELINE;
+		else if(extension.Equals("sfp")) state = (int) IO.SerializationMode.FUNCTION_PALETTE;
+		
 		// Begin file deserialization.
 		var configData = (Dictionary) jsonLoader.Data;     
 		switch (state) {
@@ -152,13 +155,6 @@ public partial class Serializer : Node {
 			res.Add("FunctionPalette", functionPalette.Save());
 		}
 
-		// Serialize UpperTimeline.
-		if(upperTimeline != null) 
-		{
-			upperTimeline.Name = componentIdentifier + ".UpperTimeline";
-			res.Add("UpperTimeline", upperTimeline.Save());
-		}
-
 		// Serialize LowerTimeline.
 		if(lowerTimeline != null) 
 		{
@@ -176,13 +172,6 @@ public partial class Serializer : Node {
 	private string SerializeTimelineToJSON() 
 	{
 		var res = new Dictionary();
-
-		// Serialize UpperTimeline.
-		if(upperTimeline != null) 
-		{
-			upperTimeline.Name = componentIdentifier + ".UpperTimeline";
-			res.Add("UpperTimeline", upperTimeline.Save());
-		}
 
 		// Serialize LowerTimeline.
 		if(lowerTimeline != null) 
@@ -218,13 +207,11 @@ public partial class Serializer : Node {
 	{
 		// Grab component configuration data.
 		var paletteConfig = configData["FunctionPalette"].AsGodotDictionary();    
-		var upperTimelineConfig = configData["UpperTimeline"].AsGodotDictionary();        
 		var timelineConfig = configData["LowerTimeline"].AsGodotDictionary();  		
 
-		// Load all components.
+		// Load components.
 		LoadFunctionPalette(paletteConfig);
-		LoadUpperTimeline(upperTimelineConfig);
-		LoadLowerTimeline(timelineConfig);
+		LoadTimeline(timelineConfig);	
 	}  
 
 	/// <summary>
@@ -260,38 +247,29 @@ public partial class Serializer : Node {
 		EmitSignal(SignalName.FunctionPaletteLoaded);
 	}
 
-	private void LoadTimeline(Dictionary timelineDictionary) {
-		LoadLowerTimeline(timelineDictionary);	
-	}	
-
-	/// <summary>
-	/// Loads an UpperTimeline instance into the application.
-	/// </summary>
-	/// <param name="timelineDictionary">Dictionary holding information needed to create a LowerTimeline.</param>
-	private void LoadUpperTimeline(Dictionary timelineDictionary) 
-	{
-
-		// Send out function list to uppertimeline.
-		EmitSignal(SignalName.UpperTimelineLoaded);
-	}
-
 	/// <summary>
 	/// Loads a LowerTimeline instance into the application.
 	/// </summary>
 	/// <param name="timelineDictionary">Dictionary holding information needed to create a LowerTimeline.</param>
-	private void LoadLowerTimeline(Dictionary timelineDictionary) 
+	private void LoadTimeline(Dictionary timelineDictionary) 
 	{
 		// Grab all LowerTimeline information.
 		var timelineName = timelineDictionary["Name"].AsString();
 		var timelineCount = timelineDictionary["Count"].AsInt32();
 		var timelineFunctionDict = timelineDictionary["Functions"].AsGodotDictionary();
-	
-		// Create info.
-		List<Function> newFunctionList = new();
-		TimelineFunctionContainer container = upperTimeline!.timelineFunctionContainer!.Instantiate<TimelineFunctionContainer>();
-		HBoxContainer timelineContainer = new HBoxContainer();
+		
+		// Reset Lower Timeline.
+		lowerTimeline!.Reset();
+		lowerTimeline.Name = timelineName;
+		lowerTimeline.SetProcess(false);
 
-		// Iterate through functions and add to a new list.
+		// Reset Upper Timeline.
+		foreach(Node n in upperTimeline!.timelineContainer!.GetChildren()) {
+			upperTimeline.timelineContainer.RemoveChild(n);
+			n.QueueFree();
+		}
+		
+		// Iterate through functions and add them to the timeline.
 		for(int i = 0; i < timelineCount; i++) {
 			// Get Function Information.
 			var currFuncDict = timelineFunctionDict[i.ToString()].AsGodotDictionary();
@@ -299,38 +277,24 @@ public partial class Serializer : Node {
 			var startTime = (int) currFuncDict["StartTime"];
 			var textRepresentation = (string) currFuncDict["TextRepresentation"];
 
-			// Create Function and add it to the list.
+			// Create Function to add to Lower and Upper timeline.
 			Function newFunction = new(textRepresentation, Bridge.Parse(textRepresentation).Unwrap(), startTime, endTime);
 
-			newFunctionList.Add(newFunction);
-
+			// Create UpperTimeline container instance to store Function.
+			TimelineFunctionContainer container = upperTimelineFunctionContainer!.Instantiate<TimelineFunctionContainer>();
 			container.StartTime = newFunction.StartTime;
 			container.EndTime = newFunction.EndTime;
 			container.LatexString = newFunction!.FunctionAST!.Latex;
 			container.Timeline = lowerTimeline;
-			container.Index = lowerTimeline!.Count - 1;
-			timelineContainer.AddChild(container);
+			container.Index = i;
+
+			// Add Function to Upper and Lower Timeline.
+			upperTimelineContainer!.AddChild(container);
+			lowerTimeline.Add(newFunction);
 		}
 
-		// Update Timeline.
-		lowerTimeline!.Reset();
-		lowerTimeline.Name = timelineName;
-		lowerTimeline.SetProcess(false);
-		lowerTimeline.Add(newFunctionList);
-
-		// Update lower timeline.
-		upperTimeline!.Name = timelineName;
-		var childCount = upperTimeline.timelineContainer!.GetChildCount();
-		for(int i = childCount; i > 0; i++) {
-			Node n = upperTimeline.timelineContainer.GetChild(i);
-			n.QueueFree();
-			upperTimeline.timelineContainer.RemoveChild(n);
-		}
-		upperTimeline.timelineContainer = timelineContainer;
-
-		// Send out the new lower timeline.
-		EmitSignal(SignalName.LowerTimelineLoaded);
-		EmitSignal(SignalName.UpperTimelineLoaded);
+		// Send notice that the timeline has been loaded.
+		EmitSignal(SignalName.TimelineLoaded);
 	}
 
 }
