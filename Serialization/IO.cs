@@ -27,6 +27,9 @@ public partial class IO : Node
 	[Export]
 	private SaveSelector? saveSelector;
 
+	[Export]
+	RichTextLabel? autoSaveNotif;
+
 	/// <summary>
 	///  Holds the path where the file is to be loaded from/stored to.
 	/// </summary>
@@ -88,6 +91,7 @@ public partial class IO : Node
 		saveMenu.IndexPressed += OnSaveMenuIndexPressed;
 		GetNode<Serializer>("Serializer").ComponentSerialized += OnComponentSerialized;
 		GetNode<Serializer>("Serializer").ComponentDeSerialized += OnComponentDeSerialized;
+		GetNode<Serializer>("Serializer").AutoSaveOccurred += OnAutoSaveOccurred;
 	}
 
 	/// <summary>
@@ -254,4 +258,11 @@ public partial class IO : Node
 		confimationWindow.DialogText = fileName + " succesfully loaded.";
 		confimationWindow.Visible = true;
 	}
+
+	private async void OnAutoSaveOccurred() {
+		autoSaveNotif?.Show();
+		await ToSignal(GetTree().CreateTimer(1.5), SceneTreeTimer.SignalName.Timeout);
+		autoSaveNotif?.Hide();
+	}
+
 }

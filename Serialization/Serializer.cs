@@ -42,6 +42,11 @@ public partial class Serializer : Node {
 	[Export]
 	HBoxContainer? upperTimelineContainer;
 
+	[Export]
+	Timer? saveTimer;
+
+	private string autoSavePath = ProjectSettings.GlobalizePath("user://") + "saves/autosave.sfu";
+
 	/// <summary>
 	/// File name to be added as name of each component for identification purposes.
 	/// </summary>
@@ -62,6 +67,13 @@ public partial class Serializer : Node {
 	public delegate void ComponentDeSerializedEventHandler(string path);
 
 	/// <summary>
+	/// Godot event called when the application has been succesfully autosaved.
+	/// </summary>
+	[Signal]
+	public delegate void AutoSaveOccurredEventHandler();
+
+
+	/// <summary>
 	/// Godot event called when a Function Palette Node has been loaded from Json.
 	/// </summary>
 	[Signal]
@@ -72,6 +84,19 @@ public partial class Serializer : Node {
 	/// </summary>
 	[Signal]
 	public delegate void TimelineLoadedEventHandler();
+
+	/// <summary>
+	/// Tracks if the serializer is auto saving.
+	/// </summary>
+	private bool AutoSaveEnabled {
+		get { return _enable; }
+		set {
+			if(value != _enable) saveTimer!.Start();
+			_enable = value;
+		}
+
+	}
+	private bool _enable;
 
 	public override void _Ready() {
 		// Grab relevant signals.
@@ -96,8 +121,12 @@ public partial class Serializer : Node {
 		};
 		File.WriteAllText(path, saveFile);
 
-		// Send out succesful serialization signal.
-		EmitSignal(SignalName.ComponentSerialized, path);
+		// Enable auto saving.
+		if(!AutoSaveEnabled) AutoSaveEnabled = true;
+
+		// Send out succesful serialization signal or autosave signal.
+		if(path.Equals(autoSavePath)) EmitSignal(SignalName.AutoSaveOccurred);
+		else EmitSignal(SignalName.ComponentSerialized, path);
 	}
 
 	/// <summary>
@@ -297,4 +326,7 @@ public partial class Serializer : Node {
 		EmitSignal(SignalName.TimelineLoaded);
 	}
 
+	private void OnSaveTimerTimeout() {
+		OnReadyToSerialize((int)IO.SerializationMode.COMPLETE_DECK, autoSavePath);
+	}
 }
