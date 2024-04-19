@@ -13,7 +13,8 @@ namespace Serialization;
 /// <summary>
 /// Data serialization for the Application.
 /// </summary>
-public partial class Serializer : Node {
+public partial class Serializer : Node
+{
 
 	/// <summary>
 	/// Current FunctionPalette Node of the application.
@@ -76,28 +77,30 @@ public partial class Serializer : Node {
 	[Signal]
 	public delegate void LowerTimelineLoadedEventHandler();
 
-	public override void _Ready() {
+	public override void _Ready()
+	{
 		// Grab relevant signals.
-		((IO) GetParent()).ReadyToSerialize += OnReadyToSerialize; 
-		((IO) GetParent()).ReadyToDeSerialize += OnReadyToDeSerialize; 
+		((IO)GetParent()).ReadyToSerialize += OnReadyToSerialize;
+		((IO)GetParent()).ReadyToDeSerialize += OnReadyToDeSerialize;
 	}
-	
+
 	/// <summary>
 	/// Handles the event where the program is raedy to serialize data.
 	/// </summary>
 	/// <param name="state">Serializer save state. See <c>IO.SerializationMode</c> for more elaboration.</param>
-    /// <param name="path">File to create under which information will be serialzied.</param>
-	private void OnReadyToSerialize(int state, string path) 
+	/// <param name="path">File to create under which information will be serialzied.</param>
+	private void OnReadyToSerialize(int state, string path)
 	{
 		// Set the component identifier and serialize accordingly based on the serialization mode.
 		componentIdentifier = path.GetBaseName().Split("/").Last();
-        string? saveFile = state switch {
-            (int)IO.SerializationMode.COMPLETE_DECK => SerializeCompleteDeckToJSON(),
-            (int)IO.SerializationMode.TIMELINE => SerializeTimelineToJSON(),
-            (int)IO.SerializationMode.FUNCTION_PALETTE => SerializeFunctionPaletteToJSON(),
-            _ => null,
-        };
-        File.WriteAllText(path, saveFile);
+		string? saveFile = state switch
+		{
+			(int)IO.SerializationMode.COMPLETE_DECK => SerializeCompleteDeckToJSON(),
+			(int)IO.SerializationMode.TIMELINE => SerializeTimelineToJSON(),
+			(int)IO.SerializationMode.FUNCTION_PALETTE => SerializeFunctionPaletteToJSON(),
+			_ => null,
+		};
+		File.WriteAllText(path, saveFile);
 
 		// Send out succesful serialization signal.
 		EmitSignal(SignalName.ComponentSerialized, path);
@@ -107,31 +110,33 @@ public partial class Serializer : Node {
 	/// Handles the event where the program is raedy to deserialize data.
 	/// </summary>
 	/// <param name="state">Serializer load state. See <c>IO.SerializationMode</c> for more elaboration.</param>
-    /// <param name="path">File where information will be deserialized from.</param>
-	private void OnReadyToDeSerialize(int state, string path) {
+	/// <param name="path">File where information will be deserialized from.</param>
+	private void OnReadyToDeSerialize(int state, string path)
+	{
 
 		// Ensure File exists.
-		if(!Godot.FileAccess.FileExists(path)) return;
+		if (!Godot.FileAccess.FileExists(path)) return;
 
 		// Read file using Json Loader, Ensure file was properly parsed.
-		string json = Godot.FileAccess.GetFileAsString(path); 
-		Json jsonLoader = new(); 
+		string json = Godot.FileAccess.GetFileAsString(path);
+		Json jsonLoader = new();
 		Error errorReadingFile = jsonLoader.Parse(json);
-		if(errorReadingFile != Error.Ok) return;
+		if (errorReadingFile != Error.Ok) return;
 
 		// Begin file deserialization.
-		var configData = (Dictionary) jsonLoader.Data;     
-		switch (state) {
-            case (int) IO.SerializationMode.COMPLETE_DECK:
+		var configData = (Dictionary)jsonLoader.Data;
+		switch (state)
+		{
+			case (int)IO.SerializationMode.COMPLETE_DECK:
 				DeserializeJSONToCompleteDeck(configData);
-                break;
-            case (int) IO.SerializationMode.TIMELINE:
+				break;
+			case (int)IO.SerializationMode.TIMELINE:
 				DeserializeJSONToTimeline(configData);
-                break;
-            case (int) IO.SerializationMode.FUNCTION_PALETTE:
+				break;
+			case (int)IO.SerializationMode.FUNCTION_PALETTE:
 				DeserializeJSONToFunctionPalette(configData);
-                break;
-        }
+				break;
+		}
 
 		// Send out succesful deserialization signal.
 		EmitSignal(SignalName.ComponentDeSerialized, path);
@@ -141,26 +146,27 @@ public partial class Serializer : Node {
 	/// Serializes the applications current state by turning all relevant infomration to JSON.
 	/// </summary>
 	/// <returns>Returns the JSON file that holds all necessary information to load the application from said file.</returns>
-	private string SerializeCompleteDeckToJSON() {
+	private string SerializeCompleteDeckToJSON()
+	{
 
 		var res = new Dictionary();
 
 		// Serialize FunctionPalette.
-		if(functionPalette != null) 
+		if (functionPalette != null)
 		{
 			functionPalette.Name = componentIdentifier + ".FunctionPalette";
 			res.Add("FunctionPalette", functionPalette.Save());
 		}
 
 		// Serialize UpperTimeline.
-		if(upperTimeline != null) 
+		if (upperTimeline != null)
 		{
 			upperTimeline.Name = componentIdentifier + ".UpperTimeline";
 			res.Add("UpperTimeline", upperTimeline.Save());
 		}
 
 		// Serialize LowerTimeline.
-		if(lowerTimeline != null) 
+		if (lowerTimeline != null)
 		{
 			lowerTimeline.Name = componentIdentifier + ".LowerTimeline";
 			res.Add("LowerTimeline", lowerTimeline.Save());
@@ -173,19 +179,19 @@ public partial class Serializer : Node {
 	/// Serializes the Upper and Lower Timelines to JSON.
 	/// </summary>
 	/// <returns>Returns the JSON file that holds the timelines.</returns>
-	private string SerializeTimelineToJSON() 
+	private string SerializeTimelineToJSON()
 	{
 		var res = new Dictionary();
 
 		// Serialize UpperTimeline.
-		if(upperTimeline != null) 
+		if (upperTimeline != null)
 		{
 			upperTimeline.Name = componentIdentifier + ".UpperTimeline";
 			res.Add("UpperTimeline", upperTimeline.Save());
 		}
 
 		// Serialize LowerTimeline.
-		if(lowerTimeline != null) 
+		if (lowerTimeline != null)
 		{
 			lowerTimeline.Name = componentIdentifier + ".LowerTimeline";
 			res.Add("LowerTimeline", lowerTimeline.Save());
@@ -198,15 +204,15 @@ public partial class Serializer : Node {
 	/// Serializes the Function Palette to JSON.
 	/// </summary>
 	/// <returns>Returns the JSON file that holds the function palette.</returns>
-	private string SerializeFunctionPaletteToJSON() 
+	private string SerializeFunctionPaletteToJSON()
 	{
 		// Serialize FunctionPalette.
 		var res = new Dictionary();
-		if(functionPalette != null) 
+		if (functionPalette != null)
 		{
 			functionPalette.Name = componentIdentifier + ".FunctionPalette";
 			res.Add("FunctionPalette", functionPalette.Save());
-		}	
+		}
 		return Json.Stringify(res, "\t");
 	}
 
@@ -214,48 +220,48 @@ public partial class Serializer : Node {
 	/// Deserializes a JSON file which holds the information to load a previous complete save of the application.
 	/// </summary>
 	/// <param name="configData">Dictionary that holds configuration data for Function Palette and Timeline that make up this deck.</param>
-	private void DeserializeJSONToCompleteDeck(Dictionary configData) 
+	private void DeserializeJSONToCompleteDeck(Dictionary configData)
 	{
 		// Grab component configuration data.
-		var paletteConfig = configData["FunctionPalette"].AsGodotDictionary();    
-		var upperTimelineConfig = configData["UpperTimeline"].AsGodotDictionary();        
-		var lowerTimelineConfig = configData["LowerTimeline"].AsGodotDictionary();  		
+		var paletteConfig = configData["FunctionPalette"].AsGodotDictionary();
+		var upperTimelineConfig = configData["UpperTimeline"].AsGodotDictionary();
+		var lowerTimelineConfig = configData["LowerTimeline"].AsGodotDictionary();
 
 		// Load all components.
 		LoadFunctionPalette(paletteConfig);
 		LoadUpperTimeline(upperTimelineConfig);
 		LoadLowerTimeline(lowerTimelineConfig);
-	}  
+	}
 
 	/// <summary>
 	/// Deserializes a JSON file which holds the information to load a previously saved Function Palette of the application.
 	/// </summary>
 	/// <param name="configData">Dictionary that holds configuration data for the Function Palette.</param>
-	private void DeserializeJSONToFunctionPalette(Dictionary configData) 
+	private void DeserializeJSONToFunctionPalette(Dictionary configData)
 	{
 		// Grab and load function palette configuration data.
-		var paletteConfig = configData["FunctionPalette"].AsGodotDictionary();  
-		LoadFunctionPalette(paletteConfig);  
+		var paletteConfig = configData["FunctionPalette"].AsGodotDictionary();
+		LoadFunctionPalette(paletteConfig);
 	}
 
 	/// <summary>
 	/// Deserializes a JSON file which holds the information to load a previously saved Timeline of the application.
 	/// </summary>
 	/// <param name="configData">Dictionary that holds configuration data for the Timeline.</param>
-	private void DeserializeJSONToTimeline(Dictionary configData) 
+	private void DeserializeJSONToTimeline(Dictionary configData)
 	{
 		// Grab and load upper+lower timeline configuration data.
-		var upperTimelineConfig = configData["UpperTimeline"].AsGodotDictionary();  
-		var lowerTimelineConfig = configData["LowerTimeline"].AsGodotDictionary(); 
-		LoadUpperTimeline(upperTimelineConfig); 
-		LoadLowerTimeline(lowerTimelineConfig);		
+		var upperTimelineConfig = configData["UpperTimeline"].AsGodotDictionary();
+		var lowerTimelineConfig = configData["LowerTimeline"].AsGodotDictionary();
+		LoadUpperTimeline(upperTimelineConfig);
+		LoadLowerTimeline(lowerTimelineConfig);
 	}
 
 	/// <summary>
 	/// Loads a FunctionPalette instance into the application.
 	/// </summary>
 	/// <param name="functionPaletteDictionary">Dictionary holding information needed to create a LowerTimeline.</param>
-	private void LoadFunctionPalette(Dictionary functionPaletteDictionary) 
+	private void LoadFunctionPalette(Dictionary functionPaletteDictionary)
 	{
 		// Logic to load the function palette from the file as a new function palette.
 		functionPalette!.Load(functionPaletteDictionary);
@@ -266,7 +272,7 @@ public partial class Serializer : Node {
 	/// Loads an UpperTimeline instance into the application.
 	/// </summary>
 	/// <param name="upperTimelineDictionary">Dictionary holding information needed to create a LowerTimeline.</param>
-	private void LoadUpperTimeline(Dictionary upperTimelineDictionary) 
+	private void LoadUpperTimeline(Dictionary upperTimelineDictionary)
 	{
 		// Logic to load the uppertimeline from the file as a new timeline.
 
@@ -277,29 +283,26 @@ public partial class Serializer : Node {
 	/// Loads a LowerTimeline instance into the application.
 	/// </summary>
 	/// <param name="lowerTimelineDictionary">Dictionary holding information needed to create a LowerTimeline.</param>
-	private void LoadLowerTimeline(Dictionary lowerTimelineDictionary) 
+	private void LoadLowerTimeline(Dictionary lowerTimelineDictionary)
 	{
 		// Grab all LowerTimeline information.
 		var timelineName = lowerTimelineDictionary["Name"].AsString();
 		var timelineCount = lowerTimelineDictionary["Count"].AsInt32();
 		var timelineFunctionDict = lowerTimelineDictionary["Functions"].AsGodotDictionary();
-	
+
 		// Iterate through functions and add to a new list.
 		List<Function> newFunctionList = new();
-		for(int i = 0; i < timelineCount; i++) {
+		for (int i = 0; i < timelineCount; i++)
+		{
 			// Get Function Information.
 			var currFuncDict = timelineFunctionDict[i.ToString()].AsGodotDictionary();
-			var endTime = (int) currFuncDict["EndTime"];
-			var startTime = (int) currFuncDict["StartTime"];
-			var textRepresentation = (string) currFuncDict["TextRepresentation"];
+			var endTime = (int)currFuncDict["EndTime"];
+			var startTime = (int)currFuncDict["StartTime"];
+			var textRepresentation = (string)currFuncDict["TextRepresentation"];
 
-            // Create Function and add it to the list.
-            Function newFunction = new(textRepresentation, Bridge.Parse(textRepresentation).Unwrap())
-            {
-                StartTime = startTime,
-                EndTime = endTime
-            };
-            newFunctionList.Add(newFunction);
+			// Create Function and add it to the list.
+			Function newFunction = new(textRepresentation, Bridge.Parse(textRepresentation).Unwrap(), startTime, endTime);
+			newFunctionList.Add(newFunction);
 		}
 
 		// Update Timeline.

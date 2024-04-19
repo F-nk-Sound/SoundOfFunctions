@@ -80,7 +80,7 @@ public partial class TextUpdate : Control
 				return;
 			}
 
-			function = new Function(finalText, ast);
+			function = new Function(finalText, ast, 0, 1);
 			latex!.LatexExpression = ast.Latex;
 		}
 		else
