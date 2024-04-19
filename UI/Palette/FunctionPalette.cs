@@ -75,14 +75,13 @@ public partial class FunctionPalette : Node
 
 	[Export]
 	private VBoxContainer? _container;
+	[Export]
 	private Resource? _textUpdateScript;
+	[Export]
 	private PackedScene? _functionContainer;
 	public override void _Ready()
 	{
 		base._Ready();
-
-		Resource _textUpdateScript = GD.Load("res://UI/Palette/TextUpdate.cs");
-		_functionContainer = GD.Load<PackedScene>("res://UI/Palette/FunctionContainer.tscn");
 	}
 
 	/// <summary>
@@ -101,6 +100,13 @@ public partial class FunctionPalette : Node
         _container.AddChild(instance);
 		return instance;
     }
+
+	private FunctionContainer AddFunction(string textRepresentation, float startTime, float endTime)
+	{
+		FunctionContainer functionContainer = AddFunction();
+		functionContainer.FunctionUpdate(textRepresentation, startTime, endTime);
+		return functionContainer;
+	}
 
 	/// <summary>
 	/// Calls C# and Godot dragged events.
@@ -137,7 +143,7 @@ public partial class FunctionPalette : Node
 			FunctionContainer fc = (FunctionContainer) functionNode;
 			if (fc == null) continue;
 			Dictionary<string, Variant> functionDictionary = new Dictionary<string, Variant>();
-			functionDictionary.Add("TextRepresentation", fc.Function.TextRepresentation);
+			functionDictionary.Add("TextRepresentation", fc.Function.TextRepresentation!);
 			functionDictionary.Add("StartTime", fc.Function.StartTime);
 			functionDictionary.Add("EndTime", fc.Function.EndTime);
 			functionStings.Add(functionDictionary);
@@ -148,18 +154,27 @@ public partial class FunctionPalette : Node
 
 	public void Load(Dictionary dictionary)
 	{
-		Array<Dictionary<string, Variant>> functionStings;
-		if (!dictionary.TryGetValue("Functions", out Variant functionsListVariant)) return;
-		functionStings = (Array<Dictionary<string, Variant>>) functionsListVariant;
-		foreach (var functionString in functionStings)
+		GD.Print(dictionary);
+		foreach (var child in  _container!.GetChildren())
 		{
-			AddFunction();
+			child.QueueFree();
 		}
-		GD.Print(functionStings);
+		Array<Dictionary<string, Variant>> functions;
+		if (!dictionary.TryGetValue("Functions", out Variant functionsListVariant)) return;
+        functions = (Array<Dictionary<string, Variant>>) functionsListVariant;
+		foreach (var function in functions)
+		{
+			AddFunction(
+					(string) function["TextRepresentation"],
+					(float) function["StartTime"],
+					(float) function["EndTime"]
+				);
+		}
 	}
 
 	public void GraphFunction(Function fn)
 	{
+		if (fn == null) return;
 		renderer!.SetFunction(fn);
 	}
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=24 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://UI/Palette/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
@@ -11,8 +11,10 @@
 [ext_resource type="Script" path="res://Sonifcation/AudioGenerator.cs" id="6_yns4e"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
+[ext_resource type="Script" path="res://UI/Palette/TextUpdate.cs" id="10_nt64i"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
+[ext_resource type="PackedScene" uid="uid://cplv0i0ax5sqm" path="res://UI/Palette/FunctionContainer.tscn" id="11_xu3hp"]
 [ext_resource type="PackedScene" uid="uid://rjw4sfomfd0q" path="res://Graphing/function_renderer.tscn" id="12_ivlup"]
 [ext_resource type="Script" path="res://Sonifcation/LowerTimeline.cs" id="13_lr367"]
 [ext_resource type="Texture2D" uid="uid://m48yl5tckgu4" path="res://Assets/FOTS UI/icons8-home-page-50.png" id="13_wjrfo"]
@@ -135,6 +137,8 @@ layout_mode = 2
 script = ExtResource("2_ykdwx")
 renderer = NodePath("../Graph BG/VBoxContainer/FunctionRenderer")
 _container = NodePath("VBoxContainer/MarginContainer/ScrollContainer/FunctionsContainer")
+_textUpdateScript = ExtResource("10_nt64i")
+_functionContainer = ExtResource("11_xu3hp")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Main/PaletteAndGraph/Function Palette"]
 layout_mode = 2
@@ -314,7 +318,7 @@ offset_bottom = 56.0
 placeholder_text = "Save as..."
 
 [node name="SaveSelector" parent="Storage" instance=ExtResource("20_ysibf")]
-position = Vector2i(-470, 0)
+position = Vector2i(0, 36)
 
 [connection signal="ready" from="." to="." method="_on_ready"]
 [connection signal="LoadButtonPressed" from="Toolbar" to="Storage" method="OnToolBarLoadButtonPressed"]
