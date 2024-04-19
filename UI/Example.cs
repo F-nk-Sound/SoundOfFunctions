@@ -8,24 +8,12 @@ using Sonification;
 
 public partial class Example : Node
 {
+	[Export]
 	private FunctionPalette? functionPalette;
 
 	public override void _Ready()
 	{
 		base._Ready();
-
-		// Get the Function Palette of the scene
-		functionPalette = GetTree().CurrentScene.GetNode<FunctionPalette>("Function Palette");
-
-		// Connect signal when the current selected function changes.
-		// Assumptively to be used for the graph view.
-		functionPalette.SelectedFunctionChanged += _OnFunctionChanged;
-
-		// Connect signal when the current selected funciton is being dragged.
-		functionPalette.FunctionDragging += _OnFunctionDragging;
-
-		// Connect signal when the current selected funciton has been dragged.
-		functionPalette.FunctionDragged += _OnFunctionDragged;
 	}
 
 	/// <summary>

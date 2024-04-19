@@ -1,258 +1,269 @@
-[gd_scene load_steps=17 format=3 uid="uid://cagj64jn35d4q"]
+[gd_scene load_steps=24 format=3 uid="uid://cagj64jn35d4q"]
 
 [ext_resource type="Script" path="res://UI/Palette/FunctionPalette.cs" id="2_ykdwx"]
 [ext_resource type="Script" path="res://UI/Example.cs" id="3_3ndwe"]
 [ext_resource type="Texture2D" uid="uid://dyv6hilyp7g3i" path="res://Assets/FOTS UI/icons8-add-50.png" id="3_5lgt0"]
 [ext_resource type="Script" path="res://UI/UpperTimeline.cs" id="4_1pkc6"]
+[ext_resource type="Texture2D" uid="uid://bt8l2qgkjmhjk" path="res://Assets/FOTS UI/icons8-undo-50.png" id="4_rspl5"]
+[ext_resource type="Texture2D" uid="uid://vncf38ysk75v" path="res://Assets/FOTS UI/icons8-redo-50.png" id="5_h8umj"]
 [ext_resource type="Script" path="res://UI/Toolbar.cs" id="6_5mm8q"]
+[ext_resource type="Texture2D" uid="uid://cediwiynb0sk5" path="res://Assets/FOTS UI/icons8-beginning-50.png" id="6_25iw2"]
 [ext_resource type="Script" path="res://Sonifcation/AudioGenerator.cs" id="6_yns4e"]
 [ext_resource type="Texture2D" uid="uid://cdigfqvk0p6lr" path="res://Assets/FOTS UI/icons8-save-50.png" id="7_jp73n"]
 [ext_resource type="Texture2D" uid="uid://bx6hcw43qh2tc" path="res://Assets/FOTS UI/icons8-download-50.png" id="8_lmbnk"]
-[ext_resource type="PackedScene" uid="uid://ecgodongo53r" path="res://UI/TimelineContainer.tscn" id="9_jons1"]
-[ext_resource type="Texture2D" uid="uid://dst08x3c1p4fb" path="res://Assets/FOTS UI/icons8-redo-50-2.png" id="9_vnk82"]
+[ext_resource type="Script" path="res://UI/Palette/TextUpdate.cs" id="10_dnwop"]
 [ext_resource type="Texture2D" uid="uid://bkrp75sdkgcyg" path="res://Assets/FOTS UI/icons8-end-50.png" id="10_sgbw4"]
 [ext_resource type="Texture2D" uid="uid://cari8rf7ta5w3" path="res://Assets/FOTS UI/icons8-circled-play-50.png" id="11_o2of6"]
-[ext_resource type="Texture2D" uid="uid://baq81af2vj12p" path="res://Assets/FOTS UI/icons8-close-window-50.png" id="12_5c7ir"]
+[ext_resource type="PackedScene" uid="uid://cplv0i0ax5sqm" path="res://UI/Palette/FunctionContainer.tscn" id="11_xwf8o"]
+[ext_resource type="PackedScene" uid="uid://rjw4sfomfd0q" path="res://Graphing/function_renderer.tscn" id="12_ivlup"]
+[ext_resource type="Script" path="res://Sonifcation/LowerTimeline.cs" id="13_lr367"]
+[ext_resource type="Texture2D" uid="uid://m48yl5tckgu4" path="res://Assets/FOTS UI/icons8-home-page-50.png" id="13_wjrfo"]
 [ext_resource type="Script" path="res://Serialization/IO.cs" id="14_a2p4c"]
 [ext_resource type="Script" path="res://Serialization/Serializer.cs" id="14_mqxfw"]
+[ext_resource type="PackedScene" uid="uid://c82ewuj4e6ylq" path="res://timeline_function_container.tscn" id="15_x5gp5"]
+[ext_resource type="PackedScene" uid="uid://b2bdnigbjemft" path="res://Serialization/SaveSelector.tscn" id="20_ysibf"]
 
 [sub_resource type="GDScript" id="GDScript_jf14m"]
 script/source = "# Base line GD UI script
-extends Node2D
+extends Control
 
 func _on_exit_button_pressed():
 	get_tree().quit()
-
 
 func _on_save_pressed():
 	# when pressed saves the current state
 	pass # Replace with function body.
 
-
 func _on_load_pressed():
 	# when pressed, loads a state/file for the session
 	pass # Replace with function body.
-
 
 func _on_undo_pressed():
 	# when pressed undoes the recent changes
 	pass # Replace with function body.
 
-
 func _on_redo_pressed():
 	# when pressed, redoes the recent redo
 	pass # Replace with function body.
-
 
 func _on_begin_pressed():
 	# when pressed, should move the timeline to the first function on the timeline
 	pass # Replace with function body.
 
-
 func _on_play_pressed():
 	# when pressed, the timeline should move, and the audio should play corresponding
 	pass # Replace with function body.
 
-
 func _on_end_pressed():
 	# when pressed, should move the timeline to the last function on the timeline
 	pass # Replace with function body.
-
 
 func _on_ready():
 	#print_tree_pretty()
 	pass # Replace with function body.
 "
 
-[node name="UI" type="Node2D"]
+[node name="UI" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = SubResource("GDScript_jf14m")
 
-[node name="Function Palette" type="Node2D" parent="."]
-script = ExtResource("2_ykdwx")
-
-[node name="FP BG" type="Panel" parent="Function Palette"]
-offset_left = 12.0
-offset_top = 65.0
-offset_right = 269.0
-offset_bottom = 506.0
-
-[node name="FP Text" type="Label" parent="Function Palette/FP BG"]
-layout_mode = 0
-offset_left = 4.0
-offset_top = 2.0
-offset_right = 131.0
-offset_bottom = 25.0
-text = "Function Palette"
-
-[node name="Add function + button" type="Button" parent="Function Palette/FP BG"]
-layout_mode = 0
-offset_left = 212.0
-offset_top = 18.0
-offset_right = 270.0
-offset_bottom = 76.0
-scale = Vector2(0.5, 0.5)
-tooltip_text = "Click to add a function"
-icon = ExtResource("3_5lgt0")
-
-[node name="Selected Function" type="Label" parent="Function Palette/FP BG"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 410.0
-offset_right = 46.0
-offset_bottom = 433.0
-script = ExtResource("3_3ndwe")
-
-[node name="ScrollContainer" type="ScrollContainer" parent="Function Palette"]
-offset_left = 22.0
-offset_top = 113.0
-offset_right = 262.0
-offset_bottom = 500.0
-
-[node name="FunctionsContainer" type="VBoxContainer" parent="Function Palette/ScrollContainer"]
+[node name="Toolbar" type="PanelContainer" parent="."]
 layout_mode = 2
-
-[node name="Graph" type="Node2D" parent="."]
-
-[node name="Graph BG" type="Panel" parent="Graph"]
-offset_left = 296.0
-offset_top = 64.0
-offset_right = 1142.0
-offset_bottom = 505.0
-
-[node name="Graph Text" type="Label" parent="Graph/Graph BG"]
-layout_mode = 0
-offset_left = 7.0
-offset_top = 5.0
-offset_right = 96.0
-offset_bottom = 28.0
-text = "Graph View"
-
-[node name="Timeline" type="Node2D" parent="."]
-script = ExtResource("4_1pkc6")
-
-[node name="Timeline BG" type="Panel" parent="Timeline"]
-offset_left = 9.0
-offset_top = 513.0
-offset_right = 1145.0
-offset_bottom = 640.0
-
-[node name="Timeline Text" type="Label" parent="Timeline/Timeline BG"]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 4.0
-offset_right = 75.0
-offset_bottom = 27.0
-text = "Timeline"
-
-[node name="ScrollContainer" type="ScrollContainer" parent="Timeline"]
-offset_left = 28.0
-offset_top = 545.0
-offset_right = 1028.0
-offset_bottom = 625.0
-
-[node name="TimelineContainer" type="HBoxContainer" parent="Timeline/ScrollContainer"]
-layout_mode = 2
-
-[node name="TimelineContainer" parent="Timeline/ScrollContainer/TimelineContainer" instance=ExtResource("9_jons1")]
-layout_mode = 2
-
-[node name="AudioGenerator" type="Node" parent="Timeline"]
-script = ExtResource("6_yns4e")
-
-[node name="Toolbar" type="Node2D" parent="."]
 script = ExtResource("6_5mm8q")
 
-[node name="Toolbar BG" type="Panel" parent="Toolbar"]
-offset_top = 1.0
-offset_right = 1151.0
-offset_bottom = 53.0
+[node name="HBoxContainer" type="HBoxContainer" parent="Toolbar"]
+layout_mode = 2
 
-[node name="Toolbar Text" type="Label" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 13.0
-offset_right = 87.0
-offset_bottom = 36.0
-text = "Toolbar"
-
-[node name="Save" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 138.0
-offset_right = 196.0
-offset_bottom = 58.0
-scale = Vector2(0.9, 0.9)
+[node name="Save" type="Button" parent="Toolbar/HBoxContainer"]
+layout_mode = 2
 tooltip_text = "Save progress"
+text = "Save"
 icon = ExtResource("7_jp73n")
 
-[node name="Load" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 195.0
-offset_right = 253.0
-offset_bottom = 58.0
-scale = Vector2(0.9, 0.9)
+[node name="Load" type="Button" parent="Toolbar/HBoxContainer"]
+layout_mode = 2
 tooltip_text = "Load a previous state"
+text = "Load"
 icon = ExtResource("8_lmbnk")
 
-[node name="Undo" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 304.0
-offset_right = 362.0
-offset_bottom = 58.0
-scale = Vector2(-0.9, 0.9)
+[node name="Undo" type="Button" parent="Toolbar/HBoxContainer"]
+layout_mode = 2
 tooltip_text = "Undo (CTRL + Z)"
-icon = ExtResource("9_vnk82")
+text = "Undo"
+icon = ExtResource("4_rspl5")
 
-[node name="Redo" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 314.0
-offset_right = 372.0
-offset_bottom = 58.0
-scale = Vector2(0.9, 0.9)
+[node name="Redo" type="Button" parent="Toolbar/HBoxContainer"]
+layout_mode = 2
 tooltip_text = "Redo your most recent \"undo\" (CTRL + Y)"
-icon = ExtResource("9_vnk82")
+text = "Redo"
+icon = ExtResource("5_h8umj")
 
-[node name="Beginning" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 521.0
-offset_right = 579.0
-offset_bottom = 58.0
-scale = Vector2(-0.9, 0.9)
+[node name="Beginning" type="Button" parent="Toolbar/HBoxContainer"]
+layout_mode = 2
 tooltip_text = "Rewind to the beginning"
-icon = ExtResource("10_sgbw4")
+text = "Beginning"
+icon = ExtResource("6_25iw2")
 
-[node name="Play" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 528.0
-offset_right = 586.0
-offset_bottom = 58.0
-scale = Vector2(0.9, 0.9)
+[node name="Play" type="Button" parent="Toolbar/HBoxContainer"]
+layout_mode = 2
 tooltip_text = "Play"
+text = "Play"
 icon = ExtResource("11_o2of6")
 
-[node name="Ending" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 590.0
-offset_right = 648.0
-offset_bottom = 58.0
-scale = Vector2(0.9, 0.9)
+[node name="Ending" type="Button" parent="Toolbar/HBoxContainer"]
+layout_mode = 2
 tooltip_text = "Fast forward to the end"
+text = "Ending"
 icon = ExtResource("10_sgbw4")
 
-[node name="Exit" type="Button" parent="Toolbar/Toolbar BG"]
-layout_mode = 0
-offset_left = 1090.0
-offset_top = 1.0
-offset_right = 1148.0
-offset_bottom = 59.0
-scale = Vector2(0.9, 0.9)
-tooltip_text = "Exit Application"
-icon = ExtResource("12_5c7ir")
+[node name="Main" type="VSplitContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = -185
 
-[node name="Storage" type="Node2D" parent="."]
+[node name="PaletteAndGraph" type="HSplitContainer" parent="Main"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 260
+
+[node name="Function Palette" type="PanelContainer" parent="Main/PaletteAndGraph" node_paths=PackedStringArray("renderer", "_container")]
+layout_mode = 2
+script = ExtResource("2_ykdwx")
+renderer = NodePath("../Graph BG/VBoxContainer/FunctionRenderer")
+_container = NodePath("VBoxContainer/MarginContainer/ScrollContainer/FunctionsContainer")
+_textUpdateScript = ExtResource("10_dnwop")
+_functionContainer = ExtResource("11_xwf8o")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Main/PaletteAndGraph/Function Palette"]
+layout_mode = 2
+
+[node name="FP Text" type="Label" parent="Main/PaletteAndGraph/Function Palette/VBoxContainer"]
+layout_mode = 2
+text = "Function Palette"
+horizontal_alignment = 1
+
+[node name="Add function + button" type="Button" parent="Main/PaletteAndGraph/Function Palette/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Click to add a function"
+text = "Add Function"
+icon = ExtResource("3_5lgt0")
+alignment = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="Main/PaletteAndGraph/Function Palette/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Main/PaletteAndGraph/Function Palette/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FunctionsContainer" type="VBoxContainer" parent="Main/PaletteAndGraph/Function Palette/VBoxContainer/MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Selected Function" type="Label" parent="Main/PaletteAndGraph/Function Palette/VBoxContainer" node_paths=PackedStringArray("functionPalette")]
+layout_mode = 2
+script = ExtResource("3_3ndwe")
+functionPalette = NodePath("../..")
+
+[node name="Graph BG" type="PanelContainer" parent="Main/PaletteAndGraph"]
+layout_mode = 2
+size_flags_stretch_ratio = 5.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Main/PaletteAndGraph/Graph BG"]
+layout_mode = 2
+
+[node name="Graph Text" type="Label" parent="Main/PaletteAndGraph/Graph BG/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Graph View"
+horizontal_alignment = 1
+
+[node name="FunctionRenderer" parent="Main/PaletteAndGraph/Graph BG/VBoxContainer" instance=ExtResource("12_ivlup")]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -58.0
+offset_bottom = 58.0
+grow_horizontal = 0
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+
+[node name="Reset" type="Button" parent="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer/MarginContainer"]
+layout_mode = 2
+icon = ExtResource("13_wjrfo")
+flat = true
+icon_alignment = 2
+
+[node name="Timeline" type="PanelContainer" parent="Main" node_paths=PackedStringArray("timelineContainer", "functionPalette", "audioGenerator", "lowerTimeline")]
+layout_mode = 2
+script = ExtResource("4_1pkc6")
+timelineContainer = NodePath("VBoxContainer/ScrollContainer/TimelineContainer")
+functionPalette = NodePath("../PaletteAndGraph/Function Palette")
+audioGenerator = NodePath("../../AudioGenerator")
+lowerTimeline = NodePath("LowerTimeline")
+timelineFunctionContainer = ExtResource("15_x5gp5")
+
+[node name="LowerTimeline" type="Node" parent="Main/Timeline"]
+script = ExtResource("13_lr367")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Main/Timeline"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Main/Timeline/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+
+[node name="Timeline Text" type="Label" parent="Main/Timeline/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Timeline"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Main/Timeline/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TimelineContainer" type="HBoxContainer" parent="Main/Timeline/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AudioGenerator" type="Node" parent="." node_paths=PackedStringArray("timeline")]
+script = ExtResource("6_yns4e")
+timeline = NodePath("../Main/Timeline/LowerTimeline")
+
+[node name="Storage" type="Node" parent="." node_paths=PackedStringArray("saveSelector", "autoSaveNotif")]
 script = ExtResource("14_a2p4c")
+saveSelector = NodePath("SaveSelector")
+autoSaveNotif = NodePath("AutoSaveNotif")
 
-[node name="Serializer" type="Node" parent="Storage"]
+[node name="Serializer" type="Node" parent="Storage" node_paths=PackedStringArray("functionPalette", "upperTimeline", "audioGenerator", "lowerTimeline", "upperTimelineContainer", "saveTimer")]
 script = ExtResource("14_mqxfw")
+functionPalette = NodePath("../../Main/PaletteAndGraph/Function Palette")
+upperTimeline = NodePath("../../Main/Timeline")
+audioGenerator = NodePath("../../AudioGenerator")
+lowerTimeline = NodePath("../../Main/Timeline/LowerTimeline")
+upperTimelineFunctionContainer = ExtResource("15_x5gp5")
+upperTimelineContainer = NodePath("../../Main/Timeline/VBoxContainer/ScrollContainer/TimelineContainer")
+saveTimer = NodePath("../SaveTimer")
 
 [node name="FileExplorer" type="FileDialog" parent="Storage"]
 mode = 4
@@ -310,5 +321,39 @@ offset_right = 500.0
 offset_bottom = 56.0
 placeholder_text = "Save as..."
 
+[node name="SaveSelector" parent="Storage" instance=ExtResource("20_ysibf")]
+position = Vector2i(0, 36)
+visible = false
+
+[node name="SaveTimer" type="Timer" parent="Storage"]
+wait_time = 30.0
+
+[node name="AutoSaveNotif" type="RichTextLabel" parent="Storage"]
+visible = false
+offset_left = 1002.0
+offset_top = 466.0
+offset_right = 1155.0
+offset_bottom = 489.0
+text = "Deck Auto saved!!!"
+fit_content = true
+
 [connection signal="ready" from="." to="." method="_on_ready"]
-[connection signal="pressed" from="Function Palette/FP BG/Add function + button" to="Function Palette" method="OnButtonPressed"]
+[connection signal="LoadButtonPressed" from="Toolbar" to="Storage" method="OnToolBarLoadButtonPressed"]
+[connection signal="PlayButtonPressed" from="Toolbar" to="Main/Timeline" method="OnToolbarPlayButtonPressed"]
+[connection signal="SaveButtonPressed" from="Toolbar" to="Storage" method="OnToolbarSaveButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Save" to="Toolbar" method="OnSaveButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Load" to="Toolbar" method="OnLoadButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Undo" to="Toolbar" method="OnUndoPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Redo" to="Toolbar" method="OnRedoPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Beginning" to="Toolbar" method="OnBeginningButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Play" to="Toolbar" method="OnPlayButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Ending" to="Toolbar" method="OnEndingButtonPressed"]
+[connection signal="FunctionDragged" from="Main/PaletteAndGraph/Function Palette" to="Main/PaletteAndGraph/Function Palette/VBoxContainer/Selected Function" method="_OnFunctionDragged"]
+[connection signal="FunctionDragging" from="Main/PaletteAndGraph/Function Palette" to="Main/PaletteAndGraph/Function Palette/VBoxContainer/Selected Function" method="_OnFunctionDragging"]
+[connection signal="SelectedFunctionChanged" from="Main/PaletteAndGraph/Function Palette" to="Main/PaletteAndGraph/Function Palette/VBoxContainer/Selected Function" method="_OnFunctionChanged"]
+[connection signal="pressed" from="Main/PaletteAndGraph/Function Palette/VBoxContainer/Add function + button" to="Main/PaletteAndGraph/Function Palette" method="OnButtonPressed"]
+[connection signal="pressed" from="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer/MarginContainer/Reset" to="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer" method="OnResetButton"]
+[connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="AudioGenerator" method="OnAudioPlaybackFinished"]
+[connection signal="TimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnTimelineUpdated"]
+[connection signal="SelectedSave" from="Storage/SaveSelector" to="Storage" method="OnSaveSelected"]
+[connection signal="timeout" from="Storage/SaveTimer" to="Storage/Serializer" method="OnSaveTimerTimeout"]

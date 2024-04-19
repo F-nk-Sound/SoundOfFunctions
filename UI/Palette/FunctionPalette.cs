@@ -1,6 +1,7 @@
 using Functions;
 using Godot;
 using Godot.Collections;
+using Graphing;
 using Sonification;
 using System;
 
@@ -11,6 +12,9 @@ namespace UI.Palette;
 /// </summary>
 public partial class FunctionPalette : Node
 {
+	[Export]
+	FunctionRenderer? renderer;
+
 	/// <summary>
 	/// Godot Event called when the current function selected by the user
 	/// has changed.
@@ -59,7 +63,7 @@ public partial class FunctionPalette : Node
 	private Function? currentSelectedFunction;
 	public Function CurrentSelectedFunction
 	{
-		get { return currentSelectedFunction; }
+		get { return currentSelectedFunction!; }
 		set
 		{
 			if (value == null) return;
@@ -69,18 +73,15 @@ public partial class FunctionPalette : Node
 		}
 	}
 
+	[Export]
 	private VBoxContainer? _container;
+	[Export]
 	private Resource? _textUpdateScript;
+	[Export]
 	private PackedScene? _functionContainer;
 	public override void _Ready()
 	{
 		base._Ready();
-
-		ScrollContainer scrollContainer = GetNode<ScrollContainer>("ScrollContainer");
-		_container = scrollContainer.GetNode<VBoxContainer>("FunctionsContainer");
-
-		Resource _textUpdateScript = GD.Load("res://UI/Palette/TextUpdate.cs");
-		_functionContainer = GD.Load<PackedScene>("res://UI/Palette/FunctionContainer.tscn");
 	}
 
 	/// <summary>
@@ -88,10 +89,23 @@ public partial class FunctionPalette : Node
 	/// </summary>
 	private void OnButtonPressed()
 	{
-		if (_container == null || _functionContainer == null) return;
-		Control instance = (Control) _functionContainer.Instantiate();
-		instance.CustomMinimumSize = new Vector2(225, 120);
-		_container.AddChild(instance);
+		AddFunction();
+	}
+
+	private FunctionContainer AddFunction()
+	{
+        if (_container == null || _functionContainer == null) return null;
+        FunctionContainer instance = (FunctionContainer)_functionContainer.Instantiate();
+        instance.FunctionPalette = this;
+        _container.AddChild(instance);
+		return instance;
+    }
+
+	private FunctionContainer AddFunction(string textRepresentation, float startTime, float endTime)
+	{
+		FunctionContainer functionContainer = AddFunction();
+		functionContainer.FunctionUpdate(textRepresentation, startTime, endTime);
+		return functionContainer;
 	}
 
 	/// <summary>
@@ -122,6 +136,45 @@ public partial class FunctionPalette : Node
 	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
 	public Dictionary Save() {
 		var res = new Dictionary();
+		Array<Dictionary<string, Variant>> functionStings = new Array<Dictionary<string, Variant>>();
+		Array<Node> functionNodes = _container!.GetChildren();
+		foreach (var functionNode in functionNodes)
+		{
+			FunctionContainer fc = (FunctionContainer) functionNode;
+			if (fc == null) continue;
+			Dictionary<string, Variant> functionDictionary = new Dictionary<string, Variant>();
+			functionDictionary.Add("TextRepresentation", fc.Function.TextRepresentation!);
+			functionDictionary.Add("StartTime", fc.Function.StartTime);
+			functionDictionary.Add("EndTime", fc.Function.EndTime);
+			functionStings.Add(functionDictionary);
+		}
+		res.Add("Functions", functionStings);
 		return res;
+	}
+
+	public void Load(Dictionary dictionary)
+	{
+		GD.Print(dictionary);
+		foreach (var child in  _container!.GetChildren())
+		{
+			child.QueueFree();
+		}
+		Array<Dictionary<string, Variant>> functions;
+		if (!dictionary.TryGetValue("Functions", out Variant functionsListVariant)) return;
+        functions = (Array<Dictionary<string, Variant>>) functionsListVariant;
+		foreach (var function in functions)
+		{
+			AddFunction(
+					(string) function["TextRepresentation"],
+					(float) function["StartTime"],
+					(float) function["EndTime"]
+				);
+		}
+	}
+
+	public void GraphFunction(Function fn)
+	{
+		if (fn == null) return;
+		renderer!.SetFunction(fn);
 	}
 }

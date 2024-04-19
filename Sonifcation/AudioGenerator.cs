@@ -1,18 +1,7 @@
 using Godot;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit.Sdk;
-using System.Diagnostics;
-using Newtonsoft.Json;
-
 using Functions;
 using Parsing;
-using Serialization;
+
 namespace Sonification;
 
 /// <summary>
@@ -23,62 +12,51 @@ public partial class AudioGenerator : Node {
 	/// <summary>
 	/// LowerTimeline representation of the Timeline UI Node
 	/// </summary>
-	public LowerTimeline timeline = new LowerTimeline();
+	[Export]
+	public LowerTimeline? timeline;
 
 	/// <summary>
 	/// If <c> true </c>, AudioGenerator playback is active.
 	/// </summary>
-	public bool IsPlaying {get;set;}
+	public bool IsPlaying => timeline!.IsPlaying;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready() {
-
 		// Add and prep the Timeline.
-		AddChild(timeline);
-		timeline.SetProcess(false);
-		
-		// Connect the necessary signals from the Timeline.
-		timeline.AudioPlaybackFinished += OnAudioPlaybackFinished;
-		GetTree().CurrentScene.GetNode<Serializer>("Storage/Serializer").LowerTimelineLoaded += OnLowerTimelineUpdated;
+		timeline!.SetProcess(false);
 
-		// Add 'Tests' that demonstrate the audio playback.
-		AddTests();
-		if(AudioDebugging.Enabled) {
+		if(AudioDebugging.Enabled) 
+		{
 			AudioDebugging.Output("Displaying AudioGenerator SceneTree after adding intial LowerTimeline");
 			PrintTreePretty();
 		}
 	}
 
-	private void OnLowerTimelineUpdated(LowerTimeline lt) {
-
-		// Clear out the old timeline.
-		RemoveChild(timeline);
-		timeline.QueueFree();
-		AudioDebugging.Output("Cleared out the Old LowerTimeline");
-
+	private void OnTimelineUpdated() {
 		// Introduce the new timeline.
-		timeline = lt;
-		AudioDebugging.Output("\tNew Timeline Processing Before Added as Child: " + timeline.IsProcessing());
-		AddChild(timeline);
-		timeline.SetProcess(false);
-		timeline.AudioPlaybackFinished += OnAudioPlaybackFinished;
-		foreach(Node n in timeline.GetChildren()) {
-			if(n is Function) n.SetProcess(false);
+		AudioDebugging.Output("\tNew Timeline Processing Before Added as Child: " + timeline!.IsProcessing());
+		foreach (Node n in timeline.GetChildren()) 
+		{
+			if (n is Function) n.SetProcess(false);
 		}
 		AudioDebugging.Output("\tNew Timeline Processing After Added as Child: " + timeline.IsProcessing());
 		AudioDebugging.Output("Added the New LowerTimeline");
 
-		if(AudioDebugging.Enabled) {
+		if (AudioDebugging.Enabled) 
+		{
 			AudioDebugging.Output("Displaying Current AudioGenerator SceneTree after updating LowerTimeline.");
 			PrintTreePretty();
 			AudioDebugging.Output("Examining the processing of each child node");
-			foreach(Node n in GetChildren()) {
+			foreach (Node n in GetChildren()) 
+			{
 				AudioDebugging.Output("\tNode: " + n.Name + " Processing? " + n.IsProcessing());
 				var grandkids = n.GetChildren();
-				if(grandkids.Count != 0) {
+				if (grandkids.Count != 0) 
+				{
 					AudioDebugging.Output("\tExamining the processing of each function node");
-					foreach(Node gk in grandkids) {
-						if(gk is Function) AudioDebugging.Output("\t\tFunction: " + gk.Name + " Processing? " + gk.IsProcessing());
+					foreach (Node gk in grandkids) 
+					{
+						if (gk is Function) AudioDebugging.Output("\t\tFunction: " + gk.Name + " Processing? " + gk.IsProcessing());
 					}
 				}
 			}
@@ -89,7 +67,6 @@ public partial class AudioGenerator : Node {
 	/// Handles the case where the timeline has indicated audio playback is finished.
 	/// </summary>
 	private void OnAudioPlaybackFinished() {
-		IsPlaying = false;
 		GD.Print("---Playback Over---");
 	}
 
@@ -99,60 +76,8 @@ public partial class AudioGenerator : Node {
 	public void Play() {
 		AudioDebugging.Output("AudioGenerator.Play(): IsPlaying = " + IsPlaying);
 		if(!IsPlaying) {
-			timeline.StartPlaying();
-			IsPlaying = true;
+			timeline!.StartPlaying();
 		}
 	}
 
-	/// <summary>
-	/// Assorted test Functions organized and added to the timeline for playback.
-	/// </summary>
-	public void AddTests() {
-		IFunctionAST t_squared = Bridge.Parse("t^2").Unwrap();
-		IFunctionAST poly = Bridge.Parse("t^2 + 3t + 4").Unwrap();
-		IFunctionAST three_t_plus_four = Bridge.Parse("3t + 4").Unwrap();
-		IFunctionAST sin_3t = Bridge.Parse("sin(3*t)").Unwrap();
-		IFunctionAST sin_3_pi_t = Bridge.Parse("sin(3 * 3.14159 * t)").Unwrap();
-		IFunctionAST inverse = Bridge.Parse("2/t").Unwrap();
-		IFunctionAST tan = Bridge.Parse("tan(3t)").Unwrap();
-		IFunctionAST A4 = Bridge.Parse("49").Unwrap();
-		IFunctionAST zero = Bridge.Parse("0").Unwrap();
-		IFunctionAST negA4 = Bridge.Parse("-49").Unwrap();
-		IFunctionAST sin3t_plus_3sint = Bridge.Parse("sin(3t) + 3sin(t)").Unwrap();
-		IFunctionAST t_plus_5 = Bridge.Parse("t + 5").Unwrap();
-
-		/*
-		Function inverseFunc = new Function("2/t", inverse);		
-		Function sumOfSines = new Function("sin(3t) + 3sin(t)", sin3t_plus_3sint);
-		Function negA4Func = new Function("-49", negA4);
-		Function zeroFunc = new Function("0", zero);
-		
-		Function tanFunc = new Function("tan(3t)", tan);
-		Function tPlus5Func = new Function("t + 5", t_plus_5);
-		Function sineFunc2 = new Function("sin(3t)", sin_3t);
-		Function sineFunc1 = new Function("sin(3*3.14159*t)", sin_3_pi_t);
-		Function linearFunc = new Function("3t + 4", three_t_plus_four);
-		Function squareFunc = new Function("t^2", t_squared);
-		Function polynomialFunc = new Function("t^2 + 3t + 4", poly);
-		//*/
-		Function A4Func = new Function("49", A4);
-		timeline.Add(A4Func);
-
-		/*
-		timeline.Add(inverseFunc);
-		timeline.Add(tPlus5Func);
-		timeline.Add(sumOfSines);
-		timeline.Add(polynomialFunc);
-		timeline.Add(squareFunc);
-		timeline.Add(linearFunc);
-		timeline.Add(sineFunc1);
-		timeline.Add(sineFunc2);
-		timeline.Add(tanFunc);
-		
-		timeline.Add(zeroFunc);
-		timeline.Add(negA4Func);
-		//*/
-
-	}
-	
 }

@@ -5,13 +5,13 @@ using System;
 namespace UI.Palette;
 public partial class FunctionContainer : Control
 {
-	private FunctionPalette? _functionPalette;
+	public FunctionPalette? FunctionPalette;
 	private Function? _function;
 	public Function Function
 	{
 		get
 		{
-			return _function;
+			return _function!;
 		}
 		set
 		{
@@ -23,26 +23,21 @@ public partial class FunctionContainer : Control
 				_function.EndTime = (int)Range.MaxValue;
 			}
 
-			if (_functionPalette != null)
-				_functionPalette.CurrentSelectedFunction = value;
+			if (FunctionPalette != null)
+				FunctionPalette.CurrentSelectedFunction = value;
 		}
 	}
-	private Godot.Range? _range;
-	public Godot.Range? Range
-	{
-		get
-		{
-			return _range;
-		}
-		set
-		{
-			_range = value;
-		}
-	}
+
+	public Godot.Range? Range { get; set; }
 	private FunctionContainer? _functionContainerCopy;
 
-	private Endpoint _start;
-	private Endpoint _end;
+	[Export]
+	private SpinBox? _start;
+	[Export]
+	private SpinBox? _end;
+
+	[Export]
+	private TextUpdate? _textUpdate;
 
 	private bool _holding = false;
 	private bool _dragging = false;
@@ -50,86 +45,57 @@ public partial class FunctionContainer : Control
 
 	public override void _Ready()
 	{
-		_functionPalette = GetTree().CurrentScene.GetNode<FunctionPalette>("Function Palette");
-
-		_start = GetChild<Endpoint>(2);
-		_end = GetChild<Endpoint>(3);
 		RangeUpdate();
 
-		if (_isCopy )
+		if (_isCopy)
 			return;
+	}
+
+	public void FunctionUpdate(string TextRepresentation, float startTime, float endTime)
+	{
+		_textUpdate!.ModifyText(TextRepresentation);
+		_start!.Value = startTime;
+		_end!.Value = endTime;
+		RangeUpdate();
 	}
 
 	public void RangeUpdate()
 	{
-		if (_start == null || _end == null)
-			return;
-
-		Godot.Range temp = new Godot.Range();
-		temp.MinValue = _start.Value;
-		temp.MaxValue = _end.Value;
+		Godot.Range temp = new()
+		{
+			MinValue = _start!.Value,
+			MaxValue = _end!.Value
+		};
 		Range = temp;
-		this.Function = this.Function;
+
+		_start.Value = Range.MinValue;
+		_end.Value = Range.MaxValue;
+
+		if (_function is not null)
+		{
+			_function.StartTime = (int)Range.MinValue;
+			_function.EndTime = (int)Range.MaxValue;
+		}
 	}
 
-	/// <summary>
-	/// Called when any text is inputted into the text box.
-	/// </summary>
-	/// <param name="event"></param>
-	public override void _Input(InputEvent @event)
+	void RangeChanged(float value)
 	{
-		base._Input(@event);
-		if (_functionPalette == null) return;
+		RangeUpdate();
+	}
 
-		if (@event is InputEventMouseButton mouseEvent)
-		{
-			
-			if (_holding && _dragging && !mouseEvent.Pressed)
-			{
-				_holding = false;
-				_dragging = false;
-				_functionPalette.OnDraggedEvent(mouseEvent.Position);
-				_functionPalette.RemoveChild(_functionContainerCopy);
-			}
+	public override Variant _GetDragData(Vector2 atPosition)
+	{
+		if (Function is null) return default;
 
-			if (mouseEvent.Position.X <= GlobalPosition.X
-				|| mouseEvent.Position.X >= GlobalPosition.X + Size.X
-				|| mouseEvent.Position.Y <= GlobalPosition.Y
-				|| mouseEvent.Position.Y >= GlobalPosition.Y + Size.Y)
-				return;
+		Control display = (Control)Duplicate();
+		SetDragPreview(display);
+		Function newFunc = (Function)Function.Duplicate();
+		newFunc.Initialize(Function.TextRepresentation!, Function.FunctionAST!, Function.StartTime, Function.EndTime);
+		return newFunc;
+	}
 
-			if (!_holding && mouseEvent.Pressed)
-			{
-				_holding = true;
-			}
-
-			if (_holding && mouseEvent.IsReleased())
-			{
-				_holding = false;
-			}
-		}
-		else
-		{
-			if (@event is InputEventMouseMotion motionEvent && _holding)
-			{
-				if ((motionEvent.Position.X <= GlobalPosition.X
-				|| motionEvent.Position.X >= GlobalPosition.X + Size.X
-				|| motionEvent.Position.Y <= GlobalPosition.Y
-				|| motionEvent.Position.Y >= GlobalPosition.Y + Size.Y)
-				&& !_dragging)
-				{
-					_functionContainerCopy = (FunctionContainer)Duplicate();
-					_functionContainerCopy._isCopy = true;
-					_functionContainerCopy.Position = motionEvent.Position - Size / 2;
-					_functionPalette.AddChild(_functionContainerCopy);
-					_dragging = true;
-				}
-				if (_dragging && _functionContainerCopy != null)
-				{
-					_functionPalette.OnDraggingEvent(motionEvent.Position);
-					_functionContainerCopy.Position = motionEvent.Position - Size / 2;
-				}
-			}
-		}
+	public void GraphFunction()
+	{
+		FunctionPalette!.GraphFunction(Function);
 	}
 }

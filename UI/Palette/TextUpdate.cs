@@ -1,9 +1,10 @@
+using System;
+using System.Runtime;
 using CSharpMath;
 using Functions;
 using Godot;
 using Parsing;
 using Sonification;
-using System;
 
 namespace UI.Palette;
 
@@ -13,65 +14,36 @@ namespace UI.Palette;
 /// </summary>
 public partial class TextUpdate : Control
 {
+	[Export]
 	FunctionContainer? functionContainer;
-	ScrollContainer? lsc;
-	LaTeX? latex;
+	[Export]
+	RichTextLabel? errorLabel;
+	[Export]
+	LaTeXButton? latex;
+	[Export]
 	LineEdit? text;
-	Control? control;
-	TextUpdate? textUpdateCopy;
-
-	Vector2 margins = new Vector2(20.0f, 10.0f);
-	Vector2 minimumSize = new Vector2(225, 80);
-
-	/// <summary>
-	/// Adjusts the LaTeX node to fit the same space as the current text box.
-	/// Also adjusts to fit within the minimumSize.
-	/// </summary>
-	private void make()
-	{
-		if (latex == null || text == null || control == null) return;
-
-		latex.Render();
-		Vector2 size;
-		size = new Vector2(Math.Max(latex.Width + margins.X, minimumSize.X), minimumSize.Y);
-		text.CustomMinimumSize = size;
-		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
-		latex.Position = new Vector2(size.X / 2, size.Y / 2 + margins.Y);
-	}
 	
 	public override void _Ready()
 	{
 		base._Ready();
-		functionContainer = (FunctionContainer) Owner;
 
-		lsc = GetParent<ScrollContainer>();
-		lsc.CustomMinimumSize = minimumSize;
-		lsc.Size = minimumSize;
-		control = this;
-		latex = control.GetChild<LaTeX>(0);
-		text = control.GetChild<LineEdit>(1);
-
-		if (latex == null)
-		{
-			GD.PushError("Latex not initialized");
-			return;
-		}
-		if (text == null)
-		{
-			GD.PushError("Text not initialized");
-			return;
-		}
-
+		OnFocusExited();
 		latex.LatexExpression = text.PlaceholderText;
-		make();
 	}
 
-	private void _OnTextChanged(String newText)
+	void ReportError(string error)
 	{
-		if (latex == null || text == null || control == null) return;
+		errorLabel!.Text = $"[color=red]Error: {error}[/color]";
+		errorLabel.Visible = true;
+	}
 
-		Vector2 size = new Vector2(Math.Max(latex.Width, minimumSize.X), minimumSize.Y);
-		control.CustomMinimumSize = new Vector2(Math.Max(text.Size.X, size.X), size.Y);
+	static string HumanifyError(string error)
+	{
+		return error
+			.Replace("EOF", "end of input")
+			.Replace("found at", "found at character(s)")
+			.Replace("r#\"-?[0-9]+(\\\\.[0-9]+)?\"#", "number")
+			.Replace("r#\"[a-zA-Zα-ωΑ-Ω](_[a-zA-Zα-ωΑ-Ω0-9]+)?\"#", "variable");
 	}
 
 	/// <summary>
@@ -79,28 +51,83 @@ public partial class TextUpdate : Control
 	/// Sets the function palettes' current selected function.
 	/// </summary>
 	/// <param name="finalText">The entered text.</param>
-	private void _LineEditSubmitted(String finalText)
+	private void LineEditSubmitted(string finalText)
 	{
-		if (latex == null || text == null || lsc == null || functionContainer == null) return;
-		
-		IFunctionAST? ast = null;
+		IFunctionAST ast;
 		Function? function = null;
-		if(!text.Text.IsEmpty())
+		if (finalText.IsNonEmpty())
 		{
 			ParseResult result = Bridge.Parse(finalText);
-			ast = result.Unwrap();
-			function = new Function(finalText, ast);
+
+			if (result is Success ok)
+			{
+				ast = ok.Value;
+				errorLabel!.Visible = false;
+			}
+			else if (result is Failure err)
+			{
+				ReportError(HumanifyError(err.Error));
+				return;
+			}
+			else 
+			{
+				throw new InvalidCastException("expected a result type");
+			}
+
+			if (ASTHasUnboundVariable(ast) is string unbound)
+			{
+				ReportError($"Unknown variable '{unbound}'");
+				return;
+			}
+
+			function = new Function(finalText, ast, 0, 1);
+			latex!.LatexExpression = ast.Latex;
+		}
+		else
+		{
+			latex!.LatexExpression = text!.PlaceholderText;
 		}
 
-		if (finalText.IsEmpty() || ast == null)
-			latex.LatexExpression = text.PlaceholderText;
-		else
-			latex.LatexExpression = ast.Latex;
-		lsc.GetHScrollBar().Value = lsc.GetHScrollBar().MinValue;
-		make();
-		text.ReleaseFocus();
+        functionContainer!.Function = function!;
 
-		functionContainer.Function = function;
+        if (IsNodeReady())
+		{
+            text!.ReleaseFocus();
+            latex.Render();
+            functionContainer.GraphFunction();
+        }
+	}
+
+	public void ModifyText(string newText)
+	{
+		text!.Text = newText;
+		LineEditSubmitted(newText);
+	}
+
+	/// <summary>
+	/// Returns true if an unbound variable is found.
+	/// </summary>
+	/// <param name="ast"></param>
+	/// <returns></returns>
+	static string? ASTHasUnboundVariable(IFunctionAST ast)
+	{
+		return ast switch
+        {
+            Absolute val => ASTHasUnboundVariable(val.Inner),
+            Add val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Ceil val => ASTHasUnboundVariable(val.Inner),
+            Cosine val => ASTHasUnboundVariable(val.Inner),
+            Divide val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Exponent val => ASTHasUnboundVariable(val.Base) ?? ASTHasUnboundVariable(val.Power),
+            Floor val => ASTHasUnboundVariable(val.Inner),
+            Multiply val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Number => null,
+            Sine val => ASTHasUnboundVariable(val.Inner),
+            Subtract val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+            Tangent val => ASTHasUnboundVariable(val.Inner),
+            Variable val => val.Name != "t" ? val.Name : null,
+            _ => throw new NotImplementedException(),
+        };
 	}
 	
 	/// <summary>
@@ -108,12 +135,15 @@ public partial class TextUpdate : Control
 	/// not set the function palettes' current selected function,
 	/// see _LineEditSubmitted.
 	/// </summary>
-	private void _OnFocusEntered()
+	private void OnFocusEntered()
 	{
-		if (text == null || latex == null) return;
+		text!.RemoveThemeColorOverride("font_color");
+		latex!.Hide();
 
-		text.RemoveThemeColorOverride("font_color");
-		latex.ZIndex = 0;
+		if (functionContainer!.Function is not null)
+		{
+			functionContainer.GraphFunction();
+		}
 	}
 
 	/// <summary>
@@ -121,14 +151,12 @@ public partial class TextUpdate : Control
 	/// This does set the function palettes' current selected function,
 	/// currently a design decision that can be modified.
 	/// </summary>
-	private void _OnFocusExited()
+	private void OnFocusExited()
 	{
-		if (text == null || latex == null) return;
+		text!.AddThemeColorOverride("font_color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
+		latex!.Show();
 
-		text.AddThemeColorOverride("font_color", new Color(0.0f, 0.0f, 0.0f, 0.0f));
-		latex.ZIndex = 1;
-
-		String functionText = text.Text;
-		_LineEditSubmitted(functionText);
+		string functionText = text.Text;
+		LineEditSubmitted(functionText);
 	}
 }

@@ -6,7 +6,7 @@ namespace Sonification;
 /// <summary>
 /// Class for Sycnhronous Timing within the application. 
 /// </summary>
-public partial class TimeKeeper {
+public class TimeKeeper {
 
     /// <summary>
     /// Current time TimeKeeper has kept time for since construction (in seconds).
