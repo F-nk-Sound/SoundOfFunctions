@@ -243,7 +243,7 @@ public partial class Serializer : Node {
 	private void LoadFunctionPalette(Dictionary functionPaletteDictionary) 
 	{
 		// Logic to load the function palette from the file as a new function palette.
-
+		functionPalette!.Load(functionPaletteDictionary);
 		EmitSignal(SignalName.FunctionPaletteLoaded);
 	}
 

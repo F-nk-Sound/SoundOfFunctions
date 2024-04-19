@@ -36,6 +36,9 @@ public partial class FunctionContainer : Control
 	[Export]
 	private SpinBox? _end;
 
+	[Export]
+	private TextUpdate? _textUpdate;
+
 	private bool _holding = false;
 	private bool _dragging = false;
 	public bool _isCopy = false;
@@ -46,6 +49,14 @@ public partial class FunctionContainer : Control
 
 		if (_isCopy)
 			return;
+	}
+
+	public void FunctionUpdate(string TextRepresentation, float startTime, float endTime)
+	{
+		_textUpdate!.ModifyText(TextRepresentation);
+		_start!.Value = startTime;
+		_end!.Value = endTime;
+		RangeUpdate();
 	}
 
 	public void RangeUpdate()

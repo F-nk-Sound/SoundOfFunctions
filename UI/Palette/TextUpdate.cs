@@ -18,16 +18,16 @@ public partial class TextUpdate : Control
 	FunctionContainer? functionContainer;
 	[Export]
 	RichTextLabel? errorLabel;
+	[Export]
 	LaTeXButton? latex;
+	[Export]
 	LineEdit? text;
 	
 	public override void _Ready()
 	{
 		base._Ready();
 
-		latex = GetChild<LaTeXButton>(0);
-		text = GetChild<LineEdit>(1);
-
+		OnFocusExited();
 		latex.LatexExpression = text.PlaceholderText;
 	}
 
@@ -88,12 +88,20 @@ public partial class TextUpdate : Control
 			latex!.LatexExpression = text!.PlaceholderText;
 		}
 
-		text!.ReleaseFocus();
+        functionContainer!.Function = function!;
 
-		latex.Render();
+        if (IsNodeReady())
+		{
+            text!.ReleaseFocus();
+            latex.Render();
+            functionContainer.GraphFunction();
+        }
+	}
 
-		functionContainer!.Function = function!;
-		functionContainer.GraphFunction();
+	public void ModifyText(string newText)
+	{
+		text!.Text = newText;
+		LineEditSubmitted(newText);
 	}
 
 	/// <summary>
