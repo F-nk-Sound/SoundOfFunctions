@@ -28,7 +28,7 @@ public partial class TextUpdate : Control
 		base._Ready();
 
 		OnFocusExited();
-		latex.LatexExpression = text.PlaceholderText;
+		latex!.LatexExpression = text!.PlaceholderText;
 	}
 
 	void ReportError(string error)

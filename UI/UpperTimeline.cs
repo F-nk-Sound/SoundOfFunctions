@@ -55,7 +55,6 @@ public partial class UpperTimeline : Control
 	/// </summary>
 	private void OnToolbarPlayButtonPressed()
 	{
-
 		// Grab the Audio Generator from the scene tree and begin/end playback.
 		if(!audioGenerator!.timeline!.IsPlaying && audioGenerator!.timeline!.Count > 0) 
 		{
@@ -94,25 +93,29 @@ public partial class UpperTimeline : Control
 
 	public override bool _CanDropData(Vector2 atPosition, Variant data)
 	{
-		if (data.As<Function>() is Function f)
-		{
+		if (data.VariantType is Variant.Type.Object && data.Obj is Function)
 			return true;
-		}
 		return false;
+	}
+
+	int DropPositionToIndex(Vector2 position)
+	{
+		Array<Node> children = timelineContainer!.GetChildren();
+		for (int i = 0; i < children.Count; i++)
+		{
+			Control child = (Control)children[i];
+			if (position.X < child.Position.X + (child.Size.X / 2))
+				return i;
+		}
+		return children.Count;
 	}
 
 	public override void _DropData(Vector2 atPosition, Variant data)
 	{
-		if (data.As<Function>() is Function f)
+		if (data.VariantType is Variant.Type.Object && data.Obj is Function f)
 		{
-			lowerTimeline!.Add(f);
-			TimelineFunctionContainer container = timelineFunctionContainer!.Instantiate<TimelineFunctionContainer>();
-			container.StartTime = f.StartTime;
-			container.EndTime = f.EndTime;
-			container.LatexString = f.FunctionAST!.Latex;
-			container.Timeline = lowerTimeline;
-			container.Index = lowerTimeline.Count - 1;
-			timelineContainer!.AddChild(container);
+			int targetIndex = DropPositionToIndex(atPosition);
+			lowerTimeline!.Insert(f, targetIndex);
 		}
 	}
 

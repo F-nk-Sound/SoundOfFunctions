@@ -1,4 +1,3 @@
-using System.Linq;
 using Godot;
 using Sonification;
 
@@ -13,25 +12,9 @@ public partial class TimelineFunctionContainer : Control
 	[Export]
 	LaTeXButton? latex;
 
-	public int Index { get; set; }
-
 	public LowerTimeline? Timeline { get; set; }
 
-	public int StartTime
-	{
-		set
-		{
-			startLabel!.Text = value.ToString();
-		}
-	}
-
-	public int EndTime
-	{
-		set
-		{
-			endLabel!.Text = value.ToString();
-		}
-	}
+	public Function? Function { get; set; }
 
 	public string LatexString
 	{
@@ -42,16 +25,23 @@ public partial class TimelineFunctionContainer : Control
 		}
 	}
 
+	public void Initialize(Function func)
+	{
+		Function = func;
+		startLabel!.Text = func.StartTime.ToString();
+		endLabel!.Text = func.EndTime.ToString();
+		LatexString = func.FunctionAST!.Latex;
+	}
+
 	void Delete()
 	{
-		foreach (TimelineFunctionContainer child in GetParent().GetChildren().Cast<TimelineFunctionContainer>())
-		{
-			if (child.Index > Index)
-			{
-				child.Index -= 1;
-			}
-		}
-		Timeline!.RemoveFunction(Index);
 		QueueFree();
 	}
+
+    public override Variant _GetDragData(Vector2 atPosition)
+    {
+		SetDragPreview((Control)Duplicate());
+		QueueFree();
+		return Function!;
+    }
 }

@@ -129,7 +129,7 @@ icon = ExtResource("10_sgbw4")
 [node name="Main" type="VSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-split_offset = -185
+split_offset = -190
 
 [node name="PaletteAndGraph" type="HSplitContainer" parent="Main"]
 layout_mode = 2
@@ -228,8 +228,10 @@ audioGenerator = NodePath("../../AudioGenerator")
 lowerTimeline = NodePath("LowerTimeline")
 timelineFunctionContainer = ExtResource("15_x5gp5")
 
-[node name="LowerTimeline" type="Node" parent="Main/Timeline"]
+[node name="LowerTimeline" type="Node" parent="Main/Timeline" node_paths=PackedStringArray("timelineContainer")]
 script = ExtResource("13_lr367")
+timelineContainer = NodePath("../VBoxContainer/ScrollContainer/TimelineContainer")
+timelineFunctionContainer = ExtResource("15_x5gp5")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Main/Timeline"]
 layout_mode = 2
@@ -363,6 +365,7 @@ fit_content = true
 [connection signal="SeekingRequested" from="Main/Timeline" to="Main/Timeline/LowerTimeline" method="OnSeekingRequested"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="Main/Timeline" method="OnLowerTimelineAudioPlaybackFinished"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="AudioGenerator" method="OnAudioPlaybackFinished"]
+[connection signal="child_order_changed" from="Main/Timeline/VBoxContainer/ScrollContainer/TimelineContainer" to="Main/Timeline/LowerTimeline" method="ComputeFunctions"]
 [connection signal="TimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnTimelineUpdated"]
 [connection signal="SelectedSave" from="Storage/SaveSelector" to="Storage" method="OnSaveSelected"]
 [connection signal="timeout" from="Storage/SaveTimer" to="Storage/Serializer" method="OnSaveTimerTimeout"]

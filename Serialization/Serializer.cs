@@ -308,16 +308,7 @@ public partial class Serializer : Node {
 			// Create Function to add to Lower and Upper timeline.
 			Function newFunction = new(textRepresentation, Bridge.Parse(textRepresentation).Unwrap(), startTime, endTime);
 
-			// Create UpperTimeline container instance to store Function.
-			TimelineFunctionContainer container = upperTimelineFunctionContainer!.Instantiate<TimelineFunctionContainer>();
-			container.StartTime = newFunction.StartTime;
-			container.EndTime = newFunction.EndTime;
-			container.LatexString = newFunction!.FunctionAST!.Latex;
-			container.Timeline = lowerTimeline;
-			container.Index = i;
-
 			// Add Function to Upper and Lower Timeline.
-			upperTimelineContainer!.AddChild(container);
 			lowerTimeline.Add(newFunction);
 		}
 
