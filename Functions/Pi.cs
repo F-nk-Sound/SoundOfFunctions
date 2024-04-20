@@ -11,5 +11,5 @@ public record Pi : IFunctionAST
 
     public bool IsTerm => true;
 
-    public string Latex => $"\\pi";
+    public string Latex => "{\\pi}";
 }

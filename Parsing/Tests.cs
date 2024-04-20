@@ -15,8 +15,7 @@ public class Tests
 	public void NumbersParse(string input, double value)
 	{
 		IFunctionAST ast = Bridge.Parse(input).Unwrap();
-		Assert.IsType<Number>(ast);
-		Assert.Equal(value, (ast as Number)!.Value);
+		Assert.Equal(value, ast.Evaluate(new()));
 	}
 
 	[Theory]
@@ -50,7 +49,7 @@ public class Tests
 	}
 
 	[Theory]
-	[InlineData("5e % 2pi", "5\\e % 2\\pi")]
+	[InlineData("5e % 2pi", "5e % 2{\\pi}")]
 	public void LatexDisplay(string input, string expected)
 	{
 		IFunctionAST ast = Bridge.Parse(input).Unwrap();

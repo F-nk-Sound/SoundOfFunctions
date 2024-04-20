@@ -123,6 +123,7 @@ public partial class TextUpdate : Control
             Floor val => ASTHasUnboundVariable(val.Inner),
 			Modulo val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
             Multiply val => ASTHasUnboundVariable(val.Left) ?? ASTHasUnboundVariable(val.Right),
+			Negation val => ASTHasUnboundVariable(val.Inner),
             Number => null,
 			Pi => null,
             Sine val => ASTHasUnboundVariable(val.Inner),

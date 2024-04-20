@@ -23,6 +23,7 @@ public unsafe struct CtorTable
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newFloor = &NewFloor;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> newModulo = &NewModulo;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> newMultiply = &NewMultiply;
+	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newNegation = &NewNegation;
 	delegate* unmanaged[Cdecl]<double, IntPtr> newNumber = &NewNumber;
 	delegate* unmanaged[Cdecl]<IntPtr> newPi = &NewPi;
 	delegate* unmanaged[Cdecl]<IntPtr, IntPtr> newSine = &NewSine;
@@ -62,7 +63,7 @@ public unsafe struct CtorTable
 		   FromHandle(l),
 		   FromHandle(r)
 	   	)
-   );
+   	);
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewMultiply(IntPtr l, IntPtr r) => NewHandle(
@@ -70,7 +71,10 @@ public unsafe struct CtorTable
 		   FromHandle(l),
 		   FromHandle(r)
 	   	)
-   );
+   	);
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	unsafe static IntPtr NewNegation(IntPtr inner) => NewHandle(new Negation(FromHandle(inner)));
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	unsafe static IntPtr NewDivide(IntPtr l, IntPtr r) => NewHandle(
