@@ -52,6 +52,10 @@ public partial class FunctionRenderer : ColorRect
 				float y = YCoordToLine(yCoord);
 
 				float nextYCoord = (float)F(nextXCoord);
+
+				if (double.IsNaN(nextYCoord) || double.IsInfinity(nextYCoord))
+					continue;
+
 				float nextY = YCoordToLine(nextYCoord);
 
 				DrawLine(new Vector2(x, y), new Vector2(x + 1, nextY), new Color(0, 0, 0, 255), -1, true);

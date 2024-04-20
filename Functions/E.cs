@@ -11,5 +11,5 @@ public record E : IFunctionAST
 
     public bool IsTerm => true;
 
-    public string Latex => $"\\e";
+    public string Latex => $"e";
 }
