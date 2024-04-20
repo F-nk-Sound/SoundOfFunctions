@@ -110,6 +110,13 @@ public partial class Function : Node
 		return frame;
 	}
 
+	double? FrequencyAt(double t)
+	{
+		double value = Frequencies.GetFrequency(FunctionAST!.EvaluateAtT(t));
+
+		return double.IsNaN(value) ? null : value;
+	}
+
 	/// <summary>
 	/// Generate individual note audio based on functions current playing state.
 	/// </summary>
@@ -124,12 +131,14 @@ public partial class Function : Node
 			if (t >= EndTime)
 				break;
 
-			double frequency = Frequencies.GetFrequency(FunctionAST!.EvaluateAtT(t));
+			double? frequency = FrequencyAt(t);
+			t += 1 / sampleRate;
 
-			var frame = CreateSinWaveFrame(frequency, sampleRate);
+			var frame = frequency is not null 
+				? CreateSinWaveFrame(frequency.Value, sampleRate)
+				: Vector2.Zero;
 
 			Playback.PushFrame(frame);
-			t += 1 / sampleRate;
 		}
 	}
 
@@ -206,7 +215,7 @@ public partial class Function : Node
 	/// </summary>
 	private void Play()
 	{
-		if (Timer.ElapsedTime >= EndTime)
+		if (Timer.ElapsedTime >= RunTime)
 		{
 			StopPlaying();
 			return;

@@ -22,14 +22,14 @@ public partial class Example : Node
 	/// </summary>
 	private void _OnFunctionChanged()
 	{
-		if (functionPalette == null) return;
-		Function func = functionPalette.CurrentSelectedFunction;
-        IFunctionAST function = func.FunctionAST;
-		object[] exampleEvaluations = new object[Math.Abs(func.EndTime - func.StartTime) + 1];
-		for (int i = func.StartTime; i <= func.EndTime; i++)
-			exampleEvaluations[i - func.StartTime] = function.EvaluateAtT(i);
-		GD.Print("Example Evaluation In Range: ");
-		GD.PrintS(exampleEvaluations);
+		// if (functionPalette == null) return;
+		// Function func = functionPalette.CurrentSelectedFunction;
+        // IFunctionAST function = func.FunctionAST!;
+		// object[] exampleEvaluations = new object[Math.Abs(func.EndTime - func.StartTime) + 1];
+		// for (int i = func.StartTime; i <= func.EndTime; i++)
+		// 	exampleEvaluations[i - func.StartTime] = function.EvaluateAtT(i);
+		// GD.Print("Example Evaluation In Range: ");
+		// GD.PrintS(exampleEvaluations);
 	}
 
 	/// <summary>

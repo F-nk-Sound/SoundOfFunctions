@@ -12,5 +12,5 @@ public record Modulo(IFunctionAST Left, IFunctionAST Right) : IFunctionAST
 
     public bool IsTerm => false;
 
-    public string Latex => $"{Left.SingleTermLatex} % {Right.SingleTermLatex}";
+    public string Latex => $"{Left.SingleTermLatex} \\% {Right.SingleTermLatex}";
 }
