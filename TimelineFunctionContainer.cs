@@ -44,6 +44,7 @@ public partial class TimelineFunctionContainer : Control
 
 	void Delete()
 	{
+		if(Timeline.IsPlaying) return;
 		foreach (TimelineFunctionContainer child in GetParent().GetChildren().Cast<TimelineFunctionContainer>())
 		{
 			if (child.Index > Index)
