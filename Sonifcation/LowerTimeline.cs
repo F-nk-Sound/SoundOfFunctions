@@ -3,7 +3,7 @@ using Godot;
 using Godot.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+
 
 namespace Sonification;
 
@@ -20,7 +20,6 @@ public partial class LowerTimeline : Node
 	/// <summary>
 	/// List of functions on the Timeline.
 	/// </summary>
-	[JsonRequired]
 	private List<Function> functions;
 
 	/// <summary>
@@ -55,6 +54,18 @@ public partial class LowerTimeline : Node
 	/// Current position of Timeline audio playback (in seconds).
 	/// </summary>
 	public double CurrPosition { get; set; }
+
+	private bool _next = false;
+	public bool SeekForward {
+		get { return _next; }
+		set { if(currFunction + 1 < functions.Count && value == true) _next = value; }
+	}
+
+	private bool _previous = false;
+	public bool SeekBackward {
+		get { return _previous; }
+		set { if(currFunction > 0 && value == true) _previous = value; }
+	}
 
 	/// <summary>
 	/// Godot event called when audio playback has finished.
@@ -102,13 +113,10 @@ public partial class LowerTimeline : Node
 	/// <param name="func">Function to be added.</param>
 	public void Add(Function func)
 	{
-		AudioDebugging.Output("Function Processing Pre Added To TL: " + func.IsProcessing());
 		if (!IsAncestorOf(func))
 			AddChild(func);
 		func.SetProcess(false);
 		functions.Add(func);
-		AudioDebugging.Output("Function Processing Pre Added To TL: " + func.IsProcessing());
-		AudioDebugging.Output("Added to LowerTimeline: " + func.Name);
 	}
 
 	/// <summary>
@@ -149,8 +157,8 @@ public partial class LowerTimeline : Node
 	private void Play()
 	{
 		// Stop playback if necessary
-		AudioDebugging.Output("\tEntered LowerTimeline.Play()");
-		if (StopPlaying() || currFunction >= functions.Count) return;
+		AudioDebugging.Output("\tEntered LowerTimeline.Play(). ToPrev = " + SeekBackward + "/ToNext =" + SeekForward);
+		if (StopPlaying(false) || currFunction == functions.Count) return;
 
 		// Grab the current timer position and the time to allow the next function to play
 		int currTime = timer.ClockTimeRounded;
@@ -158,7 +166,7 @@ public partial class LowerTimeline : Node
 
 		// Play the functions within the timeline at the appropriate time
 		if (currFunction == -1 || timer.ElapsedTime >= updateTime)
-		{
+		{	
 			currFunction++;
 			functions[currFunction].StartPlaying();
 			timer.ResetTracking();
@@ -166,7 +174,7 @@ public partial class LowerTimeline : Node
 
 		AudioDebugging.Output("\t->Timeline.Timer.CurrTime = " + currTime + " s. UpdateTime/StopTime = " + updateTime + " s");
 		AudioDebugging.Output("\t->Timeline.Timer.ElapsedTime: " + (int)timer.ElapsedTime + " s " + "[absolute: " + timer.ElapsedTime + " s]");
-		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + functions[currFunction].Name + " @ Function.Timer = " + currTime + " s");
+		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + functions[currFunction].TextRepresentation);
 		AudioDebugging.Output("\tExit LowerTimeline.Play()");
 	}
 
@@ -195,17 +203,18 @@ public partial class LowerTimeline : Node
 	/// Disables Timeline audio playback.
 	/// </summary>
 	/// <returns><c>true</c> if Timeline audio playback was succesfully disabled.</returns>
-	public bool StopPlaying()
+	public bool StopPlaying(bool interrupted)
 	{
 		bool res = true;
 		AudioDebugging.Output("\t\tEntered LowerTimeline.StopPlaying():");
-		AudioDebugging.Output("\t\tLowerTimeline.Timer.ClockTimeRounded == " + timer.ClockTimeRounded);
 		AudioDebugging.Output("\t\tLowerTimeline.RunTime == " + RunTime);
+		AudioDebugging.Output("\t\tLowerTimeline.Timer.time == " + timer.ClockTimeRounded);
 		// Poll the time and check if time has arrived. Stop Sonifcation if necessary.
-		if (timer.ClockTimeRounded < RunTime) res = false;
+		if (timer.ClockTimeRounded < RunTime && !interrupted) res = false;
 		else
-		{
+		{	
 			// Stop Sonification.
+			if(currFunction != functions.Count) functions[currFunction].StopPlaying();
 			currFunction = -1;
 			IsPlaying = false;
 			SetProcess(false);
@@ -215,15 +224,6 @@ public partial class LowerTimeline : Node
 
 		AudioDebugging.Output("\t\tExit LowerTimeline.StopPlaying(): returns " + res);
 		return res;
-	}
-
-	/// <summary>
-	/// Provides audio playback via <c> LowerTimeline.player </c>.
-	/// </summary>
-	/// <exception cref="NotImplementedException"></exception>
-	public void Sonify()
-	{
-		throw new NotImplementedException();
 	}
 
 	/// <summary>
@@ -249,16 +249,32 @@ public partial class LowerTimeline : Node
 		return res;
 	}
 
-	public void Display()
-	{
-		GD.Print("LowerTimeline: " + Name);
-		foreach (Function func in functions)
-		{
-			func.Info();
-		}
-		GD.Print();
+	private void ToPreviousFunction() {
+		_previous = false;
+		functions[currFunction].StopPlaying();
+		double startTime = 0;
+		for(int i = 0; i < currFunction; i++) startTime += functions[i].RunTime;
+		timer.Reset(startTime);
+		timer.BeginTracking();
+		currFunction--;
+		functions[currFunction].StartPlaying();
 	}
 
+	private void ToNextFunction() {
+		_next = false;
+		functions[currFunction].StopPlaying();
+		double startTime = 0;
+		for(int i = 0; i <= currFunction; i++) startTime += functions[i].RunTime;
+		timer.Reset(startTime);
+		timer.BeginTracking();
+		currFunction++;
+		functions[currFunction].StartPlaying();
+	}
+
+	private void OnSeekingRequested(string type) {
+		if(type.Equals("<<")) ToPreviousFunction();
+		else if(type.Equals(">>")) ToNextFunction();
+	}
 	public override void _Process(double delta)
 	{
 		timer.Tick(delta);

@@ -10,7 +10,6 @@ namespace Sonification;
 public static class AudioDebugging
 {
 	public static readonly bool Enabled = false;
-	public static readonly int Method = 1;
 	public static void Output(string info)
 	{
 		if (Enabled) GD.Print(info);

@@ -79,6 +79,7 @@ script = ExtResource("6_5mm8q")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Toolbar"]
 layout_mode = 2
+alignment = 1
 
 [node name="Save" type="Button" parent="Toolbar/HBoxContainer"]
 layout_mode = 2
@@ -93,12 +94,14 @@ text = "Load"
 icon = ExtResource("8_lmbnk")
 
 [node name="Undo" type="Button" parent="Toolbar/HBoxContainer"]
+visible = false
 layout_mode = 2
 tooltip_text = "Undo (CTRL + Z)"
 text = "Undo"
 icon = ExtResource("4_rspl5")
 
 [node name="Redo" type="Button" parent="Toolbar/HBoxContainer"]
+visible = false
 layout_mode = 2
 tooltip_text = "Redo your most recent \"undo\" (CTRL + Y)"
 text = "Redo"
@@ -107,19 +110,20 @@ icon = ExtResource("5_h8umj")
 [node name="Beginning" type="Button" parent="Toolbar/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Rewind to the beginning"
-text = "Beginning"
+text = "Previous"
 icon = ExtResource("6_25iw2")
 
 [node name="Play" type="Button" parent="Toolbar/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Play"
-text = "Play"
+text = "Play/Stop"
 icon = ExtResource("11_o2of6")
 
 [node name="Ending" type="Button" parent="Toolbar/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Fast forward to the end"
-text = "Ending"
+text = "Next
+"
 icon = ExtResource("10_sgbw4")
 
 [node name="Main" type="VSplitContainer" parent="."]
@@ -214,9 +218,10 @@ icon = ExtResource("13_wjrfo")
 flat = true
 icon_alignment = 2
 
-[node name="Timeline" type="PanelContainer" parent="Main" node_paths=PackedStringArray("timelineContainer", "functionPalette", "audioGenerator", "lowerTimeline")]
+[node name="Timeline" type="PanelContainer" parent="Main" node_paths=PackedStringArray("playButton", "timelineContainer", "functionPalette", "audioGenerator", "lowerTimeline")]
 layout_mode = 2
 script = ExtResource("4_1pkc6")
+playButton = NodePath("../../Toolbar/HBoxContainer/Play")
 timelineContainer = NodePath("VBoxContainer/ScrollContainer/TimelineContainer")
 functionPalette = NodePath("../PaletteAndGraph/Function Palette")
 audioGenerator = NodePath("../../AudioGenerator")
@@ -339,20 +344,24 @@ fit_content = true
 
 [connection signal="ready" from="." to="." method="_on_ready"]
 [connection signal="LoadButtonPressed" from="Toolbar" to="Storage" method="OnToolBarLoadButtonPressed"]
+[connection signal="NextButtonPressed" from="Toolbar" to="Main/Timeline" method="OnToolBarNextButtonPressed"]
 [connection signal="PlayButtonPressed" from="Toolbar" to="Main/Timeline" method="OnToolbarPlayButtonPressed"]
+[connection signal="PreviousButtonPressed" from="Toolbar" to="Main/Timeline" method="OnToolBarPreviousButtonPressed"]
 [connection signal="SaveButtonPressed" from="Toolbar" to="Storage" method="OnToolbarSaveButtonPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Save" to="Toolbar" method="OnSaveButtonPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Load" to="Toolbar" method="OnLoadButtonPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Undo" to="Toolbar" method="OnUndoPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Redo" to="Toolbar" method="OnRedoPressed"]
-[connection signal="pressed" from="Toolbar/HBoxContainer/Beginning" to="Toolbar" method="OnBeginningButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Beginning" to="Toolbar" method="OnPreviousButtonPressed"]
 [connection signal="pressed" from="Toolbar/HBoxContainer/Play" to="Toolbar" method="OnPlayButtonPressed"]
-[connection signal="pressed" from="Toolbar/HBoxContainer/Ending" to="Toolbar" method="OnEndingButtonPressed"]
+[connection signal="pressed" from="Toolbar/HBoxContainer/Ending" to="Toolbar" method="OnNextButtonPressed"]
 [connection signal="FunctionDragged" from="Main/PaletteAndGraph/Function Palette" to="Main/PaletteAndGraph/Function Palette/VBoxContainer/Selected Function" method="_OnFunctionDragged"]
 [connection signal="FunctionDragging" from="Main/PaletteAndGraph/Function Palette" to="Main/PaletteAndGraph/Function Palette/VBoxContainer/Selected Function" method="_OnFunctionDragging"]
 [connection signal="SelectedFunctionChanged" from="Main/PaletteAndGraph/Function Palette" to="Main/PaletteAndGraph/Function Palette/VBoxContainer/Selected Function" method="_OnFunctionChanged"]
 [connection signal="pressed" from="Main/PaletteAndGraph/Function Palette/VBoxContainer/Add function + button" to="Main/PaletteAndGraph/Function Palette" method="OnButtonPressed"]
 [connection signal="pressed" from="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer/MarginContainer/Reset" to="Main/PaletteAndGraph/Graph BG/VBoxContainer/FunctionRenderer" method="OnResetButton"]
+[connection signal="SeekingRequested" from="Main/Timeline" to="Main/Timeline/LowerTimeline" method="OnSeekingRequested"]
+[connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="Main/Timeline" method="OnLowerTimelineAudioPlaybackFinished"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="AudioGenerator" method="OnAudioPlaybackFinished"]
 [connection signal="TimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnTimelineUpdated"]
 [connection signal="SelectedSave" from="Storage/SaveSelector" to="Storage" method="OnSaveSelected"]

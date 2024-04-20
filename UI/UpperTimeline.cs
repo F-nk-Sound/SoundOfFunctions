@@ -7,6 +7,14 @@ namespace UI;
 
 public partial class UpperTimeline : Control
 {
+
+	// Play button for start/stop.
+	[Export]
+	Button? playButton;
+	
+	private string playIcon = "res://Assets/FOTS UI/icons8-circled-play-50.png";
+	private string stopIcon = "res://Assets/FOTS UI/esper-icon-stop.png";
+	
 	[Export]
 	public HBoxContainer? timelineContainer;
 
@@ -23,6 +31,12 @@ public partial class UpperTimeline : Control
 
 	[Export]
 	PackedScene? timelineFunctionContainer;
+
+	/// <summary>
+	/// Godot event called when seeking is requested.
+	/// </summary>
+	[Signal]
+	public delegate void SeekingRequestedEventHandler(string type);
 
 	private void OnButtonPressed()
 	{
@@ -41,9 +55,41 @@ public partial class UpperTimeline : Control
 	/// </summary>
 	private void OnToolbarPlayButtonPressed()
 	{
-		// Grab the Audio Generator from the scene tree and begin playback.
-		audioGenerator!.Play();
-		AudioDebugging.Output("AudioGenerator.Play() Activated");
+
+		// Grab the Audio Generator from the scene tree and begin/end playback.
+		if(!audioGenerator!.timeline!.IsPlaying && audioGenerator!.timeline!.Count > 0) 
+		{
+			audioGenerator.Play();
+			playButton!.Icon = (Texture2D) GD.Load(stopIcon);
+		}
+		else 
+		{
+			audioGenerator.Stop();
+			playButton!.Icon = (Texture2D) GD.Load(playIcon);
+		}
+	}
+
+	private void OnToolBarPreviousButtonPressed() 
+	{
+		if(audioGenerator!.timeline!.IsPlaying)
+		{	
+			audioGenerator.timeline.SeekBackward = true;
+			if(audioGenerator.timeline.SeekBackward) EmitSignal(SignalName.SeekingRequested, "<<");
+		}
+	}
+
+	private void OnToolBarNextButtonPressed() 
+	{
+		if(audioGenerator!.timeline!.IsPlaying)
+		{	
+			audioGenerator.timeline.SeekForward = true;
+			if(audioGenerator.timeline.SeekForward) EmitSignal(SignalName.SeekingRequested, ">>");
+		}
+	}
+
+	private void OnLowerTimelineAudioPlaybackFinished()
+	{
+		playButton!.Icon = (Texture2D) GD.Load(playIcon);
 	}
 
 	public override bool _CanDropData(Vector2 atPosition, Variant data)
@@ -70,15 +116,4 @@ public partial class UpperTimeline : Control
 		}
 	}
 
-	/// <summary>
-	/// Saves all data elements needed to create an UpperTimeline Node to a Godot Dictionary.
-	/// </summary>
-	/// <returns>Returns the Godot Dictionary that holds the required information.</returns>
-	public Dictionary Save()
-	{
-		var res = new Dictionary();
-		return res;
-	}
 }
-
-
