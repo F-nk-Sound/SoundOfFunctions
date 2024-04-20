@@ -49,7 +49,7 @@ public class Tests
 	}
 
 	[Theory]
-	[InlineData("5e % 2pi", "5e % 2{\\pi}")]
+	[InlineData("5e % 2pi", "5e \\% 2{\\pi}")]
 	public void LatexDisplay(string input, string expected)
 	{
 		IFunctionAST ast = Bridge.Parse(input).Unwrap();

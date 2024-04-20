@@ -45,6 +45,7 @@ public class Tests
     [InlineData("5sin(x^2)^2", "5\\sin(x^{2})^{2}")]
     [InlineData("12 + 3 + 4 + 5 + 6 + 19", "12 + 3 + 4 + 5 + 6 + 19")]
     [InlineData("abs(floor(ceil(x)))", "|\\lfloor \\lceil x \\rceil \\rfloor|")]
+    [InlineData("12log(2t, e)", "12\\log_{2t}(e)")]
     public void FunctionToLatex(string function, string latex)
     {
         Assert.Equal(latex, Bridge.Parse(function).Unwrap().Latex);
