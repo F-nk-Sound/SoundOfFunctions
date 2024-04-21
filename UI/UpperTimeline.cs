@@ -7,7 +7,6 @@ namespace UI;
 
 public partial class UpperTimeline : Control
 {
-
 	// Play button for start/stop.
 	[Export]
 	Button? playButton;
@@ -28,9 +27,6 @@ public partial class UpperTimeline : Control
 
 	[Export]
 	LowerTimeline? lowerTimeline;
-
-	[Export]
-	PackedScene? timelineFunctionContainer;
 
 	/// <summary>
 	/// Godot event called when seeking is requested.
