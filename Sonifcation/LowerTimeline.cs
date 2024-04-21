@@ -1,9 +1,8 @@
-using System;
 using Godot;
 using Godot.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-
 
 namespace Sonification;
 
@@ -17,10 +16,18 @@ public partial class LowerTimeline : Node
 	/// </summary>
 	private AudioStreamPlayer player;
 
+	ImmutableList<Function>? cachedFunctions;
+
 	/// <summary>
 	/// List of functions on the Timeline.
 	/// </summary>
-	private List<Function> functions;
+	private ImmutableList<Function>? Functions => cachedFunctions;
+
+	[Export]
+	HBoxContainer? timelineContainer;
+
+	[Export]
+	PackedScene? timelineFunctionContainer;
 
 	/// <summary>
 	/// Timer to manage and synchronize audio playback within the Timeline.
@@ -35,14 +42,14 @@ public partial class LowerTimeline : Node
 	/// <summary>
 	/// Runtime of the Timeline (in seconds).
 	/// </summary>    
-	public double RunTime => functions.Select(f => f.RunTime).Sum();
+	public double RunTime => Functions!.Select(f => f.RunTime).Sum();
 
 	/// <summary>
 	/// Number of Functions currently held within the LowerTimeline.
 	/// </summary>
 	public int Count
 	{
-		get { return functions.Count; }
+		get { return Functions!.Count; }
 	}
 
 	/// <summary>
@@ -56,18 +63,22 @@ public partial class LowerTimeline : Node
 	public double CurrPosition { get; set; }
 
 	private bool _next = false;
-	public bool SeekForward {
+	public bool SeekForward
+	{
 		get { return _next; }
-		set { if(currFunction + 1 < functions.Count && value == true) _next = value; }
+		set { if (currFunction + 1 < Functions!.Count && value == true) _next = value; }
 	}
 
 	private bool _previous = false;
-	public bool SeekBackward {
+	public bool SeekBackward
+	{
 		get { return _previous; }
-		set { 
+		set 
+	{ 
 			AudioDebugging.Output("-->Setting Seek Backward: CurrFunction = " + currFunction);
 			AudioDebugging.Output("-->Condition: [currFunction > 0 && value == true] is " + ((currFunction > 0) && value == true));
-			if(currFunction > 0 && value == true) _previous = value; }
+			if(currFunction > 0 && value == true) _previous = value; 
+	}
 	}
 
 	/// <summary>
@@ -82,8 +93,8 @@ public partial class LowerTimeline : Node
 	/// <param name="parent">The parent of this LowerTimeline node.</param>
 	public LowerTimeline()
 	{
-		functions = new();
 		timer = new();
+		cachedFunctions = ImmutableList.Create<Function>();
 
 		Reset();
 
@@ -97,6 +108,15 @@ public partial class LowerTimeline : Node
 		AddChild(player);
 	}
 
+	public void ComputeFunctions()
+	{
+		cachedFunctions =
+			timelineContainer!
+			.GetChildren()
+			.Select(c => ((TimelineFunctionContainer)c).Function!)
+			.ToImmutableList();
+	}
+
 	/// <summary>
 	/// Fully reset the state of the timeline
 	/// </summary>
@@ -105,7 +125,17 @@ public partial class LowerTimeline : Node
 		currFunction = -1; // Initialized to -1 to indicate playing hasn't begun yet. 0 indexed quantity.
 		CurrPosition = 0.0;
 		IsPlaying = false;
-		functions.Clear();
+		if (timelineContainer is not null)
+			foreach (var child in timelineContainer!.GetChildren())
+			{
+				timelineContainer.RemoveChild(child);
+				child.QueueFree();
+			}
+		foreach (var child in GetChildren().OfType<TimelineFunctionContainer>())
+		{
+			RemoveChild(child);
+			child.QueueFree();
+		}
 		timer.Reset();
 		SetProcess(false);
 	}
@@ -114,12 +144,23 @@ public partial class LowerTimeline : Node
 	/// Adds a Function Node to the end of the Timeline.
 	/// </summary>
 	/// <param name="func">Function to be added.</param>
-	public void Add(Function func)
+	public void Insert(Function func, int index)
 	{
 		if (!IsAncestorOf(func))
 			AddChild(func);
+
+		TimelineFunctionContainer container = timelineFunctionContainer!.Instantiate<TimelineFunctionContainer>();
+		container.Initialize(func);
+
+		timelineContainer!.AddChild(container);
+		timelineContainer.MoveChild(container, index);
+
 		func.SetProcess(false);
-		functions.Add(func);
+	}
+
+	public void Add(Function func)
+	{
+		Insert(func, Count - 1);
 	}
 
 	/// <summary>
@@ -128,7 +169,8 @@ public partial class LowerTimeline : Node
 	/// <param name="funcList">List of Functions to be added.</param>
 	public void Add(List<Function> funcList)
 	{
-		foreach (Function f in funcList) Add(f);
+		foreach (Function f in funcList)
+			Add(f);
 	}
 
 	/// <summary>
@@ -138,7 +180,7 @@ public partial class LowerTimeline : Node
 	/// <returns>Function a the specified location.</returns>
 	public Function GetFunction(int index)
 	{
-		return functions[index];
+		return Functions![index];
 	}
 
 	/// <summary>
@@ -146,12 +188,9 @@ public partial class LowerTimeline : Node
 	/// </summary>
 	/// <param name="index">Location of Function on the Timeline (0 indexed).</param>
 	/// <returns><c>true</c> if removal was successful.</returns>
-	public bool RemoveFunction(int index)
+	public void RemoveFunction(int index)
 	{
-		Function func = GetFunction(index);
-		if (func == null) return false;
-		functions.Remove(func);
-		return true;
+		timelineContainer!.GetChild(index).QueueFree();
 	}
 
 	/// <summary>
@@ -160,25 +199,25 @@ public partial class LowerTimeline : Node
 	private void Play()
 	{
 		// Stop playback if necessary
-		AudioDebugging.Output("Entered LowerTimeline.Play().");
-		if (StopPlaying(false) || currFunction == functions.Count) return;
+		AudioDebugging.Output("\tEntered LowerTimeline.Play(). ToPrev = " + SeekBackward + "/ToNext =" + SeekForward);
+		if (StopPlaying(false) || currFunction == Functions!.Count) return;
 
 		// Grab the current timer position and the time to allow the next function to play
 		int currTime = timer.ClockTimeRounded;
-		double updateTime = (currFunction == -1) ? functions.First().RunTime : functions[currFunction].RunTime;
+		double updateTime = (currFunction == -1) ? Functions!.First().RunTime : Functions![currFunction].RunTime;
 
 		// Play the functions within the timeline at the appropriate time
 		if (currFunction == -1 || timer.ElapsedTime >= updateTime)
-		{	
+		{
 			currFunction++;
-			functions[currFunction].StartPlaying();
+			Functions![currFunction].StartPlaying();
 			timer.ResetTracking();
 		}
 
 		AudioDebugging.Output("\t->Timeline.Timer.CurrTime = " + currTime + " s. UpdateTime/StopTime = " + updateTime + " s");
 		AudioDebugging.Output("\t->Timeline.Timer.ElapsedTime: " + (int)timer.ElapsedTime + " s " + "[absolute: " + timer.ElapsedTime + " s]");
-		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + functions[currFunction].TextRepresentation);
-		AudioDebugging.Output("Exit LowerTimeline.Play()");
+		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + Functions![currFunction].TextRepresentation);
+		AudioDebugging.Output("\tExit LowerTimeline.Play()");
 	}
 
 	/// <summary>
@@ -189,7 +228,7 @@ public partial class LowerTimeline : Node
 	{
 		AudioDebugging.Output("Entered LowerTimeline.StartPlaying():");
 		bool res = true;
-		if (functions.Count == 0 || IsPlaying) res = false;
+		if (Functions!.Count == 0 || IsPlaying) res = false;
 		else
 		{
 			IsPlaying = true;
@@ -215,9 +254,9 @@ public partial class LowerTimeline : Node
 		// Poll the time and check if time has arrived. Stop Sonifcation if necessary.
 		if (timer.ClockTimeRounded < RunTime && !interrupted) res = false;
 		else
-		{	
+		{
 			// Stop Sonification.
-			if(currFunction != functions.Count) functions[currFunction].StopPlaying();
+			if (currFunction != Functions!.Count) Functions[currFunction].StopPlaying();
 			currFunction = -1;
 			IsPlaying = false;
 			SetProcess(false);
@@ -237,7 +276,7 @@ public partial class LowerTimeline : Node
 	{
 		// Retrieve and store all functions within the timeline as JSON.
 		Dictionary functionsDictionary = new();
-		foreach (var (func, i) in functions.Select((f, i) => (f, i)))
+		foreach (var (func, i) in Functions!.Select((f, i) => (f, i)))
 		{
 			var functionData = func.Save();
 			functionsDictionary.Add(i, functionData);
@@ -254,39 +293,43 @@ public partial class LowerTimeline : Node
 
 	private void ToPreviousFunction() {
 		AudioDebugging.Output("Entered ToPreviousFunction");
-		AudioDebugging.Output("\tCurrFunction = " + currFunction + ":" + functions[currFunction].TextRepresentation);
-		AudioDebugging.Output("\t\tCurrFunction.Runtime = " + functions[currFunction].RunTime);
-		AudioDebugging.Output("\tPrevFunction = " + (currFunction-1) + ":" + functions[currFunction-1].TextRepresentation);
-		AudioDebugging.Output("\t\tPrevFunction.Runtime = " + functions[currFunction-1].RunTime);
+		AudioDebugging.Output("\tCurrFunction = " + currFunction + ":" + Functions![currFunction].TextRepresentation);
+		AudioDebugging.Output("\t\tCurrFunction.Runtime = " + Functions[currFunction].RunTime);
+		AudioDebugging.Output("\tPrevFunction = " + (currFunction-1) + ":" + Functions[currFunction-1].TextRepresentation);
+		AudioDebugging.Output("\t\tPrevFunction.Runtime = " + Functions[currFunction-1].RunTime);
 		AudioDebugging.Output("\tLowerTimeline.Timer.CurrTime = " + timer.ClockTimeAbsolute);
 
 		_previous = false;
-		functions[currFunction].StopPlaying();
+		Functions[currFunction].StopPlaying();
 		double startTime = 0;
-		if(currFunction - 1 != 0) for(int i = 0; i < currFunction - 1; i++) startTime += functions[i].RunTime;
+		if(currFunction - 1 != 0) 
+			for(int i = 0; i < currFunction - 1; i++) 
+				startTime += Functions[i].RunTime;
 		timer.Reset(startTime);
 		timer.BeginTracking();
 		currFunction--;
-		functions[currFunction].StartPlaying();
+		Functions[currFunction].StartPlaying();
 
 		AudioDebugging.Output("\tLowerTimeline.Timer.CurrTime (assigned new Starttime) = " + timer.ClockTimeAbsolute);
 		AudioDebugging.Output("Exited ToPreviousFunction");
 	}
 
-	private void ToNextFunction() {
+	private void ToNextFunction()
+	{
 		_next = false;
-		functions[currFunction].StopPlaying();
+		Functions![currFunction].StopPlaying();
 		double startTime = 0;
-		for(int i = 0; i <= currFunction; i++) startTime += functions[i].RunTime;
+		for (int i = 0; i <= currFunction; i++) startTime += Functions[i].RunTime;
 		timer.Reset(startTime);
 		timer.BeginTracking();
 		currFunction++;
-		functions[currFunction].StartPlaying();
+		Functions[currFunction].StartPlaying();
 	}
 
-	private void OnSeekingRequested(string type) {
-		if(type.Equals("<<")) ToPreviousFunction();
-		else if(type.Equals(">>")) ToNextFunction();
+	private void OnSeekingRequested(string type)
+	{
+		if (type.Equals("<<")) ToPreviousFunction();
+		else if (type.Equals(">>")) ToNextFunction();
 	}
 	public override void _Process(double delta)
 	{
