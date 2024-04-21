@@ -13,7 +13,9 @@ config_version=5
 config/name="Sound Of Functions"
 run/main_scene="res://ui.tscn"
 config/features=PackedStringArray("4.2", "C#", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://SOF.png"
+config/macos_native_icon="res://SOF.icns"
+config/windows_native_icon="res://SOF.ico"
 
 [dotnet]
 

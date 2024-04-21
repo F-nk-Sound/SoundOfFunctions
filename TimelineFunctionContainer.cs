@@ -14,6 +14,8 @@ public partial class TimelineFunctionContainer : Control
 
 	[Export]
 	PanelContainer? panel;
+	private StyleBox? pausedBox = (StyleBox) GD.Load("res://FunctionPaused.tres");
+	private StyleBox? playingBox = (StyleBox) GD.Load("res://FunctionPlaying.tres");
 
 	public LowerTimeline? Timeline { get; set; }
 
@@ -45,8 +47,30 @@ public partial class TimelineFunctionContainer : Control
 
   public override Variant _GetDragData(Vector2 atPosition)
   {
+		if(Timeline!.IsPlaying) return new Variant();
 		SetDragPreview((Control)Duplicate());
 		QueueFree();
 		return Function!;
   }
+
+	private void ChangePausedToPlaying() 
+	{
+		// Load playing theme.
+		panel!.RemoveThemeStyleboxOverride("Paused");
+		panel!.AddThemeStyleboxOverride("panel", playingBox);
+	}
+
+	private void ChangePlayingToPaused() 
+	{
+		// Load paused theme.
+		panel!.RemoveThemeStyleboxOverride("Playing");
+		panel!.AddThemeStyleboxOverride("panel", pausedBox);
+	}
+
+	public override void _Process(double delta)
+	{
+		StyleBox box = panel!.GetThemeStylebox("panel");
+		if(Function!.IsProcessing() && box.ResourceName.Equals("Paused")) ChangePausedToPlaying();
+		else if(!Function!.IsProcessing() && box.ResourceName.Equals("Playing")) ChangePlayingToPaused();
+	}
 }
