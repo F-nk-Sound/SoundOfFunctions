@@ -74,11 +74,11 @@ public partial class LowerTimeline : Node
 	{
 		get { return _previous; }
 		set 
-    { 
+	{ 
 			AudioDebugging.Output("-->Setting Seek Backward: CurrFunction = " + currFunction);
 			AudioDebugging.Output("-->Condition: [currFunction > 0 && value == true] is " + ((currFunction > 0) && value == true));
 			if(currFunction > 0 && value == true) _previous = value; 
-    }
+	}
 	}
 
 	/// <summary>
@@ -204,19 +204,19 @@ public partial class LowerTimeline : Node
 
 		// Grab the current timer position and the time to allow the next function to play
 		int currTime = timer.ClockTimeRounded;
-		double updateTime = (currFunction == -1) ? Functions.First().RunTime : Functions[currFunction].RunTime;
+		double updateTime = (currFunction == -1) ? Functions!.First().RunTime : Functions![currFunction].RunTime;
 
 		// Play the functions within the timeline at the appropriate time
 		if (currFunction == -1 || timer.ElapsedTime >= updateTime)
 		{
 			currFunction++;
-			Functions[currFunction].StartPlaying();
+			Functions![currFunction].StartPlaying();
 			timer.ResetTracking();
 		}
 
 		AudioDebugging.Output("\t->Timeline.Timer.CurrTime = " + currTime + " s. UpdateTime/StopTime = " + updateTime + " s");
 		AudioDebugging.Output("\t->Timeline.Timer.ElapsedTime: " + (int)timer.ElapsedTime + " s " + "[absolute: " + timer.ElapsedTime + " s]");
-		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + Functions[currFunction].TextRepresentation);
+		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + Functions![currFunction].TextRepresentation);
 		AudioDebugging.Output("\tExit LowerTimeline.Play()");
 	}
 
