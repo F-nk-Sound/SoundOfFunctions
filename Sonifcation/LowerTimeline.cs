@@ -89,6 +89,7 @@ public partial class LowerTimeline : Node
 	public LowerTimeline()
 	{
 		timer = new();
+		cachedFunctions = ImmutableList.Create<Function>();
 
 		Reset();
 
