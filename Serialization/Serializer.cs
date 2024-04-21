@@ -1,7 +1,6 @@
 using Godot;
 using System.IO;
 using Sonification;
-using System.Collections.Generic;
 using UI.Palette;
 using UI;
 using Godot.Collections;
@@ -35,9 +34,6 @@ public partial class Serializer : Node {
 	/// </summary>
 	[Export]
 	private LowerTimeline? lowerTimeline;
-
-	[Export]
-	PackedScene? upperTimelineFunctionContainer;
 
 	[Export]
 	HBoxContainer? upperTimelineContainer;
@@ -289,7 +285,6 @@ public partial class Serializer : Node {
 		// Reset Lower Timeline.
 		lowerTimeline!.Reset();
 		lowerTimeline.Name = timelineName;
-		lowerTimeline.SetProcess(false);
 
 		// Reset Upper Timeline.
 		foreach(Node n in upperTimeline!.timelineContainer!.GetChildren()) {

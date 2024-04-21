@@ -129,7 +129,7 @@ icon = ExtResource("10_sgbw4")
 [node name="Main" type="VSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-split_offset = -190
+split_offset = -200
 
 [node name="PaletteAndGraph" type="HSplitContainer" parent="Main"]
 layout_mode = 2
@@ -222,16 +222,17 @@ icon_alignment = 2
 layout_mode = 2
 script = ExtResource("4_1pkc6")
 playButton = NodePath("../../Toolbar/HBoxContainer/Play")
-timelineContainer = NodePath("VBoxContainer/ScrollContainer/TimelineContainer")
+timelineContainer = NodePath("VBoxContainer/ScrollContainer/HBoxContainer/TimelineContainer")
 functionPalette = NodePath("../PaletteAndGraph/Function Palette")
 audioGenerator = NodePath("../../AudioGenerator")
 lowerTimeline = NodePath("LowerTimeline")
 timelineFunctionContainer = ExtResource("15_x5gp5")
 
-[node name="LowerTimeline" type="Node" parent="Main/Timeline" node_paths=PackedStringArray("timelineContainer")]
+[node name="LowerTimeline" type="Node" parent="Main/Timeline" node_paths=PackedStringArray("timelineContainer", "progressBar")]
 script = ExtResource("13_lr367")
-timelineContainer = NodePath("../VBoxContainer/ScrollContainer/TimelineContainer")
+timelineContainer = NodePath("../VBoxContainer/ScrollContainer/HBoxContainer/TimelineContainer")
 timelineFunctionContainer = ExtResource("15_x5gp5")
+progressBar = NodePath("../VBoxContainer/ScrollContainer/HBoxContainer/ProgressBar")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Main/Timeline"]
 layout_mode = 2
@@ -249,7 +250,16 @@ text = "Timeline"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TimelineContainer" type="HBoxContainer" parent="Main/Timeline/VBoxContainer/ScrollContainer"]
+[node name="HBoxContainer" type="VBoxContainer" parent="Main/Timeline/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="Main/Timeline/VBoxContainer/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+max_value = 0.0
+step = 1.0
+show_percentage = false
+
+[node name="TimelineContainer" type="HBoxContainer" parent="Main/Timeline/VBoxContainer/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -269,7 +279,7 @@ upperTimeline = NodePath("../../Main/Timeline")
 audioGenerator = NodePath("../../AudioGenerator")
 lowerTimeline = NodePath("../../Main/Timeline/LowerTimeline")
 upperTimelineFunctionContainer = ExtResource("15_x5gp5")
-upperTimelineContainer = NodePath("../../Main/Timeline/VBoxContainer/ScrollContainer/TimelineContainer")
+upperTimelineContainer = NodePath("../../Main/Timeline/VBoxContainer/ScrollContainer/HBoxContainer/TimelineContainer")
 saveTimer = NodePath("../SaveTimer")
 
 [node name="FileExplorer" type="FileDialog" parent="Storage"]
@@ -365,7 +375,7 @@ fit_content = true
 [connection signal="SeekingRequested" from="Main/Timeline" to="Main/Timeline/LowerTimeline" method="OnSeekingRequested"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="Main/Timeline" method="OnLowerTimelineAudioPlaybackFinished"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="AudioGenerator" method="OnAudioPlaybackFinished"]
-[connection signal="child_order_changed" from="Main/Timeline/VBoxContainer/ScrollContainer/TimelineContainer" to="Main/Timeline/LowerTimeline" method="ComputeFunctions"]
+[connection signal="child_order_changed" from="Main/Timeline/VBoxContainer/ScrollContainer/HBoxContainer/TimelineContainer" to="Main/Timeline/LowerTimeline" method="ComputeFunctions"]
 [connection signal="TimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnTimelineUpdated"]
 [connection signal="SelectedSave" from="Storage/SaveSelector" to="Storage" method="OnSaveSelected"]
 [connection signal="timeout" from="Storage/SaveTimer" to="Storage/Serializer" method="OnSaveTimerTimeout"]
