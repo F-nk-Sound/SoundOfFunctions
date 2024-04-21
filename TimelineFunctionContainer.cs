@@ -34,14 +34,15 @@ public partial class TimelineFunctionContainer : Control
 	}
 
 	void Delete()
-	{
+  {
+		if(Timeline.IsPlaying) return;
 		QueueFree();
 	}
 
-    public override Variant _GetDragData(Vector2 atPosition)
-    {
+  public override Variant _GetDragData(Vector2 atPosition)
+  {
 		SetDragPreview((Control)Duplicate());
 		QueueFree();
 		return Function!;
-    }
+  }
 }

@@ -125,7 +125,7 @@ image = SubResource("Image_qirhn")
 
 [node name="TimelineFunctionContainer" type="MarginContainer" node_paths=PackedStringArray("startLabel", "endLabel", "latex")]
 offset_right = 104.0
-offset_bottom = 123.0
+offset_bottom = 156.0
 size_flags_vertical = 0
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
