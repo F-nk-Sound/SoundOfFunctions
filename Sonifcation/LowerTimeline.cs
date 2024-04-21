@@ -185,7 +185,7 @@ public partial class LowerTimeline : Node
 
 	public void Add(Function func)
 	{
-		Insert(func, Count - 1);
+		Insert(func, Count);
 	}
 
 	/// <summary>

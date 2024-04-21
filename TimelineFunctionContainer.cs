@@ -47,6 +47,7 @@ public partial class TimelineFunctionContainer : Control
 
   public override Variant _GetDragData(Vector2 atPosition)
   {
+		if(Timeline!.IsPlaying) return new Variant();
 		SetDragPreview((Control)Duplicate());
 		QueueFree();
 		return Function!;
@@ -55,7 +56,6 @@ public partial class TimelineFunctionContainer : Control
 	private void ChangePausedToPlaying() 
 	{
 		// Load playing theme.
-		GD.Print("Case 1");
 		panel!.RemoveThemeStyleboxOverride("Paused");
 		panel!.AddThemeStyleboxOverride("panel", playingBox);
 	}
@@ -63,7 +63,6 @@ public partial class TimelineFunctionContainer : Control
 	private void ChangePlayingToPaused() 
 	{
 		// Load paused theme.
-		GD.Print("Case 2");
 		panel!.RemoveThemeStyleboxOverride("Playing");
 		panel!.AddThemeStyleboxOverride("panel", pausedBox);
 	}

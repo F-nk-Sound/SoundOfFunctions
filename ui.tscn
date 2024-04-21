@@ -226,7 +226,6 @@ timelineContainer = NodePath("VBoxContainer/ScrollContainer/HBoxContainer/Timeli
 functionPalette = NodePath("../PaletteAndGraph/Function Palette")
 audioGenerator = NodePath("../../AudioGenerator")
 lowerTimeline = NodePath("LowerTimeline")
-timelineFunctionContainer = ExtResource("15_x5gp5")
 
 [node name="LowerTimeline" type="Node" parent="Main/Timeline" node_paths=PackedStringArray("timelineContainer", "progressBar")]
 script = ExtResource("13_lr367")
@@ -278,7 +277,6 @@ functionPalette = NodePath("../../Main/PaletteAndGraph/Function Palette")
 upperTimeline = NodePath("../../Main/Timeline")
 audioGenerator = NodePath("../../AudioGenerator")
 lowerTimeline = NodePath("../../Main/Timeline/LowerTimeline")
-upperTimelineFunctionContainer = ExtResource("15_x5gp5")
 upperTimelineContainer = NodePath("../../Main/Timeline/VBoxContainer/ScrollContainer/HBoxContainer/TimelineContainer")
 saveTimer = NodePath("../SaveTimer")
 
