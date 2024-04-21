@@ -12,6 +12,9 @@ public partial class TimelineFunctionContainer : Control
 	[Export]
 	LaTeXButton? latex;
 
+	[Export]
+	PanelContainer? panel;
+
 	public LowerTimeline? Timeline { get; set; }
 
 	public Function? Function { get; set; }
@@ -35,7 +38,7 @@ public partial class TimelineFunctionContainer : Control
 
 	void Delete()
   {
-		if(Timeline.IsPlaying) return;
+		if(Timeline!.IsPlaying) return;
 		QueueFree();
 	}
 

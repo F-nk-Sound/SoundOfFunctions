@@ -74,11 +74,11 @@ public partial class LowerTimeline : Node
 	{
 		get { return _previous; }
 		set 
-    { 
+	{ 
 			AudioDebugging.Output("-->Setting Seek Backward: CurrFunction = " + currFunction);
 			AudioDebugging.Output("-->Condition: [currFunction > 0 && value == true] is " + ((currFunction > 0) && value == true));
 			if(currFunction > 0 && value == true) _previous = value; 
-    }
+	}
 	}
 
 	/// <summary>
@@ -200,23 +200,23 @@ public partial class LowerTimeline : Node
 	{
 		// Stop playback if necessary
 		AudioDebugging.Output("\tEntered LowerTimeline.Play(). ToPrev = " + SeekBackward + "/ToNext =" + SeekForward);
-		if (StopPlaying(false) || currFunction == functions.Count) return;
+		if (StopPlaying(false) || currFunction == Count) return;
 
 		// Grab the current timer position and the time to allow the next function to play
 		int currTime = timer.ClockTimeRounded;
-		double updateTime = (currFunction == -1) ? Functions.First().RunTime : Functions[currFunction].RunTime;
+		double updateTime = (currFunction == -1) ? Functions!.First().RunTime : Functions![currFunction].RunTime;
 
 		// Play the functions within the timeline at the appropriate time
 		if (currFunction == -1 || timer.ElapsedTime >= updateTime)
 		{
 			currFunction++;
-			Functions[currFunction].StartPlaying();
+			Functions![currFunction].StartPlaying();
 			timer.ResetTracking();
 		}
 
 		AudioDebugging.Output("\t->Timeline.Timer.CurrTime = " + currTime + " s. UpdateTime/StopTime = " + updateTime + " s");
 		AudioDebugging.Output("\t->Timeline.Timer.ElapsedTime: " + (int)timer.ElapsedTime + " s " + "[absolute: " + timer.ElapsedTime + " s]");
-		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + Functions[currFunction].TextRepresentation);
+		AudioDebugging.Output("\t->Playing Timeline.CurrFunction " + currFunction + ":" + Functions![currFunction].TextRepresentation);
 		AudioDebugging.Output("\tExit LowerTimeline.Play()");
 	}
 
@@ -293,16 +293,16 @@ public partial class LowerTimeline : Node
 
 	private void ToPreviousFunction() {
 		AudioDebugging.Output("Entered ToPreviousFunction");
-		AudioDebugging.Output("\tCurrFunction = " + currFunction + ":" + functions[currFunction].TextRepresentation);
-		AudioDebugging.Output("\t\tCurrFunction.Runtime = " + functions[currFunction].RunTime);
-		AudioDebugging.Output("\tPrevFunction = " + (currFunction-1) + ":" + functions[currFunction-1].TextRepresentation);
-		AudioDebugging.Output("\t\tPrevFunction.Runtime = " + functions[currFunction-1].RunTime);
+		AudioDebugging.Output("\tCurrFunction = " + currFunction + ":" + Functions![currFunction].TextRepresentation);
+		AudioDebugging.Output("\t\tCurrFunction.Runtime = " + Functions[currFunction].RunTime);
+		AudioDebugging.Output("\tPrevFunction = " + (currFunction-1) + ":" + Functions[currFunction-1].TextRepresentation);
+		AudioDebugging.Output("\t\tPrevFunction.Runtime = " + Functions[currFunction-1].RunTime);
 		AudioDebugging.Output("\tLowerTimeline.Timer.CurrTime = " + timer.ClockTimeAbsolute);
 
 		_previous = false;
 		Functions![currFunction].StopPlaying();
 		double startTime = 0;
-		if(currFunction - 1 != 0) for(int i = 0; i < currFunction - 1; i++) startTime += functions[i].RunTime;
+		if(currFunction - 1 != 0) for(int i = 0; i < currFunction - 1; i++) startTime += Functions[i].RunTime;
 		timer.Reset(startTime);
 		timer.BeginTracking();
 		currFunction--;
