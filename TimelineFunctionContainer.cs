@@ -38,7 +38,7 @@ public partial class TimelineFunctionContainer : Control
 	}
 
 	void Delete()
-  {
+  	{
 		if(Timeline!.IsPlaying) return;
 		QueueFree();
 	}
