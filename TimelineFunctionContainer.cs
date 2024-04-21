@@ -14,6 +14,7 @@ public partial class TimelineFunctionContainer : Control
 
 	[Export]
 	PanelContainer? panel;
+	private Theme? pauseTheme = null;
 
 	public LowerTimeline? Timeline { get; set; }
 
@@ -49,4 +50,35 @@ public partial class TimelineFunctionContainer : Control
 		QueueFree();
 		return Function!;
   }
+
+	private void OnFunctionPlaybackStarted() 
+	{
+		// Grab current theme for later.
+		//pauseTheme ??= panel!.Theme;
+		GD.Print("Case 1");
+		// Load playing theme.
+		panel!.Theme = (Theme) GD.Load("res://FunctionPlaying.tres");
+	}
+
+	private void OnFunctionPlaybackEnded() 
+	{
+		// Load paused theme.
+		GD.Print("Case 2");
+		panel!.Theme = pauseTheme;
+	}
+
+	public override void _Process(double delta)
+	{
+		base._Process(delta);
+
+		//pauseTheme ??= panel!.Theme;
+		
+		if(pauseTheme == null) {
+			pauseTheme = panel!.Theme;
+			GD.Print("Not Null anymore");
+		}
+
+		if(Function!.IsProcessing() && panel!.Theme != pauseTheme) OnFunctionPlaybackStarted();
+		else if(!Function!.IsProcessing()) OnFunctionPlaybackEnded();
+	}
 }

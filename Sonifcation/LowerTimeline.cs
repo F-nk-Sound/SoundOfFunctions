@@ -96,6 +96,18 @@ public partial class LowerTimeline : Node
 	public delegate void AudioPlaybackFinishedEventHandler();
 
 	/// <summary>
+	/// Godot event called when an individual function is sonified. 
+	/// </summary>
+	[Signal]
+	public delegate void FunctionPlaybackStartedEventHandler(int index);
+
+	/// <summary>
+	/// Godot event called when an individual function sonification is stopped.
+	/// </summary>
+	[Signal]
+	public delegate void FunctionPlaybackStoppedEventHandler(int index);
+
+	/// <summary>
 	/// Initializes a new LowerTimeline Node.
 	/// </summary>
 	/// <param name="parent">The parent of this LowerTimeline node.</param>
@@ -215,6 +227,7 @@ public partial class LowerTimeline : Node
 			CurrFunction++;
 			Functions![CurrFunction].StartPlaying();
 			timer.ResetTracking();
+			EmitSignal(SignalName.FunctionPlaybackStarted, currFunction);
 		}
 
 		AudioDebugging.Output("\t->Timeline.Timer.CurrTime = " + currTime + " s. UpdateTime/StopTime = " + updateTime + " s");
