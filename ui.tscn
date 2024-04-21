@@ -346,9 +346,9 @@ wait_time = 30.0
 [node name="AutoSaveNotif" type="RichTextLabel" parent="Storage"]
 visible = false
 offset_left = 1002.0
-offset_top = 466.0
+offset_top = 453.0
 offset_right = 1155.0
-offset_bottom = 489.0
+offset_bottom = 476.0
 text = "Deck Auto saved!!!"
 fit_content = true
 
@@ -374,6 +374,9 @@ fit_content = true
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="Main/Timeline" method="OnLowerTimelineAudioPlaybackFinished"]
 [connection signal="AudioPlaybackFinished" from="Main/Timeline/LowerTimeline" to="AudioGenerator" method="OnAudioPlaybackFinished"]
 [connection signal="child_order_changed" from="Main/Timeline/VBoxContainer/ScrollContainer/HBoxContainer/TimelineContainer" to="Main/Timeline/LowerTimeline" method="ComputeFunctions"]
+[connection signal="AutoSaveOccurred" from="Storage/Serializer" to="Storage" method="OnAutoSaveOccurred"]
+[connection signal="ComponentDeSerialized" from="Storage/Serializer" to="Storage" method="OnComponentDeSerialized"]
+[connection signal="ComponentSerialized" from="Storage/Serializer" to="Storage" method="OnComponentSerialized"]
 [connection signal="TimelineLoaded" from="Storage/Serializer" to="AudioGenerator" method="OnTimelineUpdated"]
 [connection signal="SelectedSave" from="Storage/SaveSelector" to="Storage" method="OnSaveSelected"]
 [connection signal="timeout" from="Storage/SaveTimer" to="Storage/Serializer" method="OnSaveTimerTimeout"]
