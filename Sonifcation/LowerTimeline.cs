@@ -227,7 +227,7 @@ public partial class LowerTimeline : Node
 			CurrFunction++;
 			Functions![CurrFunction].StartPlaying();
 			timer.ResetTracking();
-			EmitSignal(SignalName.FunctionPlaybackStarted, currFunction);
+			EmitSignal(SignalName.FunctionPlaybackStarted, CurrFunction);
 		}
 
 		AudioDebugging.Output("\t->Timeline.Timer.CurrTime = " + currTime + " s. UpdateTime/StopTime = " + updateTime + " s");
@@ -357,8 +357,8 @@ public partial class LowerTimeline : Node
 			timer.Tick(delta);
 			Play();
 
-			GD.Print("Elapsed: ", timer.ElapsedTime);
-			GD.Print("Runtime: ", Functions![CurrFunction].RunTime);
+			//GD.Print("Elapsed: ", timer.ElapsedTime);
+			//GD.Print("Runtime: ", Functions![CurrFunction].RunTime);
 		}
 
 		if (progressBar is not null)

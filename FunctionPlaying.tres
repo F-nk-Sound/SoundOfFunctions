@@ -1,6 +1,7 @@
-[gd_resource type="StyleBoxFlat" format=3 uid="uid://d0me8isfulw4l"]
+[gd_resource type="StyleBoxFlat" format=3 uid="uid://c477en8cs02ci"]
 
 [resource]
+resource_name = "Playing"
 bg_color = Color(0.129558, 0.129558, 0.129558, 1)
 border_width_left = 2
 border_width_top = 2

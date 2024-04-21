@@ -14,7 +14,8 @@ public partial class TimelineFunctionContainer : Control
 
 	[Export]
 	PanelContainer? panel;
-	private Theme? pauseTheme = null;
+	private StyleBox? pausedBox = (StyleBox) GD.Load("res://FunctionPaused.tres");
+	private StyleBox? playingBox = (StyleBox) GD.Load("res://FunctionPlaying.tres");
 
 	public LowerTimeline? Timeline { get; set; }
 
@@ -39,7 +40,7 @@ public partial class TimelineFunctionContainer : Control
 	}
 
 	void Delete()
-  {
+  	{
 		if(Timeline!.IsPlaying) return;
 		QueueFree();
 	}
@@ -51,34 +52,26 @@ public partial class TimelineFunctionContainer : Control
 		return Function!;
   }
 
-	private void OnFunctionPlaybackStarted() 
+	private void ChangePausedToPlaying() 
 	{
-		// Grab current theme for later.
-		//pauseTheme ??= panel!.Theme;
-		GD.Print("Case 1");
 		// Load playing theme.
-		panel!.Theme = (Theme) GD.Load("res://FunctionPlaying.tres");
+		GD.Print("Case 1");
+		panel!.RemoveThemeStyleboxOverride("Paused");
+		panel!.AddThemeStyleboxOverride("panel", playingBox);
 	}
 
-	private void OnFunctionPlaybackEnded() 
+	private void ChangePlayingToPaused() 
 	{
 		// Load paused theme.
 		GD.Print("Case 2");
-		panel!.Theme = pauseTheme;
+		panel!.RemoveThemeStyleboxOverride("Playing");
+		panel!.AddThemeStyleboxOverride("panel", pausedBox);
 	}
 
 	public override void _Process(double delta)
 	{
-		base._Process(delta);
-
-		//pauseTheme ??= panel!.Theme;
-		
-		if(pauseTheme == null) {
-			pauseTheme = panel!.Theme;
-			GD.Print("Not Null anymore");
-		}
-
-		if(Function!.IsProcessing() && panel!.Theme != pauseTheme) OnFunctionPlaybackStarted();
-		else if(!Function!.IsProcessing()) OnFunctionPlaybackEnded();
+		StyleBox box = panel!.GetThemeStylebox("panel");
+		if(Function!.IsProcessing() && box.ResourceName.Equals("Paused")) ChangePausedToPlaying();
+		else if(!Function!.IsProcessing() && box.ResourceName.Equals("Playing")) ChangePlayingToPaused();
 	}
 }
