@@ -289,7 +289,6 @@ public partial class Serializer : Node {
 		// Reset Lower Timeline.
 		lowerTimeline!.Reset();
 		lowerTimeline.Name = timelineName;
-		lowerTimeline.SetProcess(false);
 
 		// Reset Upper Timeline.
 		foreach(Node n in upperTimeline!.timelineContainer!.GetChildren()) {

@@ -28,12 +28,13 @@ public partial class TimelineFunctionContainer : Control
 		}
 	}
 
-	public void Initialize(Function func)
+	public void Initialize(Function func, LowerTimeline timeline)
 	{
 		Function = func;
 		startLabel!.Text = func.StartTime.ToString();
 		endLabel!.Text = func.EndTime.ToString();
 		LatexString = func.FunctionAST!.Latex;
+		Timeline = timeline;
 	}
 
 	void Delete()

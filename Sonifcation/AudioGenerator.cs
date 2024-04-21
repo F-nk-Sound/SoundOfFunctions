@@ -20,13 +20,6 @@ public partial class AudioGenerator : Node {
 	/// </summary>
 	public bool IsPlaying => timeline!.IsPlaying;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready() {
-		// Add and prep the Timeline.
-		timeline!.SetProcess(false);
-
-	}
-
 	private void OnTimelineUpdated() {
 		// Introduce the new timeline.
 		foreach (Node n in timeline!.GetChildren()) 
