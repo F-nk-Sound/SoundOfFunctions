@@ -94,12 +94,12 @@ public partial class FunctionPalette : Node
 
 	private FunctionContainer AddFunction()
 	{
-        if (_container == null || _functionContainer == null) return null;
-        FunctionContainer instance = (FunctionContainer)_functionContainer.Instantiate();
-        instance.FunctionPalette = this;
-        _container.AddChild(instance);
+		if (_container == null || _functionContainer == null) return null;
+		FunctionContainer instance = (FunctionContainer)_functionContainer.Instantiate();
+		instance.FunctionPalette = this;
+		_container.AddChild(instance);
 		return instance;
-    }
+	}
 
 	private FunctionContainer AddFunction(string textRepresentation, float startTime, float endTime)
 	{
@@ -154,14 +154,14 @@ public partial class FunctionPalette : Node
 
 	public void Load(Dictionary dictionary)
 	{
-		GD.Print(dictionary);
+		//GD.Print(dictionary);
 		foreach (var child in  _container!.GetChildren())
 		{
 			child.QueueFree();
 		}
 		Array<Dictionary<string, Variant>> functions;
 		if (!dictionary.TryGetValue("Functions", out Variant functionsListVariant)) return;
-        functions = (Array<Dictionary<string, Variant>>) functionsListVariant;
+		functions = (Array<Dictionary<string, Variant>>) functionsListVariant;
 		foreach (var function in functions)
 		{
 			AddFunction(
