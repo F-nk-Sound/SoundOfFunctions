@@ -126,6 +126,12 @@ text = "Next
 "
 icon = ExtResource("10_sgbw4")
 
+[node name="AutoSaveNotif" type="RichTextLabel" parent="Toolbar"]
+visible = false
+layout_mode = 2
+text = "Deck Auto saved!!!"
+fit_content = true
+
 [node name="Main" type="VSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
@@ -269,7 +275,7 @@ timeline = NodePath("../Main/Timeline/LowerTimeline")
 [node name="Storage" type="Node" parent="." node_paths=PackedStringArray("saveSelector", "autoSaveNotif")]
 script = ExtResource("14_a2p4c")
 saveSelector = NodePath("SaveSelector")
-autoSaveNotif = NodePath("AutoSaveNotif")
+autoSaveNotif = NodePath("../Toolbar/AutoSaveNotif")
 
 [node name="Serializer" type="Node" parent="Storage" node_paths=PackedStringArray("functionPalette", "upperTimeline", "audioGenerator", "lowerTimeline", "upperTimelineContainer", "saveTimer")]
 script = ExtResource("14_mqxfw")
@@ -342,15 +348,6 @@ visible = false
 
 [node name="SaveTimer" type="Timer" parent="Storage"]
 wait_time = 60.0
-
-[node name="AutoSaveNotif" type="RichTextLabel" parent="Storage"]
-visible = false
-offset_left = 1002.0
-offset_top = 453.0
-offset_right = 1155.0
-offset_bottom = 476.0
-text = "Deck Auto saved!!!"
-fit_content = true
 
 [connection signal="ready" from="." to="." method="_on_ready"]
 [connection signal="LoadButtonPressed" from="Toolbar" to="Storage" method="OnToolBarLoadButtonPressed"]
